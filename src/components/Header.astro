@@ -1,6 +1,12 @@
+---
+import { SiteConfig } from "@/config";
+---
+
 <header>
-  <nav>
-    <a href="/">首页</a>
+  <nav class="flex justify-between items-center px-6 py-4">
+    <a href="/">
+      <h1 class="font-bold text-lg">{SiteConfig.title}</h1>
+    </a>
     <a href="/posts">文章</a>
   </nav>
 </header>
