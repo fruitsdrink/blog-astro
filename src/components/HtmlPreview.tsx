@@ -19,12 +19,12 @@ export const HtmlPreview = async ({
 
   return (
     <div>
-      <div className={`w-full h-[${height}px] rounded-md overflow-hidden`}>
+      <div className={`w-full rounded-md overflow-hidden`} style={{ height: `${height}px` }}>
         <iframe className="w-full h-full" srcDoc={html}></iframe>
       </div>
       {showNewWindowPreview && (
         <div className="mt-2 flex justify-center gap-2">
-          <a href={`/posts/${postId}/preview.html`} target="_blank">
+          <a href={`/posts/${postId}/preview`} target="_blank">
             新窗口预览
           </a>
           {jsFiddle && (

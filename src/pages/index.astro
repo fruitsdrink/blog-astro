@@ -1,14 +1,28 @@
 ---
-import {BaseLayout} from "@/layouts";
+import { BaseLayout } from "@/layouts";
 import { SiteConfig } from "@/config";
 import { Image } from "astro:assets";
 ---
 
 <BaseLayout>
-  <div class="flex flex-col items-center justify-center  flex-1">
-		<Image class="w-[150px] h-[150px] rounded-full object-cover shadow-xl border border-white border-2" width={720} height={360} src={SiteConfig.avatar} alt={SiteConfig.title} />
-		<div class="text-center mt-4">{SiteConfig.description}</div>
-		<a href="/posts" class="mt-6 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">点击开始</a>
-	</div>
-</BaseLayout>
+  <div class="flex flex-col items-center justify-center flex-1">
+    <div
+      class="w-[150px] h-[150px] rounded-full object-cover shadow-xl border-white border-2 overflow-hidden"
+    >
+      <Image
+        class="w-full h-full"
+        width={720}
+        height={360}
+        src={SiteConfig.avatar}
+        alt={SiteConfig.title}
+      />
+    </div>
 
+    <div class="text-center mt-4">{SiteConfig.description}</div>
+    <a
+      href="/posts"
+      class="mt-6 inline-block px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+      >点击开始</a
+    >
+  </div>
+</BaseLayout>
