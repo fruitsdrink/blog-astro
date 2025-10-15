@@ -4,7 +4,7 @@ import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
 
 const posts = (await getCollection('posts')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	(a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 ---
 
@@ -18,7 +18,9 @@ const posts = (await getCollection('posts')).sort(
               <Image class="rounded-md" width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
             )}
             <h4 class="text-lg font-bold mt-6">{post.data.title}</h4>
-            <p class="text-sm text-gray-500">{post.data.description}</p>
+
+            <p class="text-sm text-gray-500 mt-2">{post.data.description}</p>
+            <p class="text-sm text-gray-500 mt-4">{post.data.date.toLocaleDateString()}</p>
             </a>
           </article>
         ))
