@@ -8,7 +8,11 @@ const posts = defineCollection({
       title: z.string(),
       description: z.string().optional(),
       date: z.coerce.date(),
-      heroImage: image().optional(),
+      cover: z.object({
+        image: image().optional(),
+        hiddenInSingle: z.boolean().optional(),
+      }).optional(),
+      jsFiddleScript: z.string().optional(),
     })
   }
 })

@@ -2,7 +2,8 @@
 title: 'Electron 脚手架'
 date: "2025-10-11T02:25:54+08:00"
 description: "收集一些比较优秀的ElectronJs脚手架工具"
-heroImage: './cover.png'
+cover:
+  image: './cover.png'
 tags: ["electron"]
 author: "水果饮料"
 draft: false
@@ -15,11 +16,6 @@ comments: false # 评论
 searchHidden: false # 优化SEO
 ShowReadingTime: true
 ShowWordCount: false
-cover:
-  image: "posts/electron-boilerplate/cover.png"
-  alt: ""
-  caption: ""
-  relative: false
 ---
 
 
@@ -27,7 +23,6 @@ cover:
 ## electron-vie
 
 ![electron-vite](./electron-vite.png)
-
 
 - <a href="https://electron-vite.org" alt="官网地址" target="_blank">官网地址</a>
 - <a href="https://github.com/alex8088/electron-vite" alt="github" target="_blank">github</a>

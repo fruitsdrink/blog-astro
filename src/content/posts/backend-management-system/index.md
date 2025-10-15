@@ -2,7 +2,8 @@
 title: "中后台管理系统"
 date: "2025-10-09t21:37:18+08:00"
 description: "目前，市面上有许多开源和商业化的中后台管理系统解决方案，极大地降低了企业开发和维护的成本。本文将列举和简要介绍一些主流的中后台管理系统，供大家参考和选型。"
-heroImage: './cover.jpg'
+cover:
+  image: './cover.jpg'
 tags: ["admin"]
 author: "水果饮料"
 draft: false
@@ -15,11 +16,6 @@ comments: false # 评论
 searchHidden: false # 优化SEO
 ShowReadingTime: true
 ShowWordCount: false
-cover:
-  image: "posts/backend-management-system/cover.jpg"
-  alt: ""
-  caption: ""
-  relative: false
 ---
 
 中后台管理系统（Admin/Backend Management System）是企业信息化建设中不可或缺的基础软件，广泛应用于企业、政府、学校等各类组织。它主要用于支撑企业内部的业务流程管理、数据统计分析、权限控制、内容管理等功能，帮助企业实现高效的运营和管理。
@@ -59,4 +55,3 @@ cover:
 - <a href="https://www.gin-vue-admin.com" alt="官网地址" target="_blank">官网地址 用户名：admin 密码：123456</a>
 - <a href="http://demo.gin-vue-admin.com" alt="演示地址" target="_blank">演示地址</a>
 - <a href="https://github.com/flipped-aurora/gin-vue-admin" alt="代码下载" target="_blank">代码下载</a>
-

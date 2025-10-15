@@ -2,7 +2,8 @@
 title: "REST API 设计规范与最佳实践"
 date: "2025-10-09T16:02:44+08:00"
 description: "RESTful 是目前最流行的 API 设计规范，用于 Web 数据接口的设计"
-heroImage: './cover.png'
+cover:
+  image: './cover.png'
 tags: ["api"]
 author: "水果饮料"
 draft: false
