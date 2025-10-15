@@ -1,0 +1,32 @@
+---
+import { BaseLayout } from "@/layouts";
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection('posts')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout>
+  <div>
+    <h1>文章列表</h1>
+
+  </div>
+  <section>
+    <ul>
+      {
+        posts.map((post) => (
+          <li>
+            <a href={`/posts/${post.id}`}>
+            {post.data.heroImage &&(
+              <Image width={720} height={360} src={post.data.heroImage} alt={post.data.title} />
+            )}
+            <h4>{post.data.title}</h4>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>

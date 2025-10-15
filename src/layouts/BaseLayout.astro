@@ -1,0 +1,18 @@
+---
+import { Head, Header, Footer } from "@/components";
+import { SiteConfig } from "@/config";
+---
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <Head />
+  <title>{SiteConfig.title}</title>
+</head>
+<body>
+  <Header />
+  <main>
+    <slot />
+  </main>
+  <Footer />
+</body>
+</html>
