@@ -32,7 +32,7 @@ cover:
 
 ### 若依管理系统
 
-![若依](./ruoyi.jpg#center)
+![若依](./ruoyi.jpg)
 
 若依管理系统采用前后端分离架构（也提供传统的前后端不分离版本），技术栈选择兼顾稳定性与行业主流趋势。
 
@@ -40,26 +40,15 @@ cover:
 
 前端技术：主流版本采用 Vue.js 框架，配合 Element UI（或 Element Plus 新版本）组件库构建界面，集成 Vue Router（路由）、Vuex/Pinia（状态管理）、Axios（网络请求）等工具，同时支持 ECharts 数据可视化、WangEditor 富文本编辑等常用功能，兼顾美观性与交互体验。
 
-{{<link title="官网地址" href="https://ruoyi.vip" >}}
-{{< ico bootstrap house >}}
-官网地址
-{{</link>}}
-
-{{<link title="演示地址" href="http://demo.ruoyi.vip" >}}
-{{< ico bootstrap binoculars >}}
-演示地址
-{{</link>}}
-
-{{<link title="代码下载" href="https://gitee.com/y_project/RuoYi" >}}
-{{< ico bootstrap download >}}
-代码下载
-{{</link>}}
+- <a href="https://ruoyi.vip" alt="官网地址" target="_blank">官网地址</a>
+- <a href="http://demo.ruoyi.vip" alt="演示地址" target="_blank">演示地址</a>
+- <a href="https://gitee.com/y_project/RuoYi" alt="代码下载" target="_blank">代码下载</a>
 
 ## GoLang
 
 ### Gin-Vue-Admin
 
-![GVA](/posts/backend-management-system/gin-vue-admin.png#center)
+![GVA](./gin-vue-admin.png)
 
 一款基于 Go 语言生态与 Vue.js 技术栈开发的开源企业级中后台管理系统框架，主打 “轻量、高效、易扩展”，专为快速搭建高性能后台管理应用设计。
 
@@ -67,17 +56,7 @@ cover:
 
 前端技术：基于 Vue.js 框架构建，搭配 Element UI（或 Element Plus）组件库快速搭建界面，集成 Vue Router（路由管理）、Vuex/Pinia（状态管理）、Axios（网络请求）等工具；支持 ECharts 数据可视化、Tinymce 富文本编辑、Excel 导入导出等常用功能，同时优化前端性能，如路由懒加载、组件按需引入，兼顾界面美观性与加载速度。
 
-{{<link title="官网地址" href="https://www.gin-vue-admin.com" >}}
-{{< ico bootstrap house >}}
-官网地址 用户名：admin 密码：123456
-{{</link>}}
+- <a href="https://www.gin-vue-admin.com" alt="官网地址" target="_blank">官网地址 用户名：admin 密码：123456</a>
+- <a href="http://demo.gin-vue-admin.com" alt="演示地址" target="_blank">演示地址</a>
+- <a href="https://github.com/flipped-aurora/gin-vue-admin" alt="代码下载" target="_blank">代码下载</a>
 
-{{<link title="演示地址" href="http://demo.gin-vue-admin.com" >}}
-{{< ico bootstrap binoculars >}}
-演示地址
-{{</link>}}
-
-{{<link title="代码下载" href="https://github.com/flipped-aurora/gin-vue-admin" >}}
-{{< ico bootstrap download >}}
-代码下载
-{{</link>}}
