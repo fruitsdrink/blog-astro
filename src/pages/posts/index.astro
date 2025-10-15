@@ -1,4 +1,5 @@
 ---
+import { HtmlPreview } from "@/components";
 import { BaseLayout } from "@/layouts";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
@@ -16,6 +17,9 @@ const posts = (await getCollection('posts')).sort(
             <a href={`/posts/${post.id}`}>
             {post.data.cover?.image &&(
               <Image class="rounded-md" width={720} height={360} src={post.data.cover.image} alt={post.data.title} />
+            )}
+            {post.data.preview && (
+              <HtmlPreview postId={post.id} />
             )}
             <h4 class="text-lg font-bold mt-6">{post.data.title}</h4>
 

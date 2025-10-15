@@ -6,9 +6,11 @@ import partytown from '@astrojs/partytown';
 
 import tailwindcss from '@tailwindcss/vite';
 
+import mdx from '@astrojs/mdx';
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), partytown()],
+  integrations: [react(), partytown(), mdx()],
 
   vite: {
     plugins: [tailwindcss()]

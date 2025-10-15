@@ -1,4 +1,4 @@
-import { glob } from "astro/loaders";
+import {  glob } from "astro/loaders";
 import { defineCollection, z } from "astro:content";
 
 const posts = defineCollection({
@@ -12,7 +12,8 @@ const posts = defineCollection({
         image: image().optional(),
         hiddenInSingle: z.boolean().optional(),
       }).optional(),
-      jsFiddleScript: z.string().optional(),
+      jsFiddle: z.string().optional(),
+      preview: z.boolean().optional(),
     })
   }
 })
