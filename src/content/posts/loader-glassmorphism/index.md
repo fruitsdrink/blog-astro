@@ -1,0 +1,34 @@
+---
+title: "加载器-毛玻璃效果"
+date: "2025-10-11T21:42:45+08:00"
+description: "采用现代毛玻璃（Glassmorphism）设计风格的加载器动画效果。该加载器包含两种不同的毛玻璃效果实现"
+jsFiddle: "https://jsfiddle.net/fruritsdrink/L5r70nu4/81"
+bilibili: "https://www.bilibili.com/video/BV1bS4y177dx/?vd_source=fd5426d19aae781900cc2250c92cf986&p=2"
+youtube: "https://www.youtube.com/watch?v=ttWXapXj4cg&list=PL5e68lK9hEzeeXtsQCQYd9SAzj6u6wZpi"
+preview:
+  enabled: true
+  height: 740
+---
+
+
+这是一个采用现代毛玻璃（Glassmorphism）设计风格的加载器动画效果。该加载器包含两种不同的毛玻璃效果实现：
+
+**第一种效果：水平滑动毛玻璃球**
+
+- 由两个圆形元素组成，其中一个为实心蓝色球体，另一个为半透明毛玻璃效果
+- 毛玻璃球体使用 `backdrop-filter: blur(10px)` 实现背景模糊效果
+- 配合半透明背景色 `rgba(56, 109, 241, 0.05)` 和白色边框 `rgba(255, 255, 255, 0.1)`
+- 两个球体通过水平滑动动画形成交替运动效果，营造出毛玻璃材质的视觉感受
+
+**第二种效果：旋转毛玻璃环**
+
+- 外层为旋转的实心圆形，内层为毛玻璃效果的环形元素
+- 毛玻璃环同样使用背景模糊和半透明效果
+- 外层元素持续旋转，内层毛玻璃环保持静止，形成动态对比
+- 底部添加了阴影效果，增强立体感和毛玻璃的质感
+
+**整体设计特点：**
+
+- 采用淡蓝色背景 `#eafdff`，营造清新现代的视觉体验
+- 完美展现了毛玻璃材质的透明、模糊和光泽特性
+- 适合用于现代Web应用和移动端界面的加载提示

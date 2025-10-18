@@ -4,13 +4,11 @@ type Props = {
   postId: string;
   height?: number;
   showNewWindowPreview?: boolean;
-  jsFiddle?: string;
 };
 export const HtmlPreview = async ({
   postId,
   height = 360,
   showNewWindowPreview = false,
-  jsFiddle,
 }: Props) => {
   const html = fs.readFileSync(
     `src/content/posts/${postId}/preview.html`,
@@ -26,12 +24,7 @@ export const HtmlPreview = async ({
         <div className="mt-2 flex justify-center gap-2">
           <a href={`/posts/${postId}/preview`} target="_blank">
             新窗口预览
-          </a>
-          {jsFiddle && (
-            <a href={jsFiddle} target="_blank">
-              在线预览
-            </a>
-          )}
+          </a>          
         </div>
       )}
     </div>

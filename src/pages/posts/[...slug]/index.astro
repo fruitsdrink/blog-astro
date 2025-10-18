@@ -4,23 +4,54 @@ import type { CollectionEntry } from "astro:content";
 import { render } from "astro:content";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
-import { JsFiddlePreview, HtmlPreview } from "@/components";
+import { HtmlPreview, CodeView, Prose } from "@/components";
+
+import fs from "fs";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
-  return posts.map((post) => ({
-    params: {
-      slug: post.id,
-    },
-    props: post,
-  }));
+
+  return posts.map((post) => {
+    const htmlFileName = `src/content/posts/${post.id}/_src/index.html`;
+    const cssFileName = `src/content/posts/${post.id}/_src/index.css`;
+    const jsFileName = `src/content/posts/${post.id}/_src/index.js`;
+
+    let htmlContent = "";
+    let cssContent = "";
+    let jsContent = "";
+
+    if (fs.existsSync(htmlFileName)) {
+      htmlContent = fs.readFileSync(htmlFileName, "utf-8");
+    }
+    if (fs.existsSync(cssFileName)) {
+      cssContent = fs.readFileSync(cssFileName, "utf-8");
+    }
+    if (fs.existsSync(jsFileName)) {
+      jsContent = fs.readFileSync(jsFileName, "utf-8");
+    }
+    return {
+      params: {
+        slug: post.id,
+      },
+      props: {
+        post,
+        html: htmlContent,
+        css: cssContent,
+        js: jsContent,
+      },
+    };
+  });
 }
 
+type Props = CollectionEntry<"posts"> & {
+  html: string;
+  css: string;
+  js: string;
+  post: CollectionEntry<"posts">;
+};
 
-type Props = CollectionEntry<"posts">;
-
-const post = Astro.props as Props;
-const { Content } = await render(post);
+const {post, html, css, js} = Astro.props;
+const { Content } = await render(post);;
 ---
 
 <BaseLayout>
@@ -43,12 +74,22 @@ const { Content } = await render(post);
       )
     }
 
-    {post.data.preview && (
-      <HtmlPreview postId={post.id} showNewWindowPreview={true} jsFiddle={post.data.jsFiddle} />
-    )}
-    
+    {
+      post.data.preview?.enabled && (
+        <HtmlPreview
+          postId={post.id}
+          showNewWindowPreview={true}
+          height={post.data.preview?.height}
+        />
+      )
+    }
+
     <div class="mt-6">
-      <Content />
+      <Prose>
+        <Content />
+      </Prose>
+      <CodeView html={html} css={css} js={js} bilibili={post.data.bilibili} youtube={post.data.youtube} jsFiddle={post.data.jsFiddle} />
+      
     </div>
   </section>
 </BaseLayout>

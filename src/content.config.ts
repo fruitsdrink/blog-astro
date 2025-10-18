@@ -13,7 +13,12 @@ const posts = defineCollection({
         hiddenInSingle: z.boolean().optional(),
       }).optional(),
       jsFiddle: z.string().optional(),
-      preview: z.boolean().optional(),
+      preview: z.object({
+        enabled: z.boolean(),
+        height: z.number().optional(),
+      }).optional(),
+      bilibili: z.string().optional(),
+      youtube: z.string().optional(),
     })
   }
 })
