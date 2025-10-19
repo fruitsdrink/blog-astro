@@ -1,14 +1,14 @@
 ---
 import { Code } from "astro/components";
-import { Icon } from 'astro-icon/components'
+import { Icon } from "astro-icon/components";
 import fs from "fs";
+import { iconColors } from "@/lib";
 
 interface Props {
   bilibili?: string;
   youtube?: string;
   jsFiddle?: string;
 }
-const { bilibili, youtube, jsFiddle } = Astro.props as Props;
 
 const currentPath = Astro.url.pathname;
 const postId = currentPath.split("/").pop();
@@ -17,10 +17,12 @@ const cssFileName = `src/content/posts/${postId}/_src/index.css`;
 const jsFileName = `src/content/posts/${postId}/_src/index.js`;
 const dataFileName = `src/content/posts/${postId}/_src/data.json`;
 
-let htmlCode = '';
-let cssCode = '';
-let jsCode = '';
-let data: { links: { name: string, url: string, icon: string, iconColor: string }[] } = { links: [] };
+let htmlCode = "";
+let cssCode = "";
+let jsCode = "";
+let data: {
+  links: { name: string; url: string; icon: keyof typeof iconColors }[];
+} = { links: [] };
 
 if (fs.existsSync(htmlFileName)) {
   htmlCode = fs.readFileSync(htmlFileName, "utf-8");
@@ -55,27 +57,57 @@ const tabs = [
 
 <div class="my-6">
   <div class="flex gap-2">
-    {htmlCode && <span id="html" class={`cursor-pointer tab active`}>html</span>}
-    {cssCode && <span id="css" class={`cursor-pointer tab`}>css</span>}
-    {jsCode && <span id="js" class={`cursor-pointer tab`}>js</span>}
+    {
+      htmlCode && (
+        <span id="html" class={`cursor-pointer tab active`}>
+          html
+        </span>
+      )
+    }
+    {
+      cssCode && (
+        <span id="css" class={`cursor-pointer tab`}>
+          css
+        </span>
+      )
+    }
+    {
+      jsCode && (
+        <span id="js" class={`cursor-pointer tab`}>
+          js
+        </span>
+      )
+    }
   </div>
   <div>
-    {tabs.map((tab) => (
-      <div id={`${tab.value}-code`}>
-        {tab.value === "html" && htmlCode && <Code class="code" code={htmlCode} lang={"html"} />}
-        {tab.value === "css" && cssCode && <Code class="code" code={cssCode} lang={"css"} />}
-        {tab.value === "js" && jsCode && <Code class="code" code={jsCode} lang={"js"} />}
-      </div>
-    ))}
+    {
+      tabs.map((tab) => (
+        <div id={`${tab.value}-code`}>
+          {tab.value === "html" && htmlCode && (
+            <Code class="code" code={htmlCode} lang={"html"} />
+          )}
+          {tab.value === "css" && cssCode && (
+            <Code class="code" code={cssCode} lang={"css"} />
+          )}
+          {tab.value === "js" && jsCode && (
+            <Code class="code" code={jsCode} lang={"js"} />
+          )}
+        </div>
+      ))
+    }
   </div>
   <div class="flex gap-2 mt-4">
     {
       data.links.map((link) => (
         <a href={link.url} target="_blank">
-          <Icon name={`logos/${link.icon}`} class={`w-6 h-6 text-${link.iconColor}-700 hover:text-${link.iconColor}-500`}/>
+          <Icon
+            name={`logos/${link.icon}`}
+            class={`w-6 h-6`}
+            style={`color: ${iconColors[link.icon]}`}
+          />
         </a>
       ))
-    }    
+    }
   </div>
 </div>
 
@@ -92,12 +124,11 @@ const tabs = [
   }
 </style>
 
-
 <script>
   let currentTab = "html";
   document.getElementById("html")?.classList.add("active");
 
-  function setCurrentTab (tab: string){
+  function setCurrentTab(tab: string) {
     currentTab = tab;
     const tabs = document.querySelectorAll(".tab");
     tabs.forEach((tab) => {
@@ -106,23 +137,28 @@ const tabs = [
     document.getElementById(tab)?.classList.add("active");
     hideAllCode();
     showCode(tab);
-  };
+  }
 
-  function hideAllCode(){
+  function hideAllCode() {
     const codes = document.querySelectorAll(".code");
     codes.forEach((code) => {
       code.classList.remove("show");
     });
   }
 
-  function showCode(tab: string){
+  function showCode(tab: string) {
     const code = document.getElementById(`${tab}-code`);
     code?.querySelector(".code")?.classList.add("show");
   }
 
-  
   setCurrentTab("html");
-  document.getElementById("html")?.addEventListener("click", () => setCurrentTab("html"));
-  document.getElementById("css")?.addEventListener("click", () => setCurrentTab("css"));
-  document.getElementById("js")?.addEventListener("click", () => setCurrentTab("js"));
+  document
+    .getElementById("html")
+    ?.addEventListener("click", () => setCurrentTab("html"));
+  document
+    .getElementById("css")
+    ?.addEventListener("click", () => setCurrentTab("css"));
+  document
+    .getElementById("js")
+    ?.addEventListener("click", () => setCurrentTab("js"));
 </script>

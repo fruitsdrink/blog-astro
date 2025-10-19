@@ -1,0 +1,62 @@
+---
+title: "加载器-流体加载效果"
+date: "2025-10-19T21:37:18+08:00"
+description: "基于 SVG 滤镜的流体加载动画效果"
+preview:
+  enabled: true
+---
+
+## 效果介绍
+
+这是一个基于 SVG 滤镜的流体加载动画效果，主要特点包括：
+
+- **流体融合效果**：使用 SVG 的`feGaussianBlur`和`feColorMatrix`滤镜创建粘性液体效果
+- **多层旋转动画**：13 个圆点分为两组，以不同速度旋转形成复杂的运动轨迹
+- **渐变发光**：每个圆点都有蓝色渐变背景和发光阴影效果
+- **无缝循环**：动画持续 16 秒完整循环，营造流畅的视觉体验
+
+## 关键代码解析
+
+### SVG 滤镜核心
+
+```xml
+<filter id="gooey">
+  <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+  <feColorMatrix values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -10" />
+</filter>
+```
+
+- `feGaussianBlur`：对图形进行高斯模糊处理
+- `feColorMatrix`：通过矩阵变换增强对比度，创造液体融合效果
+
+### 动画结构
+
+```css
+.loader span {
+  transform: rotate(calc(45deg * var(--i)));
+}
+.rotate {
+  animation: animate 4s ease-in-out infinite;
+  animation-delay: calc(0.2s * var(--j));
+}
+```
+
+- 使用 CSS 自定义属性`--i`和`--j`控制每个元素的初始角度和动画延迟
+- 两层动画系统：基础旋转(16s)和额外旋转(4s)
+
+### 视觉效果
+
+```css
+.loader span::before {
+  background: linear-gradient(45deg, #c7eeff, #03a9f4);
+  box-shadow: 0 0 30px #00bcd4;
+  border-radius: 50%;
+}
+```
+
+- 蓝色渐变背景营造科技感
+- 发光阴影增强视觉冲击力
+
+import { CodeViewer} from '@/components'
+
+<CodeViewer  />

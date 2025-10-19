@@ -3,20 +3,17 @@
     {
       "name":"bilibili",
       "url": "https://www.bilibili.com/video/BV1bS4y177dx/?p=6",
-      "icon": "bilibili",
-      "iconColor": "blue"
+      "icon": "bilibili"
     },
     {
       "name":"youtube",
       "url": "https://www.youtube.com/watch?v=ttWXapXj4cg&list=PL5e68lK9hEzeeXtsQCQYd9SAzj6u6wZpi",
-      "icon": "youtube",
-      "iconColor": "red"
+      "icon": "youtube"
     },
     {
       "name":"jsfiddle",
       "url": "https://jsfiddle.net/fruritsdrink/736rxy8j/53",
-      "icon": "jsfiddle",
-      "iconColor": "yellow"
+      "icon": "jsfiddle"
     }
   ]
 }
