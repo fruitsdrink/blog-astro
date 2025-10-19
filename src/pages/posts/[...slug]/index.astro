@@ -11,33 +11,13 @@ import fs from "fs";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
 
-  return posts.map((post) => {
-    const htmlFileName = `src/content/posts/${post.id}/_src/index.html`;
-    const cssFileName = `src/content/posts/${post.id}/_src/index.css`;
-    const jsFileName = `src/content/posts/${post.id}/_src/index.js`;
-
-    let htmlContent = "";
-    let cssContent = "";
-    let jsContent = "";
-
-    if (fs.existsSync(htmlFileName)) {
-      htmlContent = fs.readFileSync(htmlFileName, "utf-8");
-    }
-    if (fs.existsSync(cssFileName)) {
-      cssContent = fs.readFileSync(cssFileName, "utf-8");
-    }
-    if (fs.existsSync(jsFileName)) {
-      jsContent = fs.readFileSync(jsFileName, "utf-8");
-    }
+  return posts.map((post) => {    
     return {
       params: {
         slug: post.id,
       },
       props: {
-        post,
-        html: htmlContent,
-        css: cssContent,
-        js: jsContent,
+        post,    
       },
     };
   });
@@ -88,7 +68,7 @@ const { Content } = await render(post);;
       <Prose>
         <Content />
       </Prose>
-      <CodeView html={html} css={css} js={js} bilibili={post.data.bilibili} youtube={post.data.youtube} jsFiddle={post.data.jsFiddle} />
+      
       
     </div>
   </section>

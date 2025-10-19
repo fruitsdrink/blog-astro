@@ -1,0 +1,168 @@
+---
+title: '加载器-拟物效果'
+date: "2025-10-15T21:06:53+08:00"
+description: "这是一个基于新拟态设计风格的加载器动画，通过5个垂直排列的柱状元素模拟液体流动的效果。"
+preview:
+  enabled: true
+---
+
+体结构
+这是一个基于新拟态设计风格的加载器动画，通过5个垂直排列的柱状元素模拟液体流动的效果。
+
+## HTML结构分析
+
+```html
+<div class="loader">
+  <div style="--i:0"></div>
+  <div style="--i:1"></div>
+  <div style="--i:2"></div>
+  <div style="--i:3"></div>
+  <div style="--i:4"></div>
+</div>
+```
+
+- 使用5个div元素作为加载器的柱子
+- 每个div通过CSS自定义属性--i设置不同的索引值，用于控制动画延迟
+
+## CSS核心实现
+
+1.基础样式设置
+
+```css
+body {
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background: #edf1f4;
+}
+```
+
+- 使用flexbox居中布局
+- 设置浅灰色背景#edf1f4，这是新拟态设计的典型背景色
+
+2.加载器容器
+
+```css
+.loader {
+  display: flex;
+  flex-direction: row;
+}
+```
+
+- 水平排列5个柱子
+
+3.柱子基础样式
+
+```css
+.loader div {
+  position: relative;
+  width: 40px;
+  height: 200px;
+  margin: 20px;
+  overflow: hidden;
+  border-radius: 40px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.05), #edf1f4);
+  border: 2px solid #edf1f4;
+  box-shadow: 15px 15px 20px rgba(0,0,0,0.1),
+              -15px -15px 20px #fff,
+              inset -5px -5px 5px rgba(255,255,255,0.5),
+              inset 5px 5px 5px rgba(255,255,255,0.05);
+}
+```
+
+拟态效果的关键：
+
+- 渐变背景：从半透明黑色到背景色的渐变
+- 多层阴影：
+  - 外阴影：右下角深色阴影 + 左上角亮色阴影
+  - 内阴影：模拟凹陷效果的内阴影
+- 圆角边框：40px圆角营造柔和感
+
+4.伪元素增强效果
+
+```css
+.loader div::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  border-radius: 40px;
+  box-shadow: 15px 15px 20px rgba(0,0,0,0.1),
+              -15px -15px 20px #fff,
+              inset -5px -5px 5px rgba(255,255,255,0.5),
+              inset 5px 5px 5px rgba(255,255,255,0.05);
+}
+```
+
+- ::before伪元素创建额外的阴影层，增强新拟态效果
+
+5.动画核心 - 液体效果
+
+```css
+.loader div::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: inset -5px -5px 5px rgba(0,0,0,0.2),
+              0 420px 0 400px #2196f3;
+  animation: animate 2.5s ease-in-out infinite;
+  transform: translateY(160px);
+  animation-delay: calc(-0.5s * var(--i));
+}
+```
+
+液体效果实现原理：
+
+- 白色圆形小球作为"液滴"
+- 关键技巧：box-shadow: 0 420px 0 400px #2196f3
+  - 在液滴下方420px处创建一个400px宽的蓝色矩形
+  - 当液滴移动时，蓝色矩形跟随移动，形成液体填充效果
+- 每个柱子有不同的动画延迟：calc(-0.5s * var(--i))
+
+6.动画关键帧
+
+```css
+@keyframes animate {
+  0% {
+    transform: translateY(160px);
+    filter: hue-rotate(180deg);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(160px);
+    filter: hue-rotate(0deg);
+  }
+}
+```
+
+动画效果：
+
+- 垂直运动：液滴从底部(160px)移动到顶部(0px)再回到底部
+- 颜色变化：通过hue-rotate滤镜实现颜色渐变
+- 持续时间：2.5秒，无限循环
+- 缓动函数：ease-in-out提供自然的加速减速效果
+
+设计特点
+
+- 拟态风格：通过多层阴影营造凸起和凹陷的立体效果
+- 液体动画：模拟液体在管道中流动的视觉效果
+- 波浪效果：5个柱子错开动画，形成波浪般的流动感
+- 现代配色：浅灰背景配蓝色液体，简洁现代
+- 响应式设计：使用相对单位，适配不同屏幕
+
+这个加载器完美展示了新拟态设计风格与CSS动画的结合，既具有现代感又富有动感，非常适合用于网站加载提示或品牌展示。
+
+import { CodeViewer} from '@/components'
+
+<CodeViewer  />

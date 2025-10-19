@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-攀爬效果</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+.container {
+  position: relative;
+  width: 100%;
+  transform: rotate(-35deg);
+}
+.container .box {
+  position: relative;
+  left: -200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: calc(100% + 400px);
+  height: 200px;
+  /* 倒影效果 */
+  -webkit-box-reflect: below 1px linear-gradient(transparent, #0004);
+  animation: animateSurface 1.5s ease-in-out infinite;
+}
+@keyframes animateSurface{
+  0% {
+    transform: translateX(0px);
+  }
+  100%{
+    transform: translateX(-200px);
+  }
+}
+.container .box .cube{
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: #03e9f4;
+  box-shadow: 0 0 5px rgba(3,233,244,1),
+  0 0 25px rgba(3,233,244,1),
+  0 0 50px rgba(3,233,244,1),
+  0 0 100px rgba(3,233,244,1),
+  0 0 200px rgba(3,233,244,0.5),
+  0 0 300px rgba(3,233,244,0.5);
+  transform-origin: bottom right;
+  animation: animate 1.5s ease-in-out infinite;
+}
+@keyframes animate{
+  0%{
+    transform: rotate(0deg);
+  }
+  60%{
+    transform: rotate(90deg);
+  }
+  65%{
+    transform: rotate(85deg);
+  }
+  70%{
+    transform: rotate(90deg);
+  }
+  75%{
+    transform: rotate(87.5deg);
+  }
+  80%,100%{
+    transform: rotate(90deg);
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>climbing-cube-animation-effects</title>
+  <!-- https://www.bilibili.com/video/BV1bS4y177dx/?spm_id_from=333.1391.0.0&p=4 -->
+</head>
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="cube"></div>
+    </div>
+  </div>
+</body>
+</html>
+
+  <script>
+    
+  </script>
+</body>
+</html>
