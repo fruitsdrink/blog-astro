@@ -4,5 +4,8 @@
       "nobr",
       "sup"
     ]
+  },
+  "MD013": {
+    "line_length": 120
   }
 }
