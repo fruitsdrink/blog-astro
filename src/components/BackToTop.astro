@@ -1,0 +1,108 @@
+---
+// BackToTop component for smooth scrolling to top
+---
+
+<button 
+  id="back-to-top"
+  class="fixed bottom-8 right-8 z-50 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 opacity-0 invisible group"
+  aria-label="返回顶部"
+>
+  <svg 
+    class="w-6 h-6 transform group-hover:scale-110 transition-transform duration-200" 
+    fill="none" 
+    stroke="currentColor" 
+    viewBox="0 0 24 24"
+  >
+    <path 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+      stroke-width="2" 
+      d="M5 10l7-7m0 0l7 7m-7-7v18"
+    />
+  </svg>
+</button>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const backToTopButton = document.getElementById('back-to-top');
+    
+    // Early return if button doesn't exist
+    if (!backToTopButton) {
+      console.warn('BackToTop button not found in DOM');
+      return;
+    }
+    
+    // Show/hide button based on scroll position
+    function toggleBackToTopButton() {
+      if (!backToTopButton) return;
+      
+      if (window.scrollY > 300) {
+        backToTopButton.classList.remove('opacity-0', 'invisible');
+        backToTopButton.classList.add('opacity-100', 'visible');
+      } else {
+        backToTopButton.classList.add('opacity-0', 'invisible');
+        backToTopButton.classList.remove('opacity-100', 'visible');
+      }
+    }
+    
+    // Smooth scroll to top
+    function scrollToTop(event: Event) {
+      event.preventDefault();
+      
+      // Check if smooth scrolling is supported
+      if ('scrollBehavior' in document.documentElement.style) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      } else {
+        // Fallback for browsers that don't support smooth scrolling
+        window.scrollTo(0, 0);
+      }
+    }
+    
+    // Add event listeners with null checks
+    window.addEventListener('scroll', toggleBackToTopButton, { passive: true });
+    
+    if (backToTopButton) {
+      backToTopButton.addEventListener('click', scrollToTop);
+    }
+    
+    // Initial check
+    toggleBackToTopButton();
+    
+    // Cleanup function for potential memory leaks
+    return function cleanup() {
+      window.removeEventListener('scroll', toggleBackToTopButton);
+      if (backToTopButton) {
+        backToTopButton.removeEventListener('click', scrollToTop);
+      }
+    };
+  });
+</script>
+
+<style>
+  #back-to-top {
+    backdrop-filter: blur(10px);
+    background: rgba(37, 99, 235, 0.9);
+  }
+  
+  #back-to-top:hover {
+    background: rgba(29, 78, 216, 0.95);
+    transform: translateY(-2px);
+  }
+  
+  /* Add a subtle pulse animation when visible */
+  #back-to-top.visible {
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+    }
+  }
+</style>

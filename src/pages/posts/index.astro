@@ -1,5 +1,5 @@
 ---
-import { HtmlPreview } from "@/components";
+import { HtmlPreview, BackToTop } from "@/components";
 import { BaseLayout } from "@/layouts";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
@@ -30,4 +30,6 @@ const posts = (await getCollection('posts')).sort(
         ))
       }
   </section>
+  
+  <BackToTop />
 </BaseLayout>
