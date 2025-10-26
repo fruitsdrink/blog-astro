@@ -21,6 +21,8 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()]
   },
-
+redirects:{
+  "/posts":"/posts/1"
+},
   adapter: netlify()
 });
