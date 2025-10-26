@@ -8,14 +8,16 @@ interface Props {
   bilibili?: string;
   youtube?: string;
   jsFiddle?: string;
+  postId: string;
 }
 
-const currentPath = Astro.url.pathname;
-const postId = currentPath.split("/").pop();
+const { postId } = Astro.props;
+
 const htmlFileName = `src/content/posts/${postId}/_src/index.html`;
 const cssFileName = `src/content/posts/${postId}/_src/index.css`;
 const jsFileName = `src/content/posts/${postId}/_src/index.js`;
 const dataFileName = `src/content/posts/${postId}/_src/data.json`;
+
 
 let htmlCode = "";
 let cssCode = "";
@@ -37,7 +39,6 @@ if (fs.existsSync(dataFileName)) {
   data = JSON.parse(fs.readFileSync(dataFileName, "utf-8"));
 }
 
-console.log(data);
 
 const tabs = [
   {
@@ -56,6 +57,7 @@ const tabs = [
 ---
 
 <div class="my-6">
+  <div class="text-sm text-gray-500 mb-2 font-bold">源码</div>
   <div class="flex gap-2">
     {
       htmlCode && (
