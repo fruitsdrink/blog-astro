@@ -11,13 +11,13 @@ import fs from "fs";
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
 
-  return posts.map((post) => {    
+  return posts.map((post) => {
     return {
       params: {
         slug: post.id,
       },
       props: {
-        post,    
+        post,
       },
     };
   });
@@ -30,12 +30,12 @@ type Props = CollectionEntry<"posts"> & {
   post: CollectionEntry<"posts">;
 };
 
-const {post, html, css, js} = Astro.props;
-const { Content } = await render(post);;
+const { post, html, css, js } = Astro.props;
+const { Content } = await render(post);
 ---
 
 <BaseLayout>
-  <section class="max-w-[1200px] mx-auto p-6 min-w-[768px]">
+  <section class="max-w-[960px] mx-auto p-6 min-w-[768px]">
     <div class="mb-6">
       <h1 class="text-2xl font-bold mb-6 text-center">{post.data.title}</h1>
       <p class="text-sm text-gray-500 mt-4">
@@ -68,10 +68,8 @@ const { Content } = await render(post);;
       <Prose>
         <Content />
       </Prose>
-      
-      
     </div>
   </section>
-  
+
   <BackToTop />
 </BaseLayout>
