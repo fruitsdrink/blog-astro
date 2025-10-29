@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-闪烁文字</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  min-height: 100vh;
+  background: #262626;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+ul {
+  display: flex;
+}
+ul li {
+  list-style: none;
+  color: #484848;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 5em;
+  letter-spacing: 15px;
+  animation: animate 1.4s linear infinite;
+  animation-delay: calc(0.2s * var(--i));
+}
+@keyframes animate {
+  0% {
+    color: #484848;
+    text-shadow: none;
+  }
+  90% {
+    color: #484848;
+    text-shadow: none;
+  }
+  100% {
+    color: #fff900;
+    text-shadow: 0 0 7px #fff900,
+                0 0 50px #ff6c00;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <ul>
+  <li style="--i:1">L</li>
+  <li style="--i:2">O</li>
+  <li style="--i:3">A</li>
+  <li style="--i:4">D</li>
+  <li style="--i:5">I</li>
+  <li style="--i:6">N</li>
+  <li style="--i:7">G</li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>

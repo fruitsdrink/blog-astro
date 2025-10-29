@@ -18,7 +18,7 @@ function main() {
     } else {
       const postPath = `src/content/posts/${title
         .toLowerCase()
-        .replaceAll(/ /g, "-")}`;
+        .replace(/ /g, "-")}`;
       // 检查目录是否存在
       if (!fs.existsSync(postPath)) {
         fs.mkdirSync(postPath, { recursive: true });
@@ -60,7 +60,7 @@ function createPostFile(data: { title: string; postPath: string }) {
     "utf-8"
   );
   const content = template
-    .replace("{{title}}", title)
+    .replaceAll("{{title}}", title)
     .replace("{{date}}", currentTime);
   fs.writeFileSync(postFileName, content);
   console.log(`Post created successfully: ${postFileName}`);
