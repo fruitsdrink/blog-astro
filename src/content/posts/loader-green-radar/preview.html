@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-雷达扫描动画</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: url(/assets/loader-green-radar/images/bg.png);
+  background-size: cover;
+}
+.radar{
+  position: relative;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  border: 20px solid #f7f7f7;
+  background: #000 url(/assets/loader-green-radar/images/map.png);
+  background-size: cover;
+  box-shadow: 0 8px 0 #c5c5c5, inset 0 0 100px rgba(0,255,0,0.5);
+  overflow: hidden;
+}
+.radar::before{
+  content: '';
+  position: absolute;
+  top: 80%;
+  left: 55%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background:  #00ff00;
+  filter: blur(2px);
+  animation: glow 1s linear infinite;
+}
+.radar::after{
+  content: '';
+  position: absolute;
+  top: 70%;
+  left: 45%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background:  #00ff00;
+  filter: blur(2px);
+  animation: glow 1s linear infinite;
+}
+@keyframes glow {
+  0%{
+    opacity: 0;
+  }
+  50%{
+    opacity: 1;
+  }
+  0%{
+    opacity: 0;
+  }
+}
+.radar li:nth-child(1),
+.radar li:nth-child(2),
+.radar li:nth-child(3),
+.radar li:nth-child(4) {
+  list-style: none;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+  background: rgba(0,255,0,1);
+  border-radius: 50%;
+}
+.radar li:nth-child(2){
+  transform: rotate(90deg);
+}
+.radar li:nth-child(3){
+  transform: rotate(45deg);
+}
+.radar li:nth-child(4){
+  transform: rotate(-45deg);
+}
+.radar li:nth-child(5),
+.radar li:nth-child(6),
+.radar li:nth-child(7) {
+  list-style: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(0, 255, 0, 1);
+  border-radius: 50%;
+  background: transparent;
+}
+.radar li:nth-child(5) {
+  width: 120px;
+  height: 120px;
+}
+.radar li:nth-child(6) {
+  width: 240px;
+  height: 240px;
+}
+.radar li:nth-child(7) {
+  width: 360px;
+  height: 360px;
+}
+.radar li:nth-child(8){
+  list-style: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 250px;
+  height: 250px;
+  transform-origin: top left;
+  background: linear-gradient(45deg, #00ff00 0%, transparent 50%);
+  animation: animate 2s linear infinite;
+}
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform:  rotate(360deg);
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <ul class="radar">
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>
