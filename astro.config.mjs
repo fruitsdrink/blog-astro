@@ -1,28 +1,30 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
-import react from '@astrojs/react';
-import partytown from '@astrojs/partytown';
+import react from "@astrojs/react";
+import partytown from "@astrojs/partytown";
 
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from "@tailwindcss/vite";
 
-import mdx from '@astrojs/mdx';
+import mdx from "@astrojs/mdx";
 
-import icon from 'astro-icon';
+import icon from "astro-icon";
 
+import netlify from "@astrojs/netlify";
 
-import netlify from '@astrojs/netlify';
-
+import remarkToc from "remark-toc";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react(), partytown(), mdx(), icon()],
-
-  vite: {
-    plugins: [tailwindcss()]
+  markdown: {
+    remarkPlugins: [[remarkToc, { heading: "目录" }]],
   },
-redirects:{
-  "/posts":"/posts/1"
-},
-  adapter: netlify()
+  vite: {
+    plugins: [tailwindcss()],
+  },
+  redirects: {
+    "/posts": "/posts/1",
+  },
+  adapter: netlify(),
 });

@@ -7,6 +7,8 @@ preview:
   enabled: true
 ---
 
+## 目录
+
 本示例呈现“立方体沿地面翻滚攀爬”的加载效果：整体容器通过 `transform: rotate(-35deg)` 营造倾斜视角，`box` 使用 `-webkit-box-reflect` 生成下方倒影并配合 `@keyframes animateSurface` 做水平平移；核心的 `cube` 设置 `transform-origin: bottom right`，在 `@keyframes animate` 中由 0° 逐步翻转到 90°，在 60%～80% 间做轻微回弹以模拟受力停顿。多层次 `box-shadow` 带来霓虹发光感，黑色背景与 `overflow: hidden` 则突出主体并避免溢出。
 
 import { CodeViewer} from '@/components'
