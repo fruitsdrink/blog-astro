@@ -1,0 +1,38 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #004eff;
+  }
+  ul li {
+    list-style: none;
+    display: table-cell;
+    font-size: 5em;
+    color: #fff;
+    font-weight: bold;
+    transform-origin: left;
+    animation: animate 3s linear infinite;
+    animation-delay: calc(var(--i) * 0.2s);
+  }
+  @keyframes animate{
+    0%{
+      opacity: 0;
+      transform: rotateY(90deg) translateX(-30px);
+    }
+    50%{
+      opacity: 1;
+      transform: rotateY(0deg) translateX(30px) scale(0.4);
+    }
+    100%{
+      opacity: 0;
+      transform: rotateY(0deg);
+    }
+  }
+  
+  

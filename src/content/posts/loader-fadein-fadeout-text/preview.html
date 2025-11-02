@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-淡如淡出文本</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #004eff;
+}
+ul li {
+  list-style: none;
+  display: table-cell;
+  font-size: 5em;
+  color: #fff;
+  font-weight: bold;
+  transform-origin: left;
+  animation: animate 3s linear infinite;
+  animation-delay: calc(var(--i) * 0.2s);
+}
+@keyframes animate{
+  0%{
+    opacity: 0;
+    transform: rotateY(90deg) translateX(-30px);
+  }
+  50%{
+    opacity: 1;
+    transform: rotateY(0deg) translateX(30px) scale(0.4);
+  }
+  100%{
+    opacity: 0;
+    transform: rotateY(0deg);
+  }
+}
+
+
+  </style>
+
+  
+</head>
+<body>
+  <ul>
+  <li style="--i:0">L</li>
+  <li style="--i:1">O</li>
+  <li style="--i:2">A</li>
+  <li style="--i:3">D</li>
+  <li style="--i:4">I</li>
+  <li style="--i:5">N</li>
+  <li style="--i:6">G</li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>
