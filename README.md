@@ -2,7 +2,10 @@
 
 ## 哔哩哔哩集合
 
-- [107 个 css 加载动画](https://www.bilibili.com/video/BV1bS4y177dx/?p=)
+- [107个css加载动画](https://www.bilibili.com/video/BV1bS4y177dx/?p=)
+- [86个css小项目](https://www.bilibili.com/video/BV1XV411n7Qx)
+- [2021最具创意的16个css特效](https://www.bilibili.com/video/BV1nT4y1977i)
+- [JavaScript30天挑战(一天一个小项目)](https://www.bilibili.com/video/BV1za4y1Y7Ma)
 
 ## 颜色
 

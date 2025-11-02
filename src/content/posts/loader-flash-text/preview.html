@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-闪烁文字</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #262626;
+}
+ul {
+  display: flex;
+}
+ul li {
+  list-style: none;
+  font-size: 5em;
+  text-transform: uppercase;
+  letter-spacing: 15px;
+  font-weight: bold;
+  color: #484848;
+  animation: animate 1s linear infinite;
+  animation-delay: calc(var(--i) * 0.2s);
+}
+@keyframes animate{
+  0% {
+    color: #484848;
+    text-shadow: none;
+  }
+  18%{
+    color: #484848;
+    text-shadow: none;
+  }
+  20%{
+    color: #fff900;
+    text-shadow: 0 0 7px #fff900, 0 0 20px #ff6c00;
+  }
+  30% {
+    color: #484848;
+    text-shadow: none;
+  }
+  35%{
+    color: #fff900;
+    text-shadow: 0 0 7px #fff900, 0 0 20px #ff6c00;
+  }
+  70% {
+    color: #484848;
+    text-shadow: none;
+  }
+  85%{
+    color: #fff900;
+    text-shadow: 0 0 7px #fff900, 0 0 20px #ff6c00;
+  }
+  90% {
+    color: #484848;
+    text-shadow: none;
+  }
+  100% {
+    color: #484848;
+    text-shadow: none;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <ul>
+  <li style="--i:1">h</li>
+  <li style="--i:2">e</li>
+  <li style="--i:3">l</li>
+  <li style="--i:4">l</li>
+  <li style="--i:5">o</li>
+  <li style="--i:6">w</li>
+  <li style="--i:7">o</li>
+  <li style="--i:8">r</li>
+  <li style="--i:9">l</li>
+  <li style="--i:10">d</li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>
