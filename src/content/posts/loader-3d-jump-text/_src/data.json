@@ -2,17 +2,17 @@
   "links": [
     {
       "name": "bilibili",
-      "url": "{{bilibili}}",
+      "url": "https://www.bilibili.com/video/BV1bS4y177dx/?p=19",
       "icon": "bilibili"
     },
     {
       "name": "youtube",
-      "url": "{{youtube}}",
+      "url": "https://youtu.be/PjIGduzykS8?si=pjhio6LANNR9F9tG",
       "icon": "youtube"
     },
     {
       "name": "jsfiddle",
-      "url": "{{jsfiddle}}",
+      "url": "https://jsfiddle.net/fruritsdrink/uthx1bzd/31",
       "icon": "jsfiddle"
     }
   ]

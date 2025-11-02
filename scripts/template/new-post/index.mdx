@@ -1,14 +1,15 @@
 ---
 title: "{{title}}"
 date: "{{date}}"
-tags: ['css', 'animation']
-description: ""
+tags: ["{{tags}}"]
+description: "{{description}}"
 preview:
-  enabled: true
+  enabled: "{{preview}}"
+  height: 300
 ---
 
 ## 目录
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
-<CodeViewer postId="{{title}}" />
+<CodeViewer postId="{{postId}}" />
