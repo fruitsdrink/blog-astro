@@ -1,0 +1,38 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #262626;
+  }
+  .loader {
+    width: 33.3%;
+    height: 1px;
+    background: #fff;
+    transform-origin: left;
+    transform: scaleX(0);
+    animation: animate 2s infinite alternate;
+  }
+  @keyframes animate{
+    0%{
+      transform: translateX(0) scaleX(0);
+      transform-origin: left;
+    }
+    45%{
+      transform: translateX(0) scaleX(1);
+      transform-origin: left;
+    }
+    50%{
+      transform: translateX(0) scaleX(1);
+      transform-origin: right;
+    }
+    100%{
+      transform: translateX(0) scaleX(0);
+      transform-origin: right;
+    }
+  }
