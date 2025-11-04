@@ -1,0 +1,67 @@
+---
+title: "加载器-简单高度缩放动画"
+date: "2025-11-04T16:39:00+08:00"
+tags: [css, animation]
+description: "由多条竖条组成的简洁加载动画，使用 scaleY 关键帧配合基于 CSS 自定义属性的延迟，形成依次起伏的音柱效果，轻量易复用"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+这是一个由多条细竖条组成的极简加载器。每个条形按顺序进行高度缩放，呈现出类似音柱起伏的律动效果，整体轻量、无图，仅依赖纯 CSS。
+
+### 核心实现原理
+
+- **条形元素**：使用 `ul li` 渲染多条等宽的竖条，设置固定宽高与背景色
+- **节奏延迟**：通过行内样式 `--i` 配合 `animation-delay: calc(var(--i) * 0.1s)` 实现依次起伏
+- **高度缩放**：关键帧使用 `transform: scaleY(...)` 从 1 缩放到 3，制造上下拉伸感
+- **循环动画**：`animation: animate 1s linear infinite`，时长短促，节奏干净
+
+### 关键 CSS 代码
+
+```css
+ul {
+  display: flex;
+  gap: 4px;
+}
+ul li {
+  list-style: none;
+  width: 4px;
+  height: 20px;
+  background: #262626;
+  animation: animate 1s linear infinite;
+  animation-delay: calc(var(--i) * 0.1s);
+}
+@keyframes animate {
+  0%,
+  25%,
+  50%,
+  75% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(3);
+  }
+}
+```
+
+### 可调参数建议
+
+- **条数与间距**：增减 `li` 个数与 `gap` 可控制密度
+- **动画时长**：调整 `1s` 可改变节奏快慢
+- **缩放倍率**：将 `scaleY(3)` 改为 2~4 之间以控制拉伸幅度
+- **延迟步进**：修改 `0.1s` 控制相邻条的起伏错位感
+
+### 适用场景
+
+- 轻量页面加载指示
+- 极简/音乐可视化风格界面
+- 对性能敏感的移动端场景
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-simple-scaley" />
