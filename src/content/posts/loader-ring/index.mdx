@@ -1,0 +1,166 @@
+---
+title: "加载器-光加载圆环"
+date: "2025-11-04T12:39:43+08:00"
+tags: [css, animation]
+description: "一个简洁优雅的圆环加载器，通过旋转的阴影效果创造出光线扫过圆环的视觉效果，适合需要简洁加载提示的场景"
+preview:
+  enabled: true
+  height: 340
+---
+
+## 目录
+
+## 效果介绍
+
+**Loader-ring** 是一个简洁优雅的圆环加载器，通过旋转的阴影效果创造出光线扫过圆环的视觉效果。
+
+### 核心实现原理
+
+- **阴影效果**：使用 `box-shadow: 0 4px 0 #262626` 在圆环顶部创建一个阴影点
+- **旋转动画**：通过 `rotate(360deg)` 实现持续旋转，让阴影点沿圆环移动
+- **透明背景**：设置 `background: transparent` 让圆环内部透明，显示中心文字
+- **居中布局**：使用绝对定位和 `translate` 实现文字和圆环的完美居中
+
+### 视觉效果特点
+
+- **光影扫过**：阴影点随着旋转形成光线扫过圆环的视觉效果
+- **简洁优雅**：单色设计，没有多余的装饰，适合各种场景
+- **流畅动画**：1.5 秒完成一个旋转周期，动画流畅自然
+- **层次分明**：圆环阴影和中心文字形成清晰的视觉层次
+
+### 技术亮点
+
+- **box-shadow 技巧**：使用单一阴影点 `0 4px 0` 创造高光效果
+- **旋转动画**：`rotate(0deg)` 到 `rotate(360deg)` 的无限循环
+- **绝对定位**：文字使用绝对定位居中，不影响圆环动画
+- **线性动画**：`linear` 时间函数确保匀速旋转
+
+### 关键技术细节
+
+#### 1. 阴影高光实现
+
+```css
+box-shadow: 0 4px 0 #262626;
+```
+
+- `0`：水平偏移为 0，阴影在元素正上方
+- `4px`：垂直向下偏移 4px，创造阴影深度
+- `0`：模糊半径为 0，形成清晰的阴影点
+- `#262626`：深灰色阴影，形成高光效果
+
+#### 2. 旋转动画
+
+```css
+animation: animate 1.5s linear infinite;
+```
+
+- **动画时长**：1.5 秒完成一个 360° 旋转
+- **时间函数**：`linear` 确保匀速旋转
+- **循环模式**：`infinite` 实现无限循环
+- **旋转角度**：从 0° 到 360°，形成完整旋转
+
+#### 3. 布局技巧
+
+```css
+.center {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+}
+```
+
+- `position: relative`：为内部绝对定位文字提供定位参考
+- `border-radius: 50%`：创建完美圆形
+- `box-shadow: 0 0 5px rgba(0, 0, 0, 0.2)`：外层容器添加轻微阴影，增加层次感
+
+#### 4. 文字居中
+
+```css
+.text {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+使用经典的绝对定位 + transform 技巧实现完美居中，文字始终位于圆环中心，不受旋转动画影响。
+
+### CSS 代码解析
+
+#### 整体布局
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+```
+
+使用 Flexbox 实现整个加载器的页面居中。
+
+#### 圆环容器
+
+```css
+.center {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+}
+```
+
+创建 300x300 的圆形容器，轻微阴影增加立体感。
+
+#### 旋转圆环
+
+```css
+.center .loader {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 #262626;
+  animation: animate 1.5s linear infinite;
+  background: transparent;
+}
+```
+
+- 填充整个容器，形成圆形
+- 顶部阴影点创造高光效果
+- 透明背景让中心文字可见
+- 持续旋转动画
+
+#### 动画关键帧
+
+```css
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+```
+
+从 0° 旋转到 360°，形成完整旋转周期。
+
+### 应用场景
+
+这种加载器适合：
+
+- 简洁风格的网站
+- 需要优雅加载提示的场景
+- 企业级应用
+- 管理系统后台
+- 需要不打扰用户的加载状态
+
+这种加载器通过简单的阴影旋转效果，创造出优雅的视觉反馈，既不会过于抢眼，又能有效传达加载状态。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-ring" />

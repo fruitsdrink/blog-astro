@@ -1,0 +1,159 @@
+---
+title: "加载器-简单加载动画"
+date: "2025-11-04T12:17:01+08:00"
+tags: [css, animation]
+description: "  经典的旋转圆环加载器，通过简洁的边框设计和流畅的旋转动画，创造出简洁而优雅的加载效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+**Loader-simple-animation** 是一个经典的旋转圆环加载器，通过简洁的边框设计和流畅的旋转动画，创造出简洁而优雅的加载效果。
+
+### 核心实现原理
+
+- **圆环设计**：使用 `border` 属性创建圆形边框，形成圆环效果
+- **视觉对比**：顶部边框使用纯白色，其余边框使用半透明白色，形成视觉焦点
+- **旋转动画**：通过 `transform: rotate()` 实现 360° 无限旋转
+- **线性动画**：使用 `linear` 缓动函数，实现匀速旋转效果
+
+### 视觉效果特点
+
+- **简洁优雅**：纯白色圆环在蓝色背景上形成强烈对比
+- **流畅动画**：1.5 秒完成一次 360° 旋转，节奏适中
+- **视觉焦点**：顶部白色边框作为动画指示器，清晰指示加载状态
+- **现代感**：简洁的设计风格符合现代 UI 审美
+
+### 技术亮点
+
+- **边框技巧**：通过设置不同边框颜色创造视觉差异
+- **圆形实现**：`border-radius: 50%` 将方形元素变为圆形
+- **动画循环**：`infinite` 关键字实现无限循环动画
+- **居中布局**：使用 Flexbox 实现完美居中
+
+### 关键技术细节
+
+#### 1. 圆环结构
+
+```css
+.loader {
+  width: 100px;
+  height: 100px;
+  border: 10px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top: 10px solid #fff;
+}
+```
+
+- **基础圆环**：通过 `border: 10px` 创建 10px 宽度的圆环
+- **半透明背景**：`rgba(255, 255, 255, 0.1)` 创建半透明圆环背景
+- **顶部高亮**：`border-top: 10px solid #fff` 覆盖顶部边框为纯白色，形成视觉指示器
+- **圆形化**：`border-radius: 50%` 将方形 div 变为完美圆形
+
+#### 2. 旋转动画
+
+```css
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+```
+
+- **动画时长**：1.5 秒完成一个完整旋转周期
+- **动画模式**：`linear` 线性缓动，实现匀速旋转
+- **旋转角度**：从 0° 到 360°，完成完整圆周旋转
+- **无限循环**：`infinite` 关键字实现永不停止的动画
+
+#### 3. 布局设计
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #334aff;
+}
+```
+
+- **Flexbox 居中**：使用 `justify-content: center` 和 `align-items: center` 实现水平和垂直居中
+- **全屏高度**：`min-height: 100vh` 确保容器占满视口高度
+- **背景色**：`#334aff` 蓝色背景与白色加载器形成强烈对比
+
+#### 4. 颜色搭配
+
+- **背景色**：`#334aff` - 深蓝色，提供良好的视觉背景
+- **圆环背景**：`rgba(255, 255, 255, 0.1)` - 10% 不透明度的白色，形成半透明圆环
+- **指示器**：`#fff` - 纯白色，作为加载进度指示器
+
+### 代码实现
+
+完整的 CSS 代码：
+
+```css
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #334aff;
+}
+
+.loader {
+  width: 100px;
+  height: 100px;
+  border: 10px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  border-top: 10px solid #fff;
+  animation: animate 1.5s linear infinite;
+}
+
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+```
+
+### 应用场景
+
+这种简洁的加载器适用于：
+
+- **通用加载场景**：适用于大多数需要加载提示的场景
+- **简约风格网站**：符合现代简约设计风格
+- **移动端应用**：性能优秀，适合移动设备
+- **后台管理系统**：简洁专业，适合企业级应用
+- **轻量级应用**：代码量少，易于集成
+
+### 自定义建议
+
+可以根据实际需求进行以下调整：
+
+- **颜色调整**：修改背景色和边框颜色以匹配品牌色
+- **尺寸调整**：修改 `width` 和 `height` 调整加载器大小
+- **动画速度**：修改 `1.5s` 调整旋转速度（数值越小越快）
+- **边框宽度**：修改 `10px` 调整圆环粗细
+- **动画缓动**：将 `linear` 改为 `ease-in-out` 等实现不同的动画效果
+
+这种加载器通过最少的代码实现了优雅的视觉效果，是前端开发中最经典和实用的加载器实现之一。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-simple-animation" />
