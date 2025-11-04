@@ -1,0 +1,22 @@
+---
+title: "加载器-四面翻转"
+date: "2025-11-04T20:59:04+08:00"
+tags: [css, animation]
+description: "一个由 2×2 网格方块组成的加载动画，通过 rotateX/rotateY 交替翻转与延时制造四面翻转的波动效果。"
+preview:
+  enabled: true
+  height: 300
+---
+
+### 动画说明
+
+- 结构：`index.html` 使用一个 `loader` 容器包裹 4 个 `span`，形成 2×2 网格。
+- 布局：`.loader` 采用 `display: grid` 与 `grid-template-columns: 1fr 1fr`，间距 `gap: 4px`，每个方块为 `40px`。
+- 动画：所有方块绑定同一 `@keyframes animate`，在 0%→100% 间交替进行 `rotateY` 与 `rotateX` 翻转，形成四向翻面节奏。
+- 延时与配色：通过 `:nth-child` 设置不同 `animation-delay`（0.2s、0.4s、0.8s、0.6s）与两种对比色（`#00485f` / `#00deea`），制造错位翻转的波纹感。
+
+效果上看，四个小方块按延时依次翻转，Y 轴与 X 轴的交替让画面从“侧翻”过渡到“顶/底翻”，配合色块的交替带来轻巧的节奏感，适合作为轻量级加载指示。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-four-filp-box" />

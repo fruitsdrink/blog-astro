@@ -1,0 +1,21 @@
+---
+title: "加载器-箭头动画"
+date: "2025-11-04T22:00:44+08:00"
+tags: [css, animation]
+description: "纯 CSS 箭头加载动画：多个 45° 旋转的边框方块依次滑动形成箭头指向效果，悬停时动画加速。"
+preview:
+  enabled: true
+  height: 300
+---
+
+- **效果**: 黄色条内一串由方框边组成的箭头连续从左向右滑动，形如装载进度；将鼠标悬停在区域内时，动画速度提升为 2 倍，更显灵动。
+- **CSS 要点**:
+  - **布局容器**: `ul` 设定固定宽高、边框与 `overflow: hidden`，作为动画视窗。
+  - **箭头单元**: `li` 绝对定位，使用 `border` 去掉左/下两边，通过 `rotate(45deg)` 形成“箭头拐角”。
+  - **间隔控制**: 通过内联 `style="--i:n"` 与 `left: calc(var(--i) * 32px)` 等距排列多枚箭头单元。
+  - **运动轨迹**: `transform: translateY(5px) translateX(-120px) rotate(45deg)` 到 `translateX(-12px)` 的补间，匀速横移；`@keyframes animate` 循环播放。
+  - **交互加速**: `ul:hover li { animation-duration: 1s; }`（原规则以 `1s` 覆盖 `2s`），实现悬停加速。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-arrow" />
