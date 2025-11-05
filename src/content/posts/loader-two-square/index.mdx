@@ -1,0 +1,56 @@
+---
+title: "加载器-双色方框动画"
+date: "2025-11-05T16:37:32+08:00"
+tags: [css, animation]
+description: "两个伪元素（蓝/粉）以不同时长自下而上穿过方框并左右交错，营造交叉流动的双色加载效果；文字置顶，容器裁剪溢出。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 双色方框加载器效果分析
+
+这是一个利用容器伪元素 `::before` 与 `::after` 构成的双色扫光加载效果。两块纵向色带在盒子内以不同节奏从下往上穿过，同时伴随水平位移，形成交错的动态层次；中央文字置顶显示。
+
+### 结构与布局
+
+- **容器 `.loader`**：`200×200` 居中方框，`overflow: hidden` 裁剪溢出内容。
+- **标题文字 `h2`**：`position: relative; z-index: 10;` 保证位于伪元素之上。
+- **两块色带**：通过 `.loader::before` 与 `.loader::after` 实现，宽度 `50%`，高度 `150%`，保证运动全程覆盖容器。
+
+### 视觉与层级
+
+- 背景深色 `#333`，前景文字白色，双色分别为 `#0060da`（蓝）与 `#e6005e`（粉）。
+- 容器裁剪 + 文字提高 `z-index`，实现“色带在文字下方穿行”的层次关系。
+
+### 动画与节奏
+
+- `::before` 使用 `animate1 2s linear infinite`：
+  - `transform: translateY(100%) → -100%`（自下向上）
+  - `left: 100% → -50%`（伴随向左位移）
+- `::after` 使用 `animate2 1s linear infinite`：
+  - 同样自下向上，但 `left: -50% → 100%`（向右位移）
+- 不同时长（2s vs 1s）与相反的水平位移让两块色带不断交错，增强动态丰富度。
+
+### 关键实现点
+
+- 伪元素撑满并超出容器（`height: 150%`）避免运动边缘裸露。
+- `overflow: hidden` 只呈现容器内部的运动部分，避免滚动条与溢出。
+- 通过同时动画 `transform` 与 `left` 形成“斜向扫光”的观感。
+
+### 性能与可优化
+
+- 纵向位移用 `transform`（合成层，性能优）。
+- 水平位移当前使用 `left`（触发布局），可改为 `transform: translateX()` 同时配合 `will-change: transform` 以进一步优化。
+
+### 可调参数建议
+
+- **速度**：调整两个动画的时长（如 `2s/1.2s`）改变交错节奏。
+- **覆盖**：修改伪元素 `width/height` 控制色带宽度与覆盖范围。
+- **色彩**：替换背景与色带颜色，匹配品牌/主题风格。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-two-square" />

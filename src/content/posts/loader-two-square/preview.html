@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle 4qpcx8n0</title>
+
+  <style>
+    *{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  background: #333;
+}
+.loader{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  height: 200px;
+  text-align: center;
+  line-height: 200px;
+  overflow: hidden;
+}
+.loader h2{
+  position: relative;
+  text-align: center;
+  color: #fff;
+  z-index: 10;
+}
+.loader::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 150%;
+  background: #0060da;
+  animation: animate1 2s linear infinite;
+}
+@keyframes animate1 {
+  0%{
+    transform: translateY(100%);
+    left: 100%;
+  }
+  100%{
+    transform: translateY(-100%);
+    left: -50%;
+  }
+}
+.loader::after{
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 150%;
+  background: #e6005e;
+  animation: animate2 1s linear infinite;
+}
+@keyframes animate2 {
+  0%{
+    transform: translateY(100%);
+    left: -50%;
+  }
+  100%{
+    transform: translateY(-100%);
+    left: 100%;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="loader">
+  <h2>Loading</h2>
+</div>
+
+  <script>
+    
+  </script>
+</body>
+</html>
