@@ -1,0 +1,232 @@
+---
+title: "加载器-嵌套旋转圆环"
+date: "2025-11-06T17:29:13+08:00"
+tags: [css, animation]
+description: "嵌套旋转圆环加载器：三个不同大小的圆环嵌套旋转，通过交替的顺时针和逆时针旋转方向，配合部分透明边框创造缺口效果，形成层次丰富的视觉动感。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 嵌套旋转圆环加载器效果分析
+
+这是一个由三个嵌套圆环组成的旋转加载动画。通过不同大小的圆环、交替的旋转方向以及部分透明边框，创造出层次丰富、动感十足的视觉效果。
+
+### 结构与布局
+
+- **容器 `.loader`**：使用 `position: relative` 作为三个圆环的定位参照
+- **三个 `<span>` 元素**：均使用 `position: absolute` 绝对定位
+- **居中技巧**：通过 `top: 50%`、`left: 50%` 和 `transform: translate(-50%, -50%)` 实现完美居中
+- **圆环尺寸**：从小到大分别为 40px、100px、160px，形成嵌套效果
+
+### 视觉设计与边框技巧
+
+- **圆形创建**：通过 `border: 6px solid #262626` 和 `border-radius: 50%` 创建圆环
+- **缺口效果**：
+  - 第一个圆环（40px）：`border-bottom: 6px solid transparent` - 底部透明，形成顶部缺口
+  - 第二个圆环（100px）：`border-top: 6px solid transparent` - 顶部透明，形成底部缺口
+  - 第三个圆环（160px）：`border-bottom: 6px solid transparent` - 底部透明，形成顶部缺口
+- **颜色统一**：所有圆环使用深灰色 `#262626`，简洁统一
+
+### 动画机制与旋转方向
+
+- **两个动画函数**：
+  - `animate1`：顺时针旋转（0° → 360°）
+  - `animate2`：逆时针旋转（0° → -360°）
+- **旋转分配**：
+  - 第一个圆环（40px）：使用 `animate1` 顺时针旋转
+  - 第二个圆环（100px）：使用 `animate2` 逆时针旋转
+  - 第三个圆环（160px）：使用 `animate1` 顺时针旋转
+- **动画参数**：所有动画均为 1 秒完成一个周期，`linear` 时间函数，`infinite` 无限循环
+
+### 关键技术细节
+
+#### 1. 绝对定位居中
+
+```css
+.loader span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+- `top: 50%` 和 `left: 50%` 将元素的左上角定位到容器中心
+- `translate(-50%, -50%)` 将元素自身向左上移动 50%，实现真正的居中
+- 所有圆环共享相同的定位点，形成完美的同心圆嵌套
+
+#### 2. 边框缺口实现
+
+```css
+.loader span:nth-child(1) {
+  border-bottom: 6px solid transparent;
+}
+.loader span:nth-child(2) {
+  border-top: 6px solid transparent;
+}
+```
+
+- 通过覆盖部分边框为透明，创造缺口效果
+- 第一个和第三个圆环底部透明，第二个圆环顶部透明
+- 缺口位置与旋转方向配合，形成视觉上的"追逐"效果
+
+#### 3. 旋转动画实现
+
+```css
+@keyframes animate1 {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+@keyframes animate2 {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-360deg);
+  }
+}
+```
+
+- **关键点**：在动画中同时保持 `translate(-50%, -50%)` 和 `rotate()`，确保旋转时不会偏离中心
+- `animate1` 顺时针旋转（正值角度）
+- `animate2` 逆时针旋转（负值角度）
+- 交替的旋转方向创造出动态的视觉对比
+
+#### 4. 尺寸层次
+
+```css
+.loader span:nth-child(1) {
+  width: 40px;
+  height: 40px;
+}
+.loader span:nth-child(2) {
+  width: 100px;
+  height: 100px;
+}
+.loader span:nth-child(3) {
+  width: 160px;
+  height: 160px;
+}
+```
+
+- 三个圆环尺寸比例为 1:2.5:4，形成清晰的层次感
+- 尺寸差异让嵌套效果更加明显
+- 所有圆环边框宽度统一为 6px，保持视觉一致性
+
+### 视觉效果特点
+
+- **层次丰富**：三个圆环嵌套，形成清晰的视觉层次
+- **动感十足**：交替的旋转方向创造出动态的视觉对比
+- **缺口追踪**：透明边框形成的缺口随着旋转移动，形成"追踪"效果
+- **简洁统一**：单色设计，没有多余的装饰，适合各种场景
+- **流畅动画**：1 秒完成一个旋转周期，动画流畅自然
+
+### CSS 代码解析
+
+#### 整体布局
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+```
+
+使用 Flexbox 实现整个加载器的页面居中。
+
+#### 容器设置
+
+```css
+.loader {
+  position: relative;
+}
+```
+
+创建相对定位容器，为内部绝对定位的圆环提供定位参考。
+
+#### 圆环基础样式
+
+```css
+.loader span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 6px solid #262626;
+  border-radius: 50%;
+}
+```
+
+- 绝对定位并居中
+- 6px 边框创建圆环
+- `border-radius: 50%` 形成完美圆形
+
+#### 第一个圆环（内层）
+
+```css
+.loader span:nth-child(1) {
+  width: 40px;
+  height: 40px;
+  border-bottom: 6px solid transparent;
+  animation: animate1 1s linear infinite;
+}
+```
+
+- 最小圆环（40px）
+- 底部透明，形成顶部缺口
+- 顺时针旋转
+
+#### 第二个圆环（中层）
+
+```css
+.loader span:nth-child(2) {
+  width: 100px;
+  height: 100px;
+  border-top: 6px solid transparent;
+  animation: animate2 1s linear infinite;
+}
+```
+
+- 中等圆环（100px）
+- 顶部透明，形成底部缺口
+- 逆时针旋转
+
+#### 第三个圆环（外层）
+
+```css
+.loader span:nth-child(3) {
+  width: 160px;
+  height: 160px;
+  border-bottom: 6px solid transparent;
+  animation: animate1 1s linear infinite;
+}
+```
+
+- 最大圆环（160px）
+- 底部透明，形成顶部缺口
+- 顺时针旋转
+
+### 应用场景
+
+这种加载器适合：
+
+- 需要层次感强的加载提示
+- 科技感、现代感的界面设计
+- 需要动感视觉反馈的场景
+- 企业级应用和管理系统
+- 需要不打扰用户但又能清晰传达加载状态的场景
+
+这种加载器通过简单的嵌套圆环和交替旋转方向，创造出层次丰富、动感十足的视觉反馈，既不会过于抢眼，又能有效传达加载状态。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-three-rotate-ring" />
