@@ -18,88 +18,187 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
+
+const posts = (await getCollection("posts")).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+
+const now = dayjs();
+const year = now.year();
+
+let days = Array.from({ length: 12 }, (_, index) => {
+  const month = index + 1;
+  const daysInMonth = dayjs().year(year).month(month).daysInMonth();
+
+  const days = Array.from({ length: daysInMonth }, (_, index) => {
+    const date = dayjs()
+      .year(year)
+      .month(month - 1)
+      .date(index + 1);
+
+    const postCount = posts.filter((post) => {
+      const postDate = dayjs(post.data.date);
+
+      return (
+        date.year() === postDate.year() &&
+        date.month() === postDate.month() &&
+        date.date() === postDate.date()
+      );
+    }).length;
+
+    return {
+      date,
+      postCount,
+    };
+  });
+
+  return {
+    month,
+    days,
+  };
+});
+
+const firstPost = posts[posts.length - 1];
+const firstPostYear = firstPost.data.date.getFullYear();
+if (firstPostYear === year) {
+  const firstPostMonth = firstPost.data.date.getMonth() + 1;
+  const firstPostDay = firstPost.data.date.getDate();
+  days = days.filter((day) => day.month >= firstPostMonth);
+
+  days = days.map((day) => {
+    return {
+      month: day.month,
+      days: day.days,
+    };
+  });
+}
+
+console.log(days[1]);
 ---
 
 <BaseLayout>
-  <section class="max-w-[768px] mx-auto p-6 flex flex-col gap-6">
-    {
-      page.data.map((post) => (
-        <article class="bg-white p-6 rounded-md">
-          <a href={`/posts/${post.id}`}>
-            {post.data.cover?.image && (
-              <Image
-                class="rounded-md"
-                width={720}
-                height={360}
-                src={post.data.cover.image}
-                alt={post.data.title}
-              />
-            )}
-            {post.data.preview?.enabled && (
-              <HtmlPreview
-                postId={post.id}
-                height={post.data.preview?.height}
-              />
-            )}
-            <h4 class="text-lg font-bold mt-6">{post.data.title}</h4>
+  <div class="mx-auto">
+    <div class="flex flex-row gap-6 mt-6">
+      <!-- 日历 -->
+      <div class="space-y-4">
+        {
+          days.map((day) => (
+            <div class="space-y-2 border-b border-gray-200 pb-4">
+              <div class="text-sm text-gray-500">
+                {day.month.toString().padStart(2, "0")}月
+              </div>
+              <div class="grid grid-cols-7 gap-2">
+                {day.days.map((day) => (
+                  <div
+                    class:list={[
+                      "text-sm text-gray-500 rounded-sm bg-gray-200 relative w-6 h-6 flex items-center justify-center",
+                      // day.postCount > 0 && "bg-green-400",
+                      // day.postCount > 0 && "text-white",
+                    ]}
+                  >
+                    <span>{day.date.format("DD")}</span>
+                    <div
+                      class:list={[
+                        "absolute -top-[2px] -right-[2px] rounded-full flex items-center justify-center p-1 text-xs w-[2px] h-[2px]",
+                        day.postCount > 0 ? "bg-green-400" : "bg-transparent",
+                      ]}
+                    >
+                      {/* {day.postCount} */}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
 
-            <p class="text-sm text-gray-500 mt-2">{post.data.description}</p>
-            <p class="text-sm text-gray-500 mt-4 flex flex-row items-center gap-1">
-              <span>{dayjs(post.data.date).format("YYYY-MM-DD")}</span>
-              {post.data.tags.map((tag) => (
-                <span>{tag}</span>
-              ))}
-            </p>
-          </a>
-        </article>
-      ))
-    }
-  </section>
+      <div>
+        <!-- 文章列表 -->
+        <section class="max-w-[768px] p-6 flex flex-col gap-6 pt-0">
+          {
+            page.data.map((post) => (
+              <article class="bg-white p-6 rounded-md">
+                <a href={`/posts/${post.id}`}>
+                  {post.data.cover?.image && (
+                    <Image
+                      class="rounded-md"
+                      width={720}
+                      height={360}
+                      src={post.data.cover.image}
+                      alt={post.data.title}
+                    />
+                  )}
+                  {post.data.preview?.enabled && (
+                    <HtmlPreview
+                      postId={post.id}
+                      height={post.data.preview?.height}
+                    />
+                  )}
+                  <h4 class="text-lg font-bold mt-6">{post.data.title}</h4>
 
-  <!-- 分页导航 -->
-  <nav
-    class="flex justify-center items-center gap-2 mt-8 mb-6"
-    aria-label="分页"
-  >
-    {
-      page.url.prev ? (
-        <a
-          href={`${page.url.prev}`}
-          class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+                  <p class="text-sm text-gray-500 mt-2">
+                    {post.data.description}
+                  </p>
+                  <p class="text-sm text-gray-500 mt-4 flex flex-row items-center gap-1">
+                    <span>{dayjs(post.data.date).format("YYYY-MM-DD")}</span>
+                    {post.data.tags.map((tag) => (
+                      <span>{tag}</span>
+                    ))}
+                  </p>
+                </a>
+              </article>
+            ))
+          }
+        </section>
+
+        <!-- 分页导航 -->
+        <nav
+          class="flex justify-center items-center gap-2 mt-8 mb-6"
+          aria-label="分页"
         >
-          ← 上一页
-        </a>
-      ) : (
-        <span class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed font-medium">
-          ← 上一页
-        </span>
-      )
-    }
+          {
+            page.url.prev ? (
+              <a
+                href={`${page.url.prev}`}
+                class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                ← 上一页
+              </a>
+            ) : (
+              <span class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed font-medium">
+                ← 上一页
+              </span>
+            )
+          }
 
-    {/* 页码显示 */}
-    <div
-      class="flex items-center gap-1 mx-4 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200"
-    >
-      <span class="text-sm text-gray-600 font-medium">
-        第 {page.currentPage} / {page.lastPage} 页
-      </span>
+          {/* 页码显示 */}
+          <div
+            class="flex items-center gap-1 mx-4 px-4 py-2 bg-gray-50 rounded-lg border border-gray-200"
+          >
+            <span class="text-sm text-gray-600 font-medium">
+              第 {page.currentPage} / {page.lastPage} 页
+            </span>
+          </div>
+
+          {
+            page.url.next ? (
+              <a
+                href={`${page.url.next}`}
+                class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
+              >
+                下一页 →
+              </a>
+            ) : (
+              <span class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed font-medium">
+                下一页 →
+              </span>
+            )
+          }
+        </nav>
+      </div>
     </div>
-
-    {
-      page.url.next ? (
-        <a
-          href={`${page.url.next}`}
-          class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 transition-all duration-200 shadow-sm hover:shadow-md font-medium"
-        >
-          下一页 →
-        </a>
-      ) : (
-        <span class="px-5 py-2.5 rounded-lg border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed font-medium">
-          下一页 →
-        </span>
-      )
-    }
-  </nav>
+  </div>
 
   <BackToTop />
 </BaseLayout>
