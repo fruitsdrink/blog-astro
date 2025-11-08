@@ -1,7 +1,7 @@
 ---
 title: "加载器-水杯"
 date: "2025-11-01T16:14:06+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: "水杯加载器：使用 border 绘制杯子轮廓，通过 background-position 动画实现液体上升下降效果，配合 box-shadow 与伪元素把手，营造生动的液体填充动画。"
 preview:
   enabled: true
@@ -14,36 +14,42 @@ preview:
 这是一个模拟水杯液体填充的加载动画。通过巧妙运用 `border`、`background-position` 动画与伪元素，以纯 CSS 实现了具有真实感的液体上升下降效果。
 
 ### 结构与布局
+
 - 容器 `.cup` 固定尺寸 150×180px，居中定位（`transform: translate(-50%, -50%)`）
 - 使用 `border` 绘制杯子主体：左右底边框 6px 深色 `#262626`，上边框 2px 透明，形成杯子开口
 - `border-radius: 15px` 配合 `border-top-left-radius: 5px`、`border-top-right-radius: 5px` 塑造杯子圆角轮廓
 
 ### 视觉设计与液体效果
+
 - **液体实现**：使用单色线性渐变 `linear-gradient(0deg, #E18C00)` 作为液体，设置 `background-size: 200px 180px` 并 `repeat-x`，确保横向可扩展
 - **动画核心**：通过 `@keyframes animate` 控制 `background-position`，从 `0 180px`（底部）→ `0 40px`（接近顶部）→ `0 180px`（回到底部），周期 10s，形成液体上升下降循环
 - **立体感**：双层 `box-shadow`：`0 0 0 6px #fff` 作为白色外边框，`0 20px 35px rgba(0, 0, 0, 1)` 营造底部投影，增强杯子立体感
 
 ### 杯子把手
+
 - `.cup::before` 伪元素绘制把手：位于右侧 `right: -68px`，尺寸 50×80px
 - 使用 `border: 6px solid #fff` 白色边框，配合 `border-top-right-radius` 与 `border-bottom-right-radius: 35px` 形成弯曲的弧形把手
 
 ### 动画与节奏
+
 - 动画采用 `linear` 缓动，10 秒一个完整周期，节奏舒缓自然
 - `background-position` 的 Y 轴变化（180px ↔ 40px）模拟液体从空杯到接近满杯再到空的循环过程
 - 动画无限循环，适合作为加载指示器使用
 
 ### 性能考虑
+
 - 动画仅依赖 `background-position`，属于合成层属性，性能优秀
 - 使用伪元素而非额外 DOM，结构精简
 - `box-shadow` 虽有一定性能开销，但在此场景下可接受
 
 ### 适用场景
+
 - 需要具象化、生活化的加载指示器
 - 饮品类应用、进度展示页面
 - 需要传达“填充中”或“处理中”语义的场景
 
 整体上，该效果以极简的 DOM 结构（单一元素）与纯 CSS 实现了生动的液体填充动画，通过背景位置动画巧妙模拟了真实的物理效果，视觉表现力强且易于理解。
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
 <CodeViewer postId="loader-cap" />

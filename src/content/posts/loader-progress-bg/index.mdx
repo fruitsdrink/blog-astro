@@ -1,7 +1,7 @@
 ---
 title: "加载器-进度背景"
 date: "2025-11-01T16:58:24+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: "进度条背景加载器：伪元素宽度渐变（0%→70%→100%）与背景色同步变化（红→蓝→绿），配合内阴影营造立体进度感，5秒循环动画。"
 preview:
   enabled: true
@@ -12,26 +12,31 @@ preview:
 这是一个基于伪元素的进度条加载动画，通过宽度变化与颜色渐变同步，配合背景色脉冲，营造出富有节奏感的进度指示效果。
 
 ### 结构与布局
+
 - 外层容器 `.container` 占据页面 50% 宽度，居中显示，白色背景配合阴影提升层次
 - 进度条容器 `.loader` 使用 `position: relative`，高度 10px，浅灰背景 `#f1f1f1` 作为轨道
 - 进度条使用 `::after` 伪元素作为填充条，初始宽度 50%，通过绝对定位覆盖在轨道上
 
 ### 视觉设计
+
 - 轨道通过 `box-shadow: inset` 内阴影营造凹陷质感，增强立体感
 - 背景动画 `@keyframes pulse`：body 背景色从红色 `#f00` → 蓝色 `#00f` → 绿色 `#0f0`，与进度条颜色变化呼应
 - 容器阴影 `box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5)` 增强卡片浮起效果
 
 ### 动画与节奏
+
 - 核心动画 `@keyframes load`：`::after` 伪元素宽度从 0% → 70% → 100%，同步颜色从红色 → 蓝色 → 绿色
 - 动画时长 5s，线性无限循环，与背景 `pulse` 动画同步，形成统一的视觉节奏
 - `overflow: hidden` 确保填充条超出轨道部分被裁剪，保持整洁
 
 ### 技术要点
+
 - 使用伪元素 `::after` 实现填充效果，无需额外 DOM 节点，结构简洁
 - 宽度与颜色同时变化，通过 CSS 动画的关键帧同步控制
 - 仅依赖 `width` 与 `background` 属性变化，性能友好
 
 ### 适用场景
+
 - 文件上传、下载进度指示
 - 页面加载、资源加载状态反馈
 - 需要直观进度展示的场景
@@ -40,7 +45,6 @@ preview:
 
 ## 目录
 
-
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
 <CodeViewer postId="loader-progress-bg" />

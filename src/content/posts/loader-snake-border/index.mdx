@@ -1,7 +1,7 @@
 ---
 title: "加载器-蛇形边框"
 date: "2025-10-26T08:04:02+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: "一个优雅的CSS动画加载器，通过旋转的正方形和四个依次移动的边框线条，创造出如同蛇形追逐的视觉效果。使用纯CSS实现，无需任何JavaScript。"
 preview:
   enabled: true
@@ -13,13 +13,13 @@ preview:
 
 ### HTML 结构
 
-使用了4个`<span>`元素作为蛇形边框的四个边，包裹在一个`.square`容器中。
+使用了 4 个`<span>`元素作为蛇形边框的四个边，包裹在一个`.square`容器中。
 
 ### CSS 核心实现
 
 #### 1. 容器旋转 (`.square`)
 
-- **`animation: rotate 8s linear infinite`**: 整个正方形以8秒为周期持续逆时针旋转
+- **`animation: rotate 8s linear infinite`**: 整个正方形以 8 秒为周期持续逆时针旋转
 - **`border: 10px dashed rgba(0, 0, 0, 0.2)`**: 设置虚边框作为引导线
 - **`box-shadow`**: 使用双重阴影创建边框视觉效果
 
@@ -31,7 +31,7 @@ preview:
 
 #### 3. 四个边的定位
 
-- 使用`transform: rotate()`将四个`<span>`分别旋转0°、90°、180°、270°
+- 使用`transform: rotate()`将四个`<span>`分别旋转 0°、90°、180°、270°
 - 每个`<span>`的`::before`伪元素通过`border-top`创建边框线条
 - 设置不同的`animation-delay`(0s、0.5s、1s、1.5s)实现蛇形移动的连贯效果
 
@@ -42,6 +42,6 @@ preview:
 
 这个加载器的核心是四个边框线条按顺序出现和消失，配合容器的旋转，形成蛇形追逐的视觉效果。
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
 <CodeViewer postId="loader-snake-border" />

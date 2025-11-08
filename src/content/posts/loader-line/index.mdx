@@ -1,7 +1,7 @@
 ---
 title: "加载器-线性加载器"
 date: "2025-11-02T22:47:33+08:00"
-tags: [css,animation]
+tags: [loader, animation]
 description: "线性加载器：单像素水平线条通过 scaleX 与动态 transform-origin 实现从左展开、从右收缩的流畅加载动画，极简高效。"
 preview:
   enabled: true
@@ -15,14 +15,17 @@ preview:
 这是一个极简的水平线性加载器。通过 `scaleX` 缩放与动态切换 `transform-origin`，实现从左向右展开、再从右向左收缩的流畅往返动画。
 
 ### 结构与布局
+
 - 容器 `.loader` 宽度为父容器的 33.3%，高度仅 1px，形成细线形态
 - 初始状态使用 `transform: scaleX(0)` 与 `transform-origin: left`，线条完全收缩且变换原点位于左侧
 
 ### 视觉设计
+
 - 白色线条 `#fff` 置于深色背景 `#262626` 之上，形成高对比度
 - 线条居中显示，通过父容器 `flex` 布局实现居中对齐
 
 ### 动画与节奏
+
 - 核心动画 `@keyframes animate` 分为四个关键阶段：
   - **0% → 45%**：`transform-origin: left` 保持不变，`scaleX` 从 0 渐增至 1，线条从左向右展开
   - **45% → 50%**：线条保持完全展开状态，`transform-origin` 从 `left` 切换至 `right`，为收缩阶段做准备
@@ -30,20 +33,22 @@ preview:
 - 使用 `animation: animate 2s infinite alternate`，实现无限循环且来回播放（alternate 确保动画正反交替）
 
 ### 核心技巧
+
 - **动态 transform-origin**：通过动画中改变 `transform-origin`，实现同一条线从左展开、从右收缩的视觉效果，避免元素位置跳跃
 - **translateX(0)**：在所有关键帧中保持 `translateX(0)`，确保仅通过 `scaleX` 进行缩放，线条位置不偏移
 
 ### 性能考虑
+
 - 动画仅依赖 `transform` 属性，由 GPU 合成层驱动，性能优秀，无布局回流
 - 代码简洁，仅需单一元素，DOM 开销极小
 
 ### 适用场景
+
 - 需要极简风格的加载指示器
 - 适合应用在页面顶部作为进度条，或内联于卡片、列表项中
 - 适合需要轻量级、低侵入性的加载反馈场景
 
 整体上，该效果以最少的代码实现流畅的双向展开收缩动画，通过巧妙的 `transform-origin` 切换避免复杂计算，是线性加载器的经典实现方式。
-
 
 import { CodeViewer } from "@/components";
 

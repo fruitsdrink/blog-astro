@@ -1,7 +1,7 @@
 ---
 title: "加载器-闪烁文字"
 date: "2025-10-29T20:58:09+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: ""
 preview:
   enabled: true
@@ -29,13 +29,13 @@ preview:
 - **100%**: 文字变为亮黄色 `#fff900`，并叠加两层发光阴影：
   - `0 0 7px #fff900`（近处黄光）
   - `0 0 50px #ff6c00`（远处橙光）
-  结合线性无限循环与递增延迟，显示为持续向前流动的“闪烁发光文字”加载效果。
+    结合线性无限循环与递增延迟，显示为持续向前流动的“闪烁发光文字”加载效果。
 
 ### 视觉效果要点
 
 - 深色背景下的高亮文本光晕更显著。
 - 通过自定义属性配合 `calc()` 统一控制延迟，结构简洁、扩展性好（新增字母仅需递增 `--i`）。
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
 <CodeViewer postId="loader-glowing-text" />

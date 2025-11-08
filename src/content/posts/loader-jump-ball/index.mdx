@@ -1,7 +1,7 @@
 ---
 title: "加载器-跳动小球"
 date: "2025-10-27T22:36:17+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: "这是一个经典的弹跳球加载器动画效果，通过多个小球依次弹跳形成流畅的加载动画。该效果简洁优雅，广泛应用于各种加载场景。"
 preview:
   enabled: true
@@ -14,11 +14,13 @@ preview:
 ### 核心实现原理
 
 **布局结构**：
+
 - 使用 `display: flex` 和 `gap: 5px` 实现小球之间的水平排列和间距控制
 - 通过 `position: absolute` 结合 `left: 50%` 和 `top: 50%` 实现完美的垂直水平居中
 - `transform: translate(-50%, -50%)` 精确调整位置，确保加载器位于页面正中央
 
 **视觉设计**：
+
 - 小球采用圆形设计（`border-radius: 50%`）
 - 黄色背景 `#ffeb3b` 配合金色小球 `#cea321` 形成和谐的配色方案
 - 每个小球尺寸为 20x20px，保持简洁统一
@@ -26,47 +28,59 @@ preview:
 ### 动画效果特点
 
 **关键帧动画定义**：
+
 ```css
 @keyframes animate {
-  0% { transform: translateY(0); }      // 起始位置：静止
-  60% { transform: translateY(0); }      // 停留：保持底部位置
-  80% { transform: translateY(-20px); } // 弹跳：到达最高点
-  100% { transform: translateY(0); }     // 回落：返回底部
+  0% {
+    transform: translateY(0);
+  } // 起始位置：静止
+  60% {
+    transform: translateY(0);
+  } // 停留：保持底部位置
+  80% {
+    transform: translateY(-20px);
+  } // 弹跳：到达最高点
+  100% {
+    transform: translateY(0);
+  } // 回落：返回底部
 }
 ```
 
 这种设计巧妙地营造出小球弹跳的物理感觉：
+
 - 0%-60%：小球停留在底部，模拟小球在地面的停留时间
 - 60%-80%：快速上升到-20px（向上弹跳）
 - 80%-100%：快速回落到初始位置
 
 **时间差控制**：
 通过为每个小球设置不同的 `animation-delay` 负值，创造出逐次弹跳的效果：
-- 第1个球：`animation-delay: 0s`（先开始）
-- 第2个球：`animation-delay: -1.2s`
-- 第3个球：`animation-delay: -1s`
-- 第4个球：`animation-delay: -0.8s`
-- 第5个球：`animation-delay: -0.6s`
+
+- 第 1 个球：`animation-delay: 0s`（先开始）
+- 第 2 个球：`animation-delay: -1.2s`
+- 第 3 个球：`animation-delay: -1s`
+- 第 4 个球：`animation-delay: -0.8s`
+- 第 5 个球：`animation-delay: -0.6s`
 
 负的延迟值让后面的小球提前进入动画状态，形成连续的弹跳波纹效果。
 
 ### 技术亮点
 
 1. **物理感的节奏设计**：通过在动画大部分时间（0%-60%）让小球保持静止，真实模拟了小球落地后的停顿效果
-2. **连续流畅性**：5个小球通过精细的延迟时间调整，形成不间断的弹跳循环
+2. **连续流畅性**：5 个小球通过精细的延迟时间调整，形成不间断的弹跳循环
 3. **性能优化**：仅使用 `transform` 属性实现动画，避免触发回流和重绘，保证流畅性
 4. **响应式适配**：居中布局确保在不同屏幕尺寸下都能完美显示
 
 ### 应用场景
 
 这种弹跳球效果适用于：
+
 - 页面加载提示
 - 数据请求等待状态
 - 内容加载中的过渡动画
 - 简洁优雅的加载界面需求
 
-整体而言，这是一个通过简单CSS技巧实现的优雅加载动画，展现了 CSS 动画在创造流畅用户体验方面的强大能力。
+整体而言，这是一个通过简单 CSS 技巧实现的优雅加载动画，展现了 CSS 动画在创造流畅用户体验方面的强大能力。
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
-<CodeViewer  />
+<CodeViewer />

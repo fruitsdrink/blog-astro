@@ -1,7 +1,7 @@
 ---
 title: "加载器-3D旋转"
 date: "2025-10-28T21:58:31+08:00"
-tags: ['css', 'animation']
+tags: ["loader", "animation"]
 description: "纯 CSS 3D 旋转加载器：使用 perspective、preserve-3d 与 rotateX 阶梯延迟，让多条带错峰旋转，营造具有纵深的金属波浪动画，轻量且高性能。"
 preview:
   enabled: true
@@ -14,28 +14,33 @@ preview:
 这是一个由多块纵向条带组成的 3D 旋转加载器。利用 `perspective`、`preserve-3d` 与 `rotateX` 动画，构建出具有空间深度的持续旋转效果。
 
 ### 结构与布局
+
 - 外层容器 `.box` 使用 `transform-style: preserve-3d`，并通过 `transform: perspective(1000px) rotateY(45deg)` 赋予场景透视与初始斜侧观察角
 - 内层为一组等宽条带 `<span>`，依次排列形成“柱阵”效果，统一高度由父容器继承
 
 ### 视觉设计
+
 - 条带采用线性渐变 `linear-gradient(#e8e8e8, #a7a7a7, #e8e8e8)`，模拟金属拉丝质感
 - 每个条带的 `::before` 作为投影面：`translateX(-25px) scaleY(0.5)` 压缩并侧移，营造体块的厚度与阴影层次
 - 背景色 `#607d8b` 为主体提供中性对比，突出旋转体
 
 ### 动画与节奏
+
 - 核心动画 `@keyframes animate`：条带围绕 X 轴做 0°→360° 的连续旋转，时长 2.8s、线性无限循环
-- 通过 `nth-child` 施加 0s～1.6s 的阶梯式 `animation-delay`，让相邻条带错峰启动，形成“波浪式”空间旋转序列
+- 通过 `nth-child` 施加 0s ～ 1.6s 的阶梯式 `animation-delay`，让相邻条带错峰启动，形成“波浪式”空间旋转序列
 - 这种时间差令整体旋转更具流动感，避免同步旋转的呆板
 
 ### 性能考虑
+
 - 动画仅依赖 `transform`，由合成层驱动，避免布局回流；`preserve-3d` 和 `perspective` 的组合在现代浏览器中性能良好
 
 ### 适用场景
+
 - 需要科技感、空间感的加载与过渡界面
 - 数据可视或 3D 风格应用的忙碌指示器
 
 整体上，该效果以少量 DOM 与纯 CSS 构建出具有纵深的 3D 旋转动画，层次分明且具备优秀的渲染性能。
 
-import { CodeViewer} from '@/components'
+import { CodeViewer } from "@/components";
 
 <CodeViewer postId="loader-3d-rotation" />
