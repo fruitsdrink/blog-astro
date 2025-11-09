@@ -1,0 +1,46 @@
+---
+title: "加载器-绿色进度条"
+date: "2025-11-09T20:10:44+08:00"
+tags: [loader,animation]
+description: "使用 CSS 伪元素和关键帧动画实现的倾斜绿色进度条加载效果，通过白色遮罩层滑动营造进度感"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本示例呈现"倾斜绿色进度条"的加载效果：通过倾斜的绿色容器配合白色遮罩层的滑动动画，营造出动态的进度感。
+
+### 技术关键点
+
+1. **倾斜容器设计**：使用 `transform: skewX(-20deg)` 将加载器容器倾斜 -20 度，创造出独特的视觉效果，让进度条呈现动态的倾斜姿态。
+
+2. **伪元素遮罩层**：使用 `::before` 伪元素创建白色遮罩层，通过绝对定位覆盖整个容器，并设置左右边框与容器边框对齐，形成遮罩效果：
+   ```css
+   .loader::before {
+     position: absolute;
+     background: #fff;
+     border-left: 2px solid #262626;
+     border-right: 2px solid #262626;
+   }
+   ```
+
+3. **滑动动画关键帧**：
+   - `0%`：遮罩层从左侧完全隐藏（`translateX(-100%)`）
+   - `40%`：遮罩层完全覆盖容器（`translateX(0)`），显示加载进度
+   - `80%`：遮罩层滑出右侧（`translateX(100%)`），表示加载完成
+   - `100%`：保持滑出状态，为下一轮动画做准备
+   这种设计让动画在 40% 的时间点达到峰值，然后快速完成，营造出加载完成的视觉反馈。
+
+4. **溢出隐藏**：使用 `overflow: hidden` 确保遮罩层在滑动过程中不会超出容器边界，保持整洁的视觉效果。
+
+5. **文本层级控制**：h1 元素设置 `position: relative` 的作用是创建一个新的层叠上下文（stacking context），使文本内容在层叠顺序中位于伪元素 `::before` 之上。在 CSS 的层叠规则中，定位元素（position 不为 static）会优先于非定位元素显示，而伪元素 `::before` 作为绝对定位元素，如果没有对 h1 设置 `position: relative`，文本可能会被白色遮罩层遮挡。通过这个设置，确保 "Loading" 文字始终可见，不会被滑动的白色遮罩遮挡。
+
+6. **动画时长与缓动**：使用 `6s linear infinite` 设置 6 秒的线性无限循环动画，`linear` 缓动函数确保遮罩层匀速滑动，不会出现加速或减速效果。
+
+这种设计通过简单的 CSS 变换和动画，创造出流畅且富有动感的进度条效果，适合用于需要明确进度反馈的加载场景。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-green-progress" />

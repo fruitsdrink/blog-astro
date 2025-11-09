@@ -10,3 +10,7 @@
 ## 颜色
 
 - [彩虹颜色代码](https://www.webnots.com/vibgyor-rainbow-color-codes)
+
+## ai
+
+介绍当前文章的相关css代码的效果和关键知识点，并更新description
