@@ -127,7 +127,7 @@ if (firstPostYear === year) {
                       alt={post.data.title}
                     />
                   )}
-                  {post.data.preview?.enabled && (
+                  {post.data.preview && post.data.preview?.enabled && (
                     <HtmlPreview
                       postId={post.id}
                       height={post.data.preview?.height}

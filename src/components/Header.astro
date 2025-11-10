@@ -2,66 +2,88 @@
 import { SiteConfig } from "@/config";
 ---
 
-<header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm">
+<header
+  class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-sm"
+>
   <div class="max-w-7xl mx-auto px-6 py-4">
     <div class="flex justify-between items-center">
       <h1>
         <a href="/" class="group flex items-center space-x-2">
-          <span class="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+          <span
+            class="font-bold text-xl text-gray-900 group-hover:text-blue-600 transition-colors duration-200"
+          >
             {SiteConfig.title}
           </span>
         </a>
       </h1>
       <nav class="hidden md:flex items-center space-x-1">
-        <a 
-          href="/posts/1" 
+        <a
+          href="/posts/1"
           class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           文章
         </a>
-        <a 
-          href="/posts/electron-boilerplate" 
+        <a
+          href="/posts/electron-boilerplate"
           class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           Electron脚手架
         </a>
-        <a 
-          href="/posts/backend-management-system" 
+        <a
+          href="/posts/backend-management-system"
           class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           中后台框架
         </a>
+        <a
+          href="/posts/dev-sites"
+          class="px-4 py-2 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+        >
+          开发资源
+        </a>
       </nav>
-      
+
       <!-- Mobile menu button -->
-      <button 
+      <button
         class="md:hidden p-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors duration-200"
         id="mobile-menu-button"
         aria-label="Toggle mobile menu"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
-    
+
     <!-- Mobile menu -->
-    <div class="md:hidden mt-4 pb-4 border-t border-gray-200/50 pt-4 hidden" id="mobile-menu">
+    <div
+      class="md:hidden mt-4 pb-4 border-t border-gray-200/50 pt-4 hidden"
+      id="mobile-menu"
+    >
       <nav class="flex flex-col space-y-2">
-        <a 
-          href="/posts" 
+        <a
+          href="/posts"
           class="px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           文章
         </a>
-        <a 
-          href="/posts/electron-boilerplate" 
+        <a
+          href="/posts/electron-boilerplate"
           class="px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           Electron脚手架
         </a>
-        <a 
-          href="/posts/backend-management-system" 
+        <a
+          href="/posts/backend-management-system"
           class="px-4 py-3 text-sm font-medium text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
         >
           中后台框架
@@ -73,20 +95,20 @@ import { SiteConfig } from "@/config";
 
 <script>
   // Mobile menu toggle functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    
+  document.addEventListener("DOMContentLoaded", function () {
+    const mobileMenuButton = document.getElementById("mobile-menu-button");
+    const mobileMenu = document.getElementById("mobile-menu");
+
     if (mobileMenuButton && mobileMenu) {
-      mobileMenuButton.addEventListener('click', function() {
-        mobileMenu.classList.toggle('hidden');
-        
+      mobileMenuButton.addEventListener("click", function () {
+        mobileMenu.classList.toggle("hidden");
+
         // Update button icon
-        const icon = mobileMenuButton.querySelector('svg path');
-        if (mobileMenu.classList.contains('hidden')) {
-          icon?.setAttribute('d', 'M4 6h16M4 12h16M4 18h16');
+        const icon = mobileMenuButton.querySelector("svg path");
+        if (mobileMenu.classList.contains("hidden")) {
+          icon?.setAttribute("d", "M4 6h16M4 12h16M4 18h16");
         } else {
-          icon?.setAttribute('d', 'M6 18L18 6M6 6l12 12');
+          icon?.setAttribute("d", "M6 18L18 6M6 6l12 12");
         }
       });
     }
