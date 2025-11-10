@@ -2,10 +2,10 @@
 
 ## 哔哩哔哩集合
 
-- [107个css加载动画](https://www.bilibili.com/video/BV1bS4y177dx/?p=)
-- [86个css小项目](https://www.bilibili.com/video/BV1XV411n7Qx)
-- [2021最具创意的16个css特效](https://www.bilibili.com/video/BV1nT4y1977i)
-- [JavaScript30天挑战(一天一个小项目)](https://www.bilibili.com/video/BV1za4y1Y7Ma)
+- [107 个 css 加载动画](https://www.bilibili.com/video/BV1bS4y177dx/?p=)
+- [86 个 css 小项目](https://www.bilibili.com/video/BV1XV411n7Qx)
+- [2021 最具创意的 16 个 css 特效](https://www.bilibili.com/video/BV1nT4y1977i)
+- [JavaScript30 天挑战(一天一个小项目)](https://www.bilibili.com/video/BV1za4y1Y7Ma)
 
 ## 颜色
 
@@ -13,4 +13,18 @@
 
 ## ai
 
-介绍当前文章的相关css代码的效果和关键知识点，并更新description
+介绍当前文章的相关 css 代码的效果和关键知识点，并更新 description
+
+## 截图工具
+
+安装浏览器
+
+```bash
+npx playwright install chromium
+```
+
+截图
+
+```bash
+node scripts/screenshot.js
+```
