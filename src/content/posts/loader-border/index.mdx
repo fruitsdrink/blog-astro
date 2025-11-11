@@ -1,0 +1,27 @@
+---
+title: "加载器-边框动画"
+date: "2025-11-11T21:25:58+08:00"
+tags: [loader, animation]
+description: "四条边框依次滑动绘制的 Loading 动画，利用绝对定位与多段 keyframes 控制方向与时序。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+### 效果
+
+一个 400×100 的文本容器，四条 4px 的白色线条沿着上、右、下、左四个方向依次滑动，形成“边框被逐边绘制”的 Loading 动画。
+
+### 关键知识点
+
+- 绝对定位绘制四边：通过 `.loader span:nth-child(n)` 分别设置 top/bottom/left/right 与 width/height，单个元素代表一条边。
+- 溢出隐藏：容器 `.loader { overflow: hidden }` 确保线条在边缘内外进出时不露出多余部分。
+- 分段时序控制：`@keyframes` 使用 0/20/40/60/80/100% 的分段，精确控制“到达-停留-离开”的时机，实现四边依次出现的节奏。
+- 线性时间与循环：`animation: 2s linear infinite` 保持匀速、无尽循环，营造稳定的加载感。
+- 尺寸与可读性：容器 400×100、字体 40px、字距 15px，确保文字与边框动画同时清晰可见。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-border" />
