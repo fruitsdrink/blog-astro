@@ -1,0 +1,28 @@
+---
+title: "加载器-文字动画"
+date: "2025-11-12T20:33:38+08:00"
+tags: [loader,animation]
+description: "解析利用 flex 布局、letter-spacing 动画与颜色渐变实现的 Loading 字符动效"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## CSS 动画亮点
+
+- 通过 `ul` 设置 `display: flex`，将每个字母的 `li` 横向排列，形成连贯的 Loading 文本。
+- `animation: animate 3s linear infinite` 让文本不断从左至右滑动，配合透明度与位移变化制造流动感。
+- `letter-spacing` 在关键帧间由 `20px` 压缩到 `-20px`，营造文字聚拢后再散开的节奏变化。
+- 颜色在动画末尾从 `#f00` 渐变到 `#00f`，带来由红到蓝的视觉转换。
+
+## 关键知识点
+
+- 利用 `calc(var(--i) * 0.2s)` 为每个 `li` 设置不同的 `animation-delay`，实现级联错峰动画。
+- `transform: translateX()` 配合透明度控制，负责文本的进场与离场，使动画首尾衔接自然。
+- 通过 `min-height: 100vh` 与 `justify-content`/`align-items` 将场景垂直水平居中，保证在不同视口下的位置一致。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-text-3" />

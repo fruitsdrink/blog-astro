@@ -10,11 +10,11 @@ preview:
 
 ## 目录
 
-### 效果
+## 效果
 
 一个 400×100 的文本容器，四条 4px 的白色线条沿着上、右、下、左四个方向依次滑动，形成“边框被逐边绘制”的 Loading 动画。
 
-### 关键知识点
+## 关键知识点
 
 - 绝对定位绘制四边：通过 `.loader span:nth-child(n)` 分别设置 top/bottom/left/right 与 width/height，单个元素代表一条边。
 - 溢出隐藏：容器 `.loader { overflow: hidden }` 确保线条在边缘内外进出时不露出多余部分。
