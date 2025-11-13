@@ -1,0 +1,56 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  .circle {
+    width: 150px;
+    height: 150px;
+    background: #ccc;
+    border: 5px solid #fff;
+    box-shadow: 0 0 0 5px #4973ff;
+    border-radius: 50%;
+  }
+  .circle .wave {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #4973ff;
+    border-radius: 50%;
+    box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+  }
+  .circle .wave::before,
+  .circle .wave::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -75%);
+  }
+  .circle .wave::before {
+    border-radius: 45%;
+    background: rgba(255, 255, 255, 1);
+    animation: animate 5s linear infinite;
+  }
+  .circle .wave::after {
+    border-radius: 40%;
+    background: rgba(255, 255, 255, 0.5);
+    animation: animate 10s linear infinite;
+  }
+  @keyframes animate {
+    0% {
+      transform: translate(-50%, -75%) rotate(0deg);
+    }
+    100% {
+      transform: translate(-50%, -75%) rotate(360deg);
+    }
+  }

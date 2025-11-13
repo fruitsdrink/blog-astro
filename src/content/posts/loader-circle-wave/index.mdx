@@ -1,0 +1,20 @@
+---
+title: "加载器-水球"
+date: "2025-11-13T22:09:39+08:00"
+tags: [loader,animation]
+description: "纯 CSS 实现双层旋转波浪的水球加载器，重点解析伪元素动画与圆形裁剪技巧。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本篇加载器将展示一个水球样式的等待动画：外圈以圆形边框与阴影突出主体，内层通过两个伪元素旋转制造深浅交错的波浪。实现中尤其要关注以下要点：
+
+- 动效效果：双层波浪沿圆心持续旋转，利用透明度差异营造层次感，使水面不断翻涌。
+- 关键知识点：`::before` / `::after` 伪元素叠加、`transform: translate + rotate` 保持波纹围绕中心运行、以及 `animation` 与 `box-shadow` 控制内外圆的视觉分离。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-circle-wave" />
