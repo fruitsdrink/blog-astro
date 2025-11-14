@@ -1,0 +1,28 @@
+---
+title: "加载器-圆环"
+date: "2025-11-14T10:47:10+08:00"
+tags: [loader, animation]
+description: "使用伪元素创建的双圆环波纹扩散动画，通过尺寸变化与透明度实现从中心向外扩散并淡出的视觉效果。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果
+
+一个 200×200 的容器，使用 `::before` 和 `::after` 伪元素创建两个绿色圆环，从中心点（0×0）逐渐扩散到容器大小（100%×100%），同时边框从 4px 变为 0px，阴影从 10px 扩散到 50px，透明度从 1 变为 0，形成波纹扩散并淡出的动画效果。第二个圆环延迟 0.5s 启动，形成连续的波纹效果。
+
+## 关键知识点
+
+- 伪元素创建圆环：使用 `::before` 和 `::after` 创建两个独立的圆环元素，无需额外 HTML 标签。
+- 居中定位技巧：通过 `left: 50%; top: 50%; transform: translate(-50%, -50%)` 实现元素中心点与容器中心点对齐。
+- 圆形绘制：使用 `border-radius: 50%` 配合相等的 `width` 和 `height` 创建正圆。
+- 扩散动画原理：通过 `@keyframes` 同时改变 `width`、`height`、`border`、`box-shadow` 和 `opacity`，实现从中心向外扩散并淡出的视觉效果。
+- 动画延迟：使用 `animation-delay: 0.5s` 让第二个圆环延迟启动，形成连续波纹效果。
+- 发光效果：通过 `box-shadow` 从 `0 0 10px` 变化到 `0 0 50px`，增强视觉冲击力。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-circle" />

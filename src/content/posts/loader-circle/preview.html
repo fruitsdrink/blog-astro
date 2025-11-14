@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-圆环</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #111;
+}
+.loader {
+  position: relative;
+  width: 200px;
+  height: 200px;
+}
+.loader::before,
+.loader::after{
+  content: '';
+  position: absolute;
+  left:50%;
+  top: 50%;
+  width: 0%;
+  height: 0%;
+  transform: translate(-50%, -50%);
+  border: 4px solid #00e250;
+  border-radius: 50%;
+  animation: animate 2s linear infinite;
+}
+.loader::after {
+  animation-delay: 0.5s;
+}
+@keyframes animate {
+  0%{
+    width: 0;
+    height: 0;
+    border: 4px solid #00e250;
+    box-shadow:  0 0 10px #00e250;
+    opacity: 1;
+  }
+  70%{
+    opacity: 1;
+  }
+  100%{
+    width: 100%;
+    height: 100%;
+    border: 0px solid #00e250;
+    box-shadow:  0 0 50px #00e250;
+    opacity: 0;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="loader"></div>
+
+  <script>
+    
+  </script>
+</body>
+</html>
