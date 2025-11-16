@@ -32,15 +32,50 @@ type Props = CollectionEntry<"posts"> & {
 
 const { post, html, css, js } = Astro.props;
 const { Content } = await render(post);
+
+// Tag 颜色映射函数
+function getTagColorClass(tag: string): string {
+  const tagLower = tag.toLowerCase();
+  const colorMap: Record<string, string> = {
+    css: "bg-blue-50 text-blue-700 border-blue-200 hover:bg-blue-100",
+    loader:
+      "bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100",
+    animation: "bg-pink-50 text-pink-700 border-pink-200 hover:bg-pink-100",
+    "3d": "bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100",
+    api: "bg-green-50 text-green-700 border-green-200 hover:bg-green-100",
+    electron:
+      "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100",
+    admin: "bg-teal-50 text-teal-700 border-teal-200 hover:bg-teal-100",
+  };
+  return (
+    colorMap[tagLower] ||
+    "bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100"
+  );
+}
 ---
 
 <BaseLayout>
   <section class="max-w-[768px] mx-auto p-6 min-w-[768px]">
     <div class="mb-6">
       <h1 class="text-2xl font-bold mb-6 text-center">{post.data.title}</h1>
-      <p class="text-sm text-gray-500 mt-4">
-        {post.data.date.toLocaleDateString()}
-      </p>
+      <div class="flex flex-row items-center gap-3 flex-wrap justify-center">
+        <span class="text-sm text-gray-500">
+          {post.data.date.toLocaleDateString()}
+        </span>
+        {
+          post.data.tags && post.data.tags.length > 0 && (
+            <div class="flex flex-row items-center gap-2 flex-wrap">
+              {post.data.tags.map((tag) => (
+                <span
+                  class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border transition-colors duration-200 ${getTagColorClass(tag)}`}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )
+        }
+      </div>
     </div>
     {
       post.data.cover?.image && !post.data.cover?.hiddenInSingle && (
