@@ -1,7 +1,7 @@
 ---
 title: "加载器-滑动六边形"
 date: "2025-11-10T21:11:09+08:00"
-tags: [loader,animation]
+tags: [css, loader, animation]
 description: "一个优雅的六边形加载动画，六边形沿着一条会旋转的线条滑动，同时自身也在旋转，创造出流畅的视觉效果。"
 preview:
   enabled: true
@@ -20,24 +20,30 @@ preview:
 ## 关键知识点
 
 ### 1. CSS 伪元素创建复杂形状
+
 使用 `::before` 和 `::after` 伪元素配合 `transform: rotate()` 来创建六边形：
+
 - 主元素 `.hexagon` 作为基础矩形
 - `::before` 旋转 60° 形成第二个面
 - `::after` 旋转 -60° 形成第三个面
 - 三个矩形叠加形成六边形轮廓
 
 ### 2. 关键帧动画（@keyframes）
+
 - **`line` 动画**：控制线条的旋转角度，在 0%、25%、50%、75%、100% 关键帧之间平滑过渡
 - **`animate` 动画**：同时控制六边形的水平位移（`left`）和旋转（`transform: rotate()`）
 
 ### 3. 绝对定位与动态计算
+
 - 使用 `position: absolute` 实现六边形相对于线条的定位
 - `left: calc(100% - 50px)` 动态计算右侧位置，确保六边形完全滑出线条范围
 
 ### 4. 动画同步
+
 两个动画都设置为 `5s linear infinite`，确保线条旋转和六边形滑动完美同步，形成连贯的视觉效果。
 
 ### 5. Transform 变换
+
 - `transform: rotate()` 实现旋转效果，不会影响文档流
 - 多个 transform 可以组合使用，实现复杂的动画效果
 

@@ -1,7 +1,7 @@
 ---
 title: "加载器-简单预加载"
 date: "2025-11-09T15:40:57+08:00"
-tags: [loader,animation]
+tags: [css, loader, animation]
 description: "三层嵌套圆环反向旋转的简洁加载动画效果"
 preview:
   enabled: true
@@ -17,17 +17,20 @@ preview:
 1. **嵌套结构设计**：使用三层 `div` 嵌套，每层设置 `padding: 10px` 和圆形边框，形成由外到内的同心圆结构。
 
 2. **部分透明边框技巧**：通过将部分边框设置为 `transparent`，只显示圆环的一部分，例如：
+
    - `small` 圆环：`border-top` 和 `border-right` 透明
    - `medium` 圆环：`border-bottom` 和 `border-left` 透明
    - `large` 圆环：`border-top` 和 `border-right` 透明
 
 3. **反向旋转动画**：
+
    - `small` 从 720° 旋转到 0°（逆时针）
    - `medium` 从 0° 旋转到 720°（顺时针）
    - `large` 从 360° 旋转到 0°（逆时针）
-   三个圆环以不同的方向和速度旋转，形成动态的视觉层次。
+     三个圆环以不同的方向和速度旋转，形成动态的视觉层次。
 
 4. **中心发光点**：使用 `box-shadow` 创建多层阴影效果，让红色圆点呈现发光感：
+
    ```css
    box-shadow: 0 0 2px #f00, 0 0 4px #f00, 0 0 8px #f00;
    ```
@@ -35,7 +38,6 @@ preview:
 5. **统一动画时长**：所有动画都设置为 `1s linear infinite`，保证同步性，同时使用 `linear` 缓动函数实现匀速旋转。
 
 这种设计通过简单的 CSS 动画和嵌套结构，创造出流畅且富有层次感的加载效果，适合用于需要简洁优雅加载提示的场景。
-
 
 import { CodeViewer } from "@/components";
 
