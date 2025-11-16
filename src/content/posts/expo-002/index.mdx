@@ -1,0 +1,320 @@
+---
+title: "expo动画003"
+date: "2025-11-17T03:58:51+08:00"
+tags: [expo, react-native, animation]
+description: ""
+video:
+  type: "cloudinary"
+  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-003_mzme0b&autoplay_mode=on-scroll&muted=true&loop=true"
+---
+
+import { CloudinaryVideo, Link } from "@/components";
+
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-003_mzme0b&autoplay_mode=on-scroll&muted=true&loop=true" />
+
+<Link
+  url="https://youtu.be/SqwpRr7kbnQ?si=aMyBm32hCiiiG4G7"
+  icon="youtube"
+  title="YouTube"
+/>
+
+## 目录
+
+## 关键代码
+
+### 1. **useAnimatedScrollHandler** - 滚动事件处理
+
+```jsx
+const scrollHandler = useAnimatedScrollHandler({
+  onScroll: (event) => {
+    "worklet";
+    translateX.value = event.contentOffset.x;
+  },
+});
+```
+
+- **作用**：在 UI 线程处理滚动事件，避免 JS 线程阻塞
+- **关键**：`"worklet"` 标记确保代码在 UI 线程执行，保证 60fps 流畅度
+- **性能**：配合 `scrollEventThrottle={16}` 实现每帧更新
+
+### 2. **useSharedValue** - 共享动画值
+
+```jsx
+const translateX = useSharedValue(0);
+```
+
+- **特点**：可在 UI 线程和 JS 线程之间共享的响应式值
+- **优势**：直接修改 `.value` 属性即可触发动画更新
+- **用途**：存储滚动位置，作为所有派生动画的输入源
+
+### 3. **useDerivedValue** - 派生值计算
+
+```jsx
+const scale = useDerivedValue(() => {
+  return interpolate(
+    translateX.value,
+    inputRange,
+    [0, 1, 0],
+    Extrapolation.CLAMP
+  );
+});
+```
+
+- **作用**：基于其他共享值自动计算派生值
+- **优势**：响应式更新，当输入值变化时自动重新计算
+- **性能**：在 UI 线程执行，不阻塞主线程
+
+### 4. **interpolate** - 插值映射
+
+```jsx
+interpolate(
+  translateX.value, // 输入值
+  inputRange, // 输入范围 [min, current, max]
+  [0, 1, 0], // 输出范围
+  Extrapolation.CLAMP // 超出范围的处理方式
+);
+```
+
+- **功能**：将输入范围映射到输出范围
+- **Extrapolation.CLAMP**：限制值在输出范围内，防止超出边界
+- **应用**：实现平滑的动画过渡效果
+
+### 5. **useAnimatedStyle** - 动画样式
+
+```jsx
+const rStyle = useAnimatedStyle(() => {
+  return {
+    transform: [{ scale: scale.value }],
+    borderRadius: borderRadius.value,
+  };
+});
+```
+
+- **特点**：创建响应式动画样式
+- **性能**：样式计算在 UI 线程完成
+- **使用**：直接应用到 `Animated.View` 组件
+
+### 6. **Animated.ScrollView** - 动画化滚动视图
+
+```jsx
+<Animated.ScrollView
+  horizontal
+  pagingEnabled
+  onScroll={scrollHandler}
+  scrollEventThrottle={16}
+>
+```
+
+- **horizontal**：水平滚动
+- **pagingEnabled**：启用分页效果
+- **scrollEventThrottle={16}**：每 16ms 触发一次滚动事件（约 60fps）
+
+### 7. **多属性联动动画**
+
+本示例实现了四个动画属性的联动：
+
+1. **scale**：缩放动画（0 → 1 → 0）
+2. **borderRadius**：圆角动画（0 → 圆 → 0）
+3. **opacity**：透明度动画（-2 → 1 → -2，使用 CLAMP 限制）
+4. **translateY**：垂直位移动画（height/2 → 0 → -height/2）
+
+### 8. **性能优化要点**
+
+- ✅ 所有计算函数标记 `"worklet"`，在 UI 线程运行
+- ✅ 使用 `useDerivedValue` 避免重复计算
+- ✅ `scrollEventThrottle={16}` 控制事件频率
+- ✅ 使用 `Extrapolation.CLAMP` 防止无效计算
+
+## package
+
+```json
+{
+  "react-native-gesture-handler": "~2.28.0",
+  "react-native-worklets": "0.5.1",
+  "react-native-reanimated": "~4.1.1"
+}
+```
+
+## 源代码
+
+```jsx title="expo"
+import { Stack } from "expo-router";
+import { Dimensions, Text, View } from "react-native";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  SharedValue,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useDerivedValue,
+  useSharedValue,
+} from "react-native-reanimated";
+
+const PAGES = [
+  {
+    id: 1,
+    title: "Page1",
+  },
+  {
+    id: 2,
+    title: "Page2",
+  },
+  {
+    id: 3,
+    title: "Page3",
+  },
+  {
+    id: 4,
+    title: "Page4",
+  },
+];
+
+export default function Index() {
+  const translateX = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      "worklet";
+
+      translateX.value = event.contentOffset.x;
+    },
+  });
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
+        <Animated.ScrollView
+          horizontal
+          pagingEnabled
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+        >
+          {PAGES.map((page, index) => (
+            <Page
+              key={page.id}
+              title={page.title}
+              index={index}
+              translateX={translateX}
+            />
+          ))}
+        </Animated.ScrollView>
+      </View>
+    </>
+  );
+}
+
+const { width, height } = Dimensions.get("window");
+
+type PageProps = {
+  index: number,
+  title: string,
+  translateX: SharedValue<number>,
+};
+
+const Page = ({ title, index, translateX }: PageProps) => {
+  const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
+
+  const scale = useDerivedValue(() => {
+    return interpolate(
+      translateX.value,
+      inputRange,
+      [0, 1, 0],
+      Extrapolation.CLAMP
+    );
+  });
+
+  const borderRadius = useDerivedValue(() => {
+    return interpolate(
+      translateX.value,
+      inputRange,
+      [0, (width * 0.7) / 2, 0],
+      Extrapolation.CLAMP
+    );
+  });
+
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      borderRadius: borderRadius.value,
+    };
+  });
+
+  const opacity = useDerivedValue(() => {
+    return interpolate(
+      translateX.value,
+      inputRange,
+      [-2, 1, -2],
+      Extrapolation.CLAMP
+    );
+  });
+
+  const translateY = useDerivedValue(() => {
+    return interpolate(
+      translateX.value,
+      inputRange,
+      [height / 2, 0, -height / 2],
+      Extrapolation.CLAMP
+    );
+  });
+
+  const rTextStyle = useAnimatedStyle(() => {
+    return {
+      opacity: opacity.value,
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
+  return (
+    <View
+      style={{
+        width,
+        height,
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: `rgba(0,0,255,0.${index + 2})`,
+      }}
+    >
+      <Animated.View
+        style={[
+          {
+            width: width * 0.7,
+            height: width * 0.7,
+            backgroundColor: "rgba(255,0,0, 0.8)",
+            boxShadow:
+              "0 0 10px 0 rgba(255,0,0, 0.5), 0 0 50px 0 rgba(255,0,0, 0.5)",
+          },
+          rStyle,
+        ]}
+      />
+      <Animated.View
+        style={[
+          {
+            position: "absolute",
+          },
+          rTextStyle,
+        ]}
+      >
+        <Text
+          style={[
+            {
+              fontSize: 28,
+              textTransform: "uppercase",
+              textAlign: "center",
+              color: "#fff",
+              fontWeight: "700",
+            },
+          ]}
+        >
+          {title}
+        </Text>
+      </Animated.View>
+    </View>
+  );
+};
+```
