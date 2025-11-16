@@ -1,0 +1,29 @@
+---
+title: "加载器-发光点"
+date: "2025-11-16T10:29:58+08:00"
+tags: [css, loader, animation]
+description: "发光点加载器：七个彩色光点依次放大缩小形成波浪动画，通过负延迟实现错峰效果，配合 box-shadow 营造霓虹发光视觉。解析 CSS 缩放动画、负延迟技巧和发光效果实现。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本示例呈现"发光点波浪"的加载效果：七个不同颜色的光点（黄、绿、粉、蓝、紫、橙、深紫）依次放大缩小，形成流畅的波浪式动画。每个点通过 `box-shadow` 营造霓虹发光效果，使用负延迟（`animation-delay: -1.4s, -1.2s, -1s, -0.8s, -0.6s, -0.4s, -0.2s`）实现错峰动画，让光点在不同时间点开始动画，形成连续的波浪追逐效果。
+
+**关键知识点：**
+
+1. **CSS 缩放动画（Transform Scale）**：使用 `transform: scale()` 实现点的放大缩小效果。在关键帧中，0%、40%、100% 时缩小到 0.2 倍，20% 时放大到 1 倍，形成"缩小-放大-缩小"的节奏感。
+
+2. **负延迟错峰效果（Negative Animation Delay）**：通过 `animation-delay: -1.4s, -1.2s, -1s, -0.8s, -0.6s, -0.4s, -0.2s` 让七个点分别提前不同时间开始动画，实现错峰缩放，避免同时放大造成的视觉重叠，形成流畅的波浪式动画。
+
+3. **霓虹发光效果（Box Shadow）**：每个点使用 `box-shadow: 0 0 50px` 配合不同颜色，营造霓虹灯般的强烈发光效果，增强视觉吸引力和科技感。
+
+4. **Flex 布局居中**：使用 `display: flex` 配合 `justify-content: center` 和 `align-items: center` 实现光点的水平排列和垂直居中。
+
+5. **动画缓动函数（Ease-in-out）**：使用 `ease-in-out` 缓动函数，让缩放动画在开始和结束时更平滑，中间过程更自然，提升动画的流畅度。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-light-dot" />
