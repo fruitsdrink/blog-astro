@@ -14,9 +14,32 @@ import netlify from "@astrojs/netlify";
 
 import remarkToc from "remark-toc";
 
+import expressiveCode from "astro-expressive-code";
+
+import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
+
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react(), partytown(), mdx(), icon()],
+  integrations: [
+    react(),
+    partytown(),
+    expressiveCode({
+      frames: {
+        showCopyToClipboardButton: true,
+      },
+      // plugins: [pluginLineNumbers()],
+      // defaultProps: {
+      //   showLineNumbers: false,
+      //   overridesByLang: {
+      //     "js,ts,html,css,jsx,tsx": {
+      //       showLineNumbers: true,
+      //     },
+      //   },
+      // },
+    }),
+    mdx(),
+    icon(),
+  ],
   markdown: {
     remarkPlugins: [[remarkToc, { heading: "目录" }]],
   },

@@ -24,6 +24,12 @@ const posts = defineCollection({
         .optional(),
       bilibili: z.string().optional(),
       youtube: z.string().optional(),
+      video: z
+        .object({
+          type: z.enum(["cloudinary"]),
+          url: z.string(),
+        })
+        .optional(),
     });
   },
 });

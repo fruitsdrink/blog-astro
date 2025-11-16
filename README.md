@@ -28,3 +28,7 @@ npx playwright install chromium
 ```bash
 node scripts/screenshot.js
 ```
+
+## 代码高亮
+
+- [Expressive Code](https://expressive-code.com)

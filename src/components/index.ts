@@ -6,5 +6,16 @@ import { HtmlPreview } from "./HtmlPreview";
 import { JsFiddlePreview } from "./JsFiddlePreview";
 import Prose from "./Prose.astro";
 import CodeViewer from "./CodeViewer.astro";
+import CloudinaryVideo from "./CloudinaryVideo.astro";
 
-export { Head, Header, Footer, BackToTop, HtmlPreview, JsFiddlePreview, Prose, CodeViewer };
+export {
+  Head,
+  Header,
+  Footer,
+  BackToTop,
+  HtmlPreview,
+  JsFiddlePreview,
+  Prose,
+  CodeViewer,
+  CloudinaryVideo,
+};

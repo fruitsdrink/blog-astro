@@ -1,0 +1,164 @@
+---
+title: "expo简单动画01"
+date: "2025-11-16T19:32:51+08:00"
+tags: [expo, react-native, animation]
+description: "使用 **React Native Reanimated** 的 Expo 动画示例，实现了一个红色方块的动画效果"
+video:
+  type: "cloudinary"
+  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-animation-01&autoplay_mode=on-scroll&muted=true&loop=true"
+---
+
+import { CloudinaryVideo } from "@/components";
+
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-animation-01&autoplay_mode=on-scroll&muted=true&loop=true" />
+
+## 目录
+
+## 代码概述
+
+这是一个使用 **React Native Reanimated** 的 Expo 动画示例，实现了一个红色方块的动画效果。
+
+## 主要功能
+
+### 1. **导入依赖** (22-33 行)
+
+- `expo-router` 的 `Stack`：用于导航配置
+- `react-native-reanimated`：强大的动画库
+  - `useSharedValue`：创建共享的动画值
+  - `useAnimatedStyle`：创建动画样式
+  - `withRepeat`、`withSpring`、`withTiming`：各种动画函数
+
+### 2. **核心动画逻辑**
+
+**旋转函数** (37-40 行)
+
+```tsx
+const handleRotation = (value: SharedValue<number>) => {
+  "worklet";
+  return `${value.value * 2 * Math.PI}rad`;
+};
+```
+
+- 将数值转换为旋转角度（弧度制）
+- `"worklet"` 标记使其在 UI 线程运行，提升性能
+
+**共享值** (43-44 行)
+
+- `process`：控制透明度和圆角变化（初始值 1）
+- `scale`：控制缩放动画（初始值 2）
+
+**动画样式** (46-59 行)
+
+- `opacity`：根据 `process` 值动态变化透明度
+- `borderRadius`：从方形渐变到圆形（`process * SIZE / 2`）
+- `transform`：
+  - `scale`：缩放变换
+  - `rotate`：旋转变换
+
+### 3. **动画启动** (61-64 行)
+
+- `process`：使用 `withTiming` 在 0.5 和 1 之间循环
+- `scale`：使用 `withSpring` 在 1 和 2 之间循环
+- `withRepeat(..., -1, true)`：无限循环，往返播放
+
+### 4. **UI 渲染** (66-93 行)
+
+- 隐藏导航栏
+- 居中显示一个红色方块（`#e63946`）
+- 应用多层阴影效果，增强视觉层次
+- 使用 `Animated.View` 应用动画样式
+
+## 动画效果
+
+方块会同时进行：
+
+1. **透明度变化**（1 ↔ 0.5）
+2. **形状变化**（方形 ↔ 圆形）
+3. **缩放动画**（1 ↔ 2）
+4. **旋转动画**（基于 `process` 值）
+
+所有动画循环播放，形成连续的动画效果。
+
+```jsx
+import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+
+const SIZE = 100;
+
+const handleRotation = (value: SharedValue<number>) => {
+  "worklet";
+  return `${value.value * 2 * Math.PI}rad`;
+};
+
+export default function Index() {
+  const process = useSharedValue(1);
+  const scale = useSharedValue(2);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: process.value,
+      borderRadius: (process.value * SIZE) / 2,
+      transform: [
+        {
+          scale: scale.value,
+        },
+        {
+          rotate: handleRotation(process),
+        },
+      ],
+    };
+  });
+
+  useEffect(() => {
+    process.value = withRepeat(withTiming(0.5), -1, true);
+    scale.value = withRepeat(withSpring(1), -1, true);
+  }, [process, scale]);
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <View style={styles.container}>
+        <Animated.View
+          style={[
+            {
+              height: SIZE,
+              width: SIZE,
+              backgroundColor: "#e63946",
+              boxShadow: `
+                0 0 10px rgba(230, 57, 70, 0.22),
+                0 0 20px rgba(230, 57, 70, 0.22),
+                0 0 30px rgba(230, 57, 70, 0.22),
+                0 0 40px rgba(230, 57, 70, 0.22),
+                0 0 50px rgba(230, 57, 70, 0.22)
+              `,
+            },
+            animatedStyle,
+          ]}
+        />
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+});
+```

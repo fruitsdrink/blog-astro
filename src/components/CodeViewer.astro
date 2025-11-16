@@ -1,6 +1,8 @@
 ---
-import { Code } from "astro/components";
+// import { Code } from "astro/components";
+import { Code } from "astro-expressive-code/components";
 import { Icon } from "astro-icon/components";
+
 import fs from "fs";
 import { iconColors } from "@/lib";
 
@@ -17,7 +19,6 @@ const htmlFileName = `src/content/posts/${postId}/_src/index.html`;
 const cssFileName = `src/content/posts/${postId}/_src/index.css`;
 const jsFileName = `src/content/posts/${postId}/_src/index.js`;
 const dataFileName = `src/content/posts/${postId}/_src/data.json`;
-
 
 let htmlCode = "";
 let cssCode = "";
@@ -39,7 +40,6 @@ if (fs.existsSync(dataFileName)) {
   data = JSON.parse(fs.readFileSync(dataFileName, "utf-8"));
 }
 
-
 const tabs = [
   {
     label: "html",
@@ -58,7 +58,7 @@ const tabs = [
 
 <div class="my-6">
   <div class="text-sm text-gray-500 mb-2 font-bold">源码</div>
-  <div class="flex gap-2">
+  <div class="flex gap-2 mb-2">
     {
       htmlCode && (
         <span id="html" class={`cursor-pointer tab active`}>
@@ -86,13 +86,19 @@ const tabs = [
       tabs.map((tab) => (
         <div id={`${tab.value}-code`}>
           {tab.value === "html" && htmlCode && (
-            <Code class="code" code={htmlCode} lang={"html"} />
+            <div class="code">
+              <Code code={htmlCode} lang={"html"} />
+            </div>
           )}
           {tab.value === "css" && cssCode && (
-            <Code class="code" code={cssCode} lang={"css"} />
+            <div class="code">
+              <Code code={cssCode} lang={"css"} />
+            </div>
           )}
           {tab.value === "js" && jsCode && (
-            <Code class="code" code={jsCode} lang={"js"} />
+            <div class="code">
+              <Code code={jsCode} lang={"js"} />
+            </div>
           )}
         </div>
       ))
