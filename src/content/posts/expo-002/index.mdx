@@ -1,129 +1,120 @@
 ---
-title: "expo动画003"
-date: "2025-11-17T03:58:51+08:00"
+title: "expo 平移手势"
+date: "2025-11-16T22:32:51+08:00"
 tags: [expo, react-native, animation]
-description: ""
+description: "使用 React Native Reanimated 和 Gesture Handler 实现可拖拽方块动画，支持手势交互和弹性回弹效果"
 video:
   type: "cloudinary"
-  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-003_mzme0b&autoplay_mode=on-scroll&muted=true&loop=true"
+  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-002_ukuz0c&autoplay_mode=on-scroll&muted=true&loop=true"
 ---
 
 import { CloudinaryVideo, Link } from "@/components";
 
-<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-003_mzme0b&autoplay_mode=on-scroll&muted=true&loop=true" />
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-002_ukuz0c&autoplay_mode=on-scroll&muted=true&loop=true" />
 
 <Link
-  url="https://youtu.be/SqwpRr7kbnQ?si=aMyBm32hCiiiG4G7"
+  url="https://youtu.be/4HUreYYoE6U?si=1l6NvdQdu04HHs-x"
   icon="youtube"
   title="YouTube"
 />
 
 ## 目录
 
-## 关键代码
+## 代码概述
 
-### 1. **useAnimatedScrollHandler** - 滚动事件处理
+这是一个使用 **React Native Reanimated** 和 **React Native Gesture Handler** 的 Expo 动画示例，实现了一个可拖拽的蓝色方块。当方块被拖拽到圆圈边界内并释放时，会自动使用弹性动画回到中心位置。
 
-```jsx
-const scrollHandler = useAnimatedScrollHandler({
-  onScroll: (event) => {
-    "worklet";
-    translateX.value = event.contentOffset.x;
-  },
-});
-```
+## 主要功能
 
-- **作用**：在 UI 线程处理滚动事件，避免 JS 线程阻塞
-- **关键**：`"worklet"` 标记确保代码在 UI 线程执行，保证 60fps 流畅度
-- **性能**：配合 `scrollEventThrottle={16}` 实现每帧更新
+### 1. **导入依赖** (25-37 行)
 
-### 2. **useSharedValue** - 共享动画值
+- `expo-router` 的 `Stack`：用于导航配置
+- `react-native`：基础组件（Dimensions, StyleSheet, View）
+- `react-native-gesture-handler`：手势处理库
+  - `Gesture`：手势对象
+  - `GestureDetector`：手势检测器组件
+  - `GestureHandlerRootView`：手势处理根视图
+- `react-native-reanimated`：动画库
+  - `useAnimatedStyle`：创建动画样式
+  - `useSharedValue`：创建共享的动画值
+  - `withSpring`：弹性动画函数
 
-```jsx
-const translateX = useSharedValue(0);
-```
+### 2. **常量定义** (39-43 行)
 
-- **特点**：可在 UI 线程和 JS 线程之间共享的响应式值
-- **优势**：直接修改 `.value` 属性即可触发动画更新
-- **用途**：存储滚动位置，作为所有派生动画的输入源
+- `SIZE = 100`：方块的大小（宽高）
+- `CIRCLE_RADIUS = SIZE * 2`：圆圈的半径（200）
+- `CIRCLE_VISIBLE_RADIUS`：圆圈的实际可视半径（150）
+- `width, height`：获取屏幕尺寸
 
-### 3. **useDerivedValue** - 派生值计算
+### 3. **工具函数** (45-54 行)
 
-```jsx
-const scale = useDerivedValue(() => {
-  return interpolate(
-    translateX.value,
-    inputRange,
-    [0, 1, 0],
-    Extrapolation.CLAMP
-  );
-});
-```
-
-- **作用**：基于其他共享值自动计算派生值
-- **优势**：响应式更新，当输入值变化时自动重新计算
-- **性能**：在 UI 线程执行，不阻塞主线程
-
-### 4. **interpolate** - 插值映射
+**clamp 函数** (45-49 行)
 
 ```jsx
-interpolate(
-  translateX.value, // 输入值
-  inputRange, // 输入范围 [min, current, max]
-  [0, 1, 0], // 输出范围
-  Extrapolation.CLAMP // 超出范围的处理方式
-);
+function clamp(val: number, min: number, max: number): number {
+  "worklet";
+  return Math.min(Math.max(val, min), max);
+}
 ```
 
-- **功能**：将输入范围映射到输出范围
-- **Extrapolation.CLAMP**：限制值在输出范围内，防止超出边界
-- **应用**：实现平滑的动画过渡效果
+- 限制值在指定范围内
+- `"worklet"` 标记使其在 UI 线程运行
 
-### 5. **useAnimatedStyle** - 动画样式
+**distance 函数** (51-54 行)
 
 ```jsx
-const rStyle = useAnimatedStyle(() => {
-  return {
-    transform: [{ scale: scale.value }],
-    borderRadius: borderRadius.value,
-  };
-});
+function distance(x: number, y: number): number {
+  "worklet";
+  return Math.sqrt(x ** 2 + y ** 2);
+}
 ```
 
-- **特点**：创建响应式动画样式
-- **性能**：样式计算在 UI 线程完成
-- **使用**：直接应用到 `Animated.View` 组件
+- 计算两点间的欧几里得距离（用于判断方块是否在圆圈内）
 
-### 6. **Animated.ScrollView** - 动画化滚动视图
+### 4. **核心动画逻辑**
 
-```jsx
-<Animated.ScrollView
-  horizontal
-  pagingEnabled
-  onScroll={scrollHandler}
-  scrollEventThrottle={16}
->
-```
+**共享值** (57-60 行)
 
-- **horizontal**：水平滚动
-- **pagingEnabled**：启用分页效果
-- **scrollEventThrottle={16}**：每 16ms 触发一次滚动事件（约 60fps）
+- `translateX`、`translateY`：当前方块的位置
+- `prevTranslateX`、`prevTranslateY`：拖拽开始时的位置
 
-### 7. **多属性联动动画**
+**手势处理** (62-91 行)
 
-本示例实现了四个动画属性的联动：
+- `onStart`：记录拖拽开始时的位置
+- `onUpdate`：更新方块位置，使用 `clamp` 限制在屏幕范围内
+- `onEnd`：检查方块是否在圆圈内，如果是则使用 `withSpring` 动画回到中心
 
-1. **scale**：缩放动画（0 → 1 → 0）
-2. **borderRadius**：圆角动画（0 → 圆 → 0）
-3. **opacity**：透明度动画（-2 → 1 → -2，使用 CLAMP 限制）
-4. **translateY**：垂直位移动画（height/2 → 0 → -height/2）
+**动画样式** (93-104 行)
 
-### 8. **性能优化要点**
+- 使用 `useAnimatedStyle` 创建基于 `translateX` 和 `translateY` 的变换样式
 
-- ✅ 所有计算函数标记 `"worklet"`，在 UI 线程运行
-- ✅ 使用 `useDerivedValue` 避免重复计算
-- ✅ `scrollEventThrottle={16}` 控制事件频率
-- ✅ 使用 `Extrapolation.CLAMP` 防止无效计算
+### 5. **UI 渲染** (105-120 行)
+
+- 隐藏导航栏
+- 使用 `GestureHandlerRootView` 包裹整个视图
+- 渲染一个带边框的圆圈（`View` with `circle` style）
+- 在圆圈内渲染可拖拽的方块（`Animated.View` with `square` style）
+- 使用 `GestureDetector` 包裹方块以启用手势识别
+
+### 6. **样式定义** (123-145 行)
+
+- `container`：居中布局
+- `square`：蓝色方块样式（`#4A8DDA`），带圆角
+- `circle`：圆圈样式，带边框，用于显示拖拽边界
+
+## 动画效果
+
+1. **拖拽交互**：用户可以拖拽蓝色方块在屏幕上移动
+2. **边界限制**：方块被限制在屏幕可见范围内
+3. **自动回弹**：当方块在圆圈内释放时，使用弹性动画自动回到中心位置
+4. **视觉反馈**：圆圈边框提供拖拽区域的视觉提示
+
+## 关键实现细节
+
+- **碰撞检测**：使用距离计算判断方块是否在圆圈内（`dist < maxAllowedDistance`）
+- **位置限制**：使用 `clamp` 函数确保方块不会移出屏幕
+- **平滑动画**：使用 `withSpring` 实现自然的弹性回弹效果
+- **性能优化**：所有计算函数都标记为 `"worklet"`，在 UI 线程运行，保证 60fps 流畅度
 
 ## package
 
@@ -139,182 +130,123 @@ const rStyle = useAnimatedStyle(() => {
 
 ```jsx title="expo"
 import { Stack } from "expo-router";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
 import Animated, {
-  Extrapolation,
-  interpolate,
-  SharedValue,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
-  useDerivedValue,
   useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 
-const PAGES = [
-  {
-    id: 1,
-    title: "Page1",
-  },
-  {
-    id: 2,
-    title: "Page2",
-  },
-  {
-    id: 3,
-    title: "Page3",
-  },
-  {
-    id: 4,
-    title: "Page4",
-  },
-];
+const SIZE = 100;
+const CIRCLE_RADIUS = SIZE * 2;
+const CIRCLE_VISIBLE_RADIUS = (CIRCLE_RADIUS * 1.5) / 2; // 圆圈的实际可视半径
+
+const { width, height } = Dimensions.get("screen");
+
+function clamp(val: number, min: number, max: number): number {
+  "worklet";
+
+  return Math.min(Math.max(val, min), max);
+}
+
+function distance(x: number, y: number): number {
+  "worklet";
+  return Math.sqrt(x ** 2 + y ** 2);
+}
 
 export default function Index() {
   const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const prevTranslateX = useSharedValue(0);
+  const prevTranslateY = useSharedValue(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      "worklet";
+  const panGesture = Gesture.Pan()
+    .onStart((e) => {
+      prevTranslateX.value = translateX.value;
+      prevTranslateY.value = translateY.value;
+    })
+    .onUpdate((e) => {
+      const maxTranslateX = width / 2 - SIZE / 2;
+      const maxTranslateY = height / 2 - SIZE / 2;
+      translateX.value = clamp(
+        prevTranslateX.value + e.translationX,
+        -maxTranslateX,
+        maxTranslateX
+      );
+      translateY.value = clamp(
+        prevTranslateY.value + e.translationY,
+        -maxTranslateY,
+        maxTranslateY
+      );
+    })
+    .onEnd((e) => {
+      const dist = distance(translateX.value, translateY.value);
+      // 检查方块是否进入圆环内：方块中心距离 - 方块半径 < 圆环半径
+      // 即：方块最近的边缘点距离圆圈中心 < 圆环半径时，方块就进入了圆环
+      // 只要方块有任何部分在圆环内，释放后就归零
+      const maxAllowedDistance = CIRCLE_VISIBLE_RADIUS + SIZE / 2;
+      if (dist < maxAllowedDistance) {
+        translateX.value = withSpring(0);
+        translateY.value = withSpring(0);
+      }
+    });
 
-      translateX.value = event.contentOffset.x;
-    },
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+        {
+          translateY: translateY.value,
+        },
+      ],
+    };
   });
-
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
-      <View
-        style={{
-          flex: 1,
+      <Stack.Screen
+        options={{
+          headerShown: false,
         }}
-      >
-        <Animated.ScrollView
-          horizontal
-          pagingEnabled
-          onScroll={scrollHandler}
-          scrollEventThrottle={16}
-        >
-          {PAGES.map((page, index) => (
-            <Page
-              key={page.id}
-              title={page.title}
-              index={index}
-              translateX={translateX}
-            />
-          ))}
-        </Animated.ScrollView>
-      </View>
+      />
+      <GestureHandlerRootView style={styles.container}>
+        <View style={styles.circle}>
+          <GestureDetector gesture={panGesture}>
+            <Animated.View style={[styles.square, rStyle]} />
+          </GestureDetector>
+        </View>
+      </GestureHandlerRootView>
     </>
   );
 }
 
-const { width, height } = Dimensions.get("window");
-
-type PageProps = {
-  index: number,
-  title: string,
-  translateX: SharedValue<number>,
-};
-
-const Page = ({ title, index, translateX }: PageProps) => {
-  const inputRange = [(index - 1) * width, index * width, (index + 1) * width];
-
-  const scale = useDerivedValue(() => {
-    return interpolate(
-      translateX.value,
-      inputRange,
-      [0, 1, 0],
-      Extrapolation.CLAMP
-    );
-  });
-
-  const borderRadius = useDerivedValue(() => {
-    return interpolate(
-      translateX.value,
-      inputRange,
-      [0, (width * 0.7) / 2, 0],
-      Extrapolation.CLAMP
-    );
-  });
-
-  const rStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: scale.value }],
-      borderRadius: borderRadius.value,
-    };
-  });
-
-  const opacity = useDerivedValue(() => {
-    return interpolate(
-      translateX.value,
-      inputRange,
-      [-2, 1, -2],
-      Extrapolation.CLAMP
-    );
-  });
-
-  const translateY = useDerivedValue(() => {
-    return interpolate(
-      translateX.value,
-      inputRange,
-      [height / 2, 0, -height / 2],
-      Extrapolation.CLAMP
-    );
-  });
-
-  const rTextStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
-  return (
-    <View
-      style={{
-        width,
-        height,
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: `rgba(0,0,255,0.${index + 2})`,
-      }}
-    >
-      <Animated.View
-        style={[
-          {
-            width: width * 0.7,
-            height: width * 0.7,
-            backgroundColor: "rgba(255,0,0, 0.8)",
-            boxShadow:
-              "0 0 10px 0 rgba(255,0,0, 0.5), 0 0 50px 0 rgba(255,0,0, 0.5)",
-          },
-          rStyle,
-        ]}
-      />
-      <Animated.View
-        style={[
-          {
-            position: "absolute",
-          },
-          rTextStyle,
-        ]}
-      >
-        <Text
-          style={[
-            {
-              fontSize: 28,
-              textTransform: "uppercase",
-              textAlign: "center",
-              color: "#fff",
-              fontWeight: "700",
-            },
-          ]}
-        >
-          {title}
-        </Text>
-      </Animated.View>
-    </View>
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  square: {
+    width: SIZE,
+    height: SIZE,
+    backgroundColor: "#4A8DDA",
+    borderRadius: 16,
+  },
+  circle: {
+    width: CIRCLE_RADIUS * 1.5,
+    height: CIRCLE_RADIUS * 1.5,
+    borderRadius: CIRCLE_RADIUS,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 4,
+    borderColor: "#4A8DDA",
+  },
+});
 ```
