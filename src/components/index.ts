@@ -7,6 +7,7 @@ import { JsFiddlePreview } from "./JsFiddlePreview";
 import Prose from "./Prose.astro";
 import CodeViewer from "./CodeViewer.astro";
 import CloudinaryVideo from "./CloudinaryVideo.astro";
+import Link from "./Link.astro";
 
 export {
   Head,
@@ -18,4 +19,5 @@ export {
   Prose,
   CodeViewer,
   CloudinaryVideo,
+  Link,
 };

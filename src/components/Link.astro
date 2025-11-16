@@ -1,0 +1,25 @@
+---
+import { iconColors } from "@/lib";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  url: string;
+  title: string;
+  icon?: keyof typeof iconColors;
+}
+
+const { url, icon, title } = Astro.props;
+---
+
+<a href={url} target="_blank" class="flex items-center gap-2">
+  {
+    icon && (
+      <Icon
+        name={`logos/youtube`}
+        class={`w-6 h-6`}
+        style={`color: ${iconColors[icon]}`}
+      />
+    )
+  }
+  <span>{title}</span>
+</a>
