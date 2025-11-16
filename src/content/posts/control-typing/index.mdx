@@ -1,0 +1,70 @@
+---
+title: "速度可控的打字机效果"
+date: "2025-11-16T14:48:22+08:00"
+tags: [css, js, typing, animation]
+description: "速度可控的打字机效果：支持开始、暂停、重置和速度调节，通过 JavaScript 控制字符逐字显示和删除，配合 CSS 光标闪烁动画和渐变背景，实现流畅的打字机视觉效果。"
+preview:
+  enabled: false
+  height: 300
+---
+
+<iframe
+  src="//player.bilibili.com/player.html?isOutside=true&aid=115553159090405&bvid=BV19gC1BsE4C&cid=34023542560&p=1"
+  scrolling="no"
+  border="0"
+  frameborder="no"
+  framespacing="0"
+  allowfullscreen="true"
+  class="w-full aspect-video mb-4"
+></iframe>
+
+源代码可关注公众号 **艾恩小灰灰** 获取
+
+本示例呈现"速度可控的打字机效果"：文本逐字显示和删除，形成打字机动画。支持开始、暂停、重置和速度调节，通过 JavaScript 控制字符显示逻辑，配合 CSS 光标闪烁动画和渐变背景，实现流畅的视觉效果。
+
+**CSS 关键效果：**
+
+1. **渐变背景（Linear Gradient）**：使用 `linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c)` 创建 135 度对角渐变，从深蓝到红色再到深蓝，营造科技感背景。
+
+2. **光标闪烁动画（Blink Animation）**：通过 `@keyframes blink` 定义光标闪烁效果，在 0% 和 100% 时完全不透明，50% 时完全透明，配合 `animation: blink 1s linear infinite` 实现持续闪烁。
+
+3. **按钮交互效果**：
+
+   - 使用 `rgba(255, 255, 255, 0.15)` 半透明背景和边框
+   - `border-radius: 30px` 创建圆角按钮
+   - `transition: all 0.3s` 实现平滑过渡
+   - `:hover` 时背景变亮并上移 2px（`transform: translateY(-2px)`），增强交互反馈
+
+4. **文本阴影（Text Shadow）**：标题使用 `text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5)` 增加文字立体感和可读性。
+
+5. **Flex 布局居中**：使用 `display: flex` 配合 `justify-content: center` 和 `align-items: center` 实现内容垂直水平居中。
+
+**JavaScript 关键代码：**
+
+1. **打字和删除逻辑**：
+
+   - `type()` 函数通过 `substring()` 方法逐字截取文本
+   - `isDeleting` 标志控制打字或删除状态
+   - 使用 `setTimeout` 递归调用实现逐字显示效果
+
+2. **速度控制机制**：
+
+   - `typingSpeed` 和 `deletingSpeed` 分别控制打字和删除速度
+   - `adjuctSpeed()` 函数通过 `Math.max()` 和 `Math.min()` 限制速度范围（20-300ms）
+   - 删除速度（50ms）快于打字速度（100ms），更符合真实打字体验
+
+3. **状态管理**：
+
+   - `isPaused` 标志控制暂停状态
+   - `currentTextIndex` 和 `currentCharIndex` 追踪当前文本和字符位置
+   - 使用 `timeoutId` 管理定时器，支持暂停和重置
+
+4. **MutationObserver 光标管理**：
+
+   - 使用 `MutationObserver` 监听 DOM 变化
+   - 自动在文本末尾插入光标元素，确保光标始终跟随文本
+   - 避免光标在初始状态显示，提升用户体验
+
+5. **文本循环显示**：
+   - 使用取模运算 `(currentTextIndex + 1) % texts.length` 实现文本数组循环
+   - 删除完毕后自动切换到下一段文本，形成连续的打字机效果
