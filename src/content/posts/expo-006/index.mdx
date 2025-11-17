@@ -1,0 +1,166 @@
+---
+title: "expo 加载动画"
+date: "2025-11-18T01:15:51+08:00"
+tags: [expo,loader, react-native, animation]
+description: "拆解一个基于 useSharedValue、withRepeat 与自定义样式的 Expo Loader，讲清旋转插值和光效点缀等关键实现"
+video:
+  type: "mux"
+  url: "https://player.mux.com/mBpaJTcPA1u901ElKecV3Uu00FSniB02jpNc0141nrELnHA"
+---
+
+import { MuxVideo, Link } from "@/components";
+
+<MuxVideo url="https://player.mux.com/mBpaJTcPA1u901ElKecV3Uu00FSniB02jpNc0141nrELnHA" />
+
+## 目录
+
+## 动画驱动：useSharedValue + withRepeat
+
+整个 Loader 的动效由一个 `circle` 共享值驱动：在 `useEffect` 中通过 `withRepeat(withTiming(360, { duration: 2000, easing: Easing.linear }), -2, false)` 持续把数值从 0 补间到 360，并无限循环。  
+这个共享值分别注入到两个 `useAnimatedStyle`：`circleStyle` 直接把数值拼成 `rotate(${circle.value}deg)`，驱动外圈描边旋转；`dotStyle` 则在基础上加 45°，让光点与描边错位，制造“追光”效果。  
+之所以使用 `useSharedValue` 而非 `useState`，是因为 Reanimated 会在 UI 线程上执行动画，保证了旋转的流畅度，并且任何额外的插值逻辑都可以直接依附在同一个共享值上。
+
+## Loader 造型与光效细节
+
+造型部分全部通过 `StyleSheet` 固定样式完成，再用动画样式叠加：`loader` 是一个带描边的圆形容器，`circle` 使用透明描边，只保留 `borderTopColor` 与 `borderRightColor`，因此旋转时能呈现“弧形进度条”。  
+`dotContainer` 将 `transformOrigin` 设在左端，以 `rotate(45deg)` 固定起始角，内部的 `dot` 做高斯阴影（`boxShadow`）模拟强烈光晕。由于 `dotContainer` 本身也套上了 `dotStyle`，旋转时光点沿着圆周滑动，形成类似“雷达扫光”的视觉。
+
+
+## package
+
+```json
+{
+  "react-native-gesture-handler": "~2.28.0",
+  "react-native-worklets": "0.5.1",
+  "react-native-reanimated": "~4.1.1"
+}
+```
+
+## 源代码
+
+```jsx title="expo"
+import { Stack } from "expo-router";
+import { useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+
+const SIZE = 150;
+
+export default function Index() {
+  const circle = useSharedValue(0);
+
+  const circleStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${circle.value}deg` }],
+    };
+  });
+
+  const dotStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${circle.value + 45}deg` }],
+    };
+  });
+
+  useEffect(() => {
+    circle.value = withRepeat(
+      withTiming(360, {
+        duration: 2000,
+        easing: Easing.linear,
+      }),
+      -2,
+      false
+    );
+  }, [circle]);
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <View style={styles.loader}>
+          <Animated.View style={[styles.circle, circleStyle]}></Animated.View>
+          <Text style={styles.text}>Loading</Text>
+          <Animated.View style={[styles.dotContainer, dotStyle]}>
+            <Animated.View style={styles.dot}></Animated.View>
+          </Animated.View>
+        </View>
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#262626",
+  },
+  loader: {
+    position: "relative",
+    width: SIZE,
+    height: SIZE,
+    borderRadius: SIZE / 2,
+    borderWidth: 3,
+    borderColor: "#3c3c3c",
+    borderStyle: "solid",
+    boxShadow: "0 0 20px 0 rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    color: "#ff0",
+    fontSize: 20,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    textShadowColor: "#ff0",
+    textShadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    textShadowRadius: 4,
+  },
+  circle: {
+    position: "absolute",
+    top: -3,
+    left: -3,
+    width: SIZE,
+    height: SIZE,
+    borderRadius: "50%",
+    borderWidth: 3,
+    borderColor: "transparent",
+    borderTopColor: "#ff0",
+    borderRightColor: "#ff0",
+  },
+  dotContainer: {
+    position: "absolute",
+    top: SIZE / 2 - 4,
+    left: "50%",
+    width: "50%",
+    height: 4,
+    backgroundColor: "transparent",
+    transformOrigin: "left",
+    transform: [
+      {
+        rotate: "45deg",
+      },
+    ],
+  },
+  dot: {
+    position: "absolute",
+    right: -8,
+    top: -6,
+    width: 16,
+    height: 16,
+    borderRadius: "50%",
+    backgroundColor: "#ff0",
+    boxShadow: "0 0 10px 0 rgba(255, 255, 0, 0.5)",
+  },
+});
+```
+
