@@ -1,0 +1,207 @@
+---
+title: "捏合手势"
+date: "2025-11-17T23:29:51+08:00"
+tags: [expo, react-native, animation]
+description: "详解 react-native-gesture-handler 与 Reanimated 协作实现跟随焦点的捏合缩放效果"
+video:
+  type: "mux"
+  url: "https://player.mux.com/K2baNejtr9bHayRFwaONYFg8WcwKAyibzLEIDMsz202A"
+---
+
+import { MuxVideo, Link } from "@/components";
+
+<MuxVideo url="https://player.mux.com/K2baNejtr9bHayRFwaONYFg8WcwKAyibzLEIDMsz202A" />
+
+<Link
+  url="https://youtu.be/R7vyLItMQJw?si=GI9Jyx8mRp_t9EEd"
+  icon="youtube"
+  title="YouTube"
+/>
+## 目录
+
+- [实现目标与体验要求](#实现目标与体验要求)
+- [捏合手势：Pinch Gesture 的生命周期](#手势流pinch-gesture-的生命周期)
+- [缩放逻辑：共享状态与 clamp](#缩放逻辑共享状态与-clamp)
+- [焦点跟随：transform 链的拆解](#焦点跟随transform-链的拆解)
+- [反馈与可视化：spring 回弹与焦点指示](#反馈与可视化spring-回弹与焦点指示)
+
+## 实现目标与体验要求
+
+这段示例代码希望在 Expo 应用中实现“手指捏到哪里就在哪里缩放”的交互体验。除了基本的缩放手势，还强调以下体验细节：
+
+- 任意两指捏合都能触发缩放，且缩放倍数控制在 0.5x 到 2x 之间。
+- 缩放必须围绕用户的实时焦点进行，而不是固定在图片中心。
+- 手势结束后图片要平滑回弹到默认比例，避免停留在放大状态。
+- 焦点位置需要可视化，帮助调试和观察效果。
+
+## 手势流：Pinch Gesture 的生命周期
+
+代码使用 `Gesture.Pinch()` 定义捏合手势，并在 `.onStart` / `.onUpdate` / `.onEnd` 三个阶段管理状态：
+
+- `onStart` 将当前缩放写入 `startScale`，确保新的手势从上一次的比例继续。
+- `onUpdate` 接收 `event.scale` 与 `event.focalX/Y`，实时更新缩放倍数和焦点坐标。
+- `onEnd` 使用 `withSpring(1)` 回正，提供符合直觉的弹性反馈。
+
+新版 Gesture API 让手势声明式组合，配合 Reanimated Worklet，整个流程无需穿梭 JS ↔ UI 线程。
+
+## 缩放逻辑：共享状态与 clamp
+
+`scale`, `startScale`, `focalX`, `focalY` 均通过 `useSharedValue` 创建，使得在动画线程里读写毫无延迟。
+
+`scale.value = clamp(startScale.value * event.scale, 0.5, 2);` 这一句承担了关键职责：
+
+- 以 `startScale` 作为基准，保证多次拖动可以叠加。
+- 通过 `clamp` 控制上下限，避免无限缩放或比例跳变。
+
+辅助的 `clamp` 函数被标记为 `"worklet"`，确保仍然在动画线程中执行，不受 JS 逻辑拖累。
+
+## 焦点跟随：transform 链的拆解
+
+`useAnimatedStyle` 返回的 `transform` 队列，是“围绕焦点缩放”的真正秘诀：
+
+1. `translateX/Y: focal` 先把图片移动到用户当前捏合的焦点。
+2. `translateX/Y: -width/2, -height/2` 将坐标系移到屏幕中心，为缩放做准备。
+3. 执行 `{ scale: scale.value }`，缩放围绕当前原点完成。
+4. 反向平移，把坐标系送回原位，最终视觉上就是围绕手指缩放。
+
+这种“平移 → 缩放 → 平移回去”的模式本质是在动态改变变换原点，比直接操作矩阵更直观，也方便调试。
+
+## 反馈与可视化：spring 回弹与焦点指示
+
+- `withSpring(1)` 给缩放加上了柔和的回弹效果，让手势结束后的体验更自然。
+- 第二个 `useAnimatedStyle` 将红色 `focalPoint` 的位置绑定到 `focalX/Y`，实时渲染一个小圆点，既能辅助调试焦点数据，也能在产品中作为视觉反馈。
+
+## package
+
+```json
+{
+  "react-native-gesture-handler": "~2.28.0",
+  "react-native-worklets": "0.5.1",
+  "react-native-reanimated": "~4.1.1"
+}
+```
+
+## 源代码
+
+```jsx title="expo"
+import { Stack } from "expo-router";
+import { Dimensions, StyleSheet } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
+
+const imageUri =
+  "https://res.cloudinary.com/di0hcf6yr/image/upload/v1763390452/waiguan-pc-22_ru6buj.jpg";
+
+function clamp(val: number, min: number, max: number): number {
+  "worklet";
+  return Math.min(Math.max(val, min), max);
+}
+
+const { width, height } = Dimensions.get("screen");
+
+export default function Index() {
+  const scale = useSharedValue(1);
+  const startScale = useSharedValue(0);
+  const focalX = useSharedValue(0);
+  const focalY = useSharedValue(0);
+
+  // 定义捏合手势
+  const pinch = Gesture.Pinch()
+    .onStart((event) => {
+      startScale.value = scale.value;
+    })
+    .onUpdate((event) => {
+      scale.value = clamp(startScale.value * event.scale, 0.5, 2);
+      // 焦点坐标
+      focalX.value = event.focalX;
+      focalY.value = event.focalY;
+    })
+    .onEnd(() => {
+      scale.value = withSpring(1);
+    });
+
+  /*
+    scale 只会围绕当前变换原点缩放。Animated.Image 默认原点在自身中心（或在 transform 链最末一次平移后的位置）。如果直接 { scale: scale.value }，图像会始终围绕中心缩放，而不会跟随用户捏合的焦点。
+rStyle 的多段 translateX/Y 是在“临时改变原点”
+    把原点从中心移动到捏合焦点，以实现“跟随焦点”的视觉效果。
+    { translateX: -focalX.value },
+    { translateY: -focalY.value },
+    把原点从捏合焦点移动回中心，以恢复默认位置。
+    { translateX: width / 2 },
+    { translateY: height / 2 },
+    把原点从中心移动回自身中心，以恢复默认位置。
+    { translateX: -width / 2 },
+    { translateY: -height / 2 },
+  */
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { translateX: focalX.value },
+        { translateY: focalY.value },
+        { translateX: -width / 2 },
+        { translateY: -height / 2 },
+        { scale: scale.value },
+        { translateX: -focalX.value },
+        { translateY: -focalY.value },
+        { translateX: width / 2 },
+        { translateY: height / 2 },
+      ],
+    };
+  });
+
+  const focalPointStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: focalX.value,
+        },
+        {
+          translateY: focalY.value,
+        },
+      ],
+    };
+  });
+
+  return (
+    <GestureHandlerRootView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <GestureDetector gesture={pinch}>
+        <Animated.Image
+          source={{ uri: imageUri }}
+          style={[styles.image, rStyle]}
+        />
+      </GestureDetector>
+      <Animated.View style={[styles.focalPoint, focalPointStyle]} />
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+  focalPoint: {
+    width: 20,
+    height: 20,
+    backgroundColor: "red",
+    borderRadius: 10,
+    position: "absolute",
+    left: 0,
+    top: 0,
+  },
+});
+```
