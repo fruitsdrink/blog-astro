@@ -1,0 +1,50 @@
+// 要操作的DOM元素
+const progressBar = document.getElementById('progressBar')
+const percentText = document.getElementById('percent')
+const startBtn = document.getElementById('startBtn')
+const resetBtn = document.getElementById('resetBtn')
+
+let animationId = null
+let progress = 0
+
+// 开始动画
+function startProgress(){
+  if(animationId) return; // 防止重复点击开始动画
+
+  progress = 0;
+  updateProgress();
+
+  function animate(){
+    if(progress < 100){
+      progress += 0.8;
+      updateProgress();
+      animationId = requestAnimationFrame(animate)
+    }else{
+      cancelAnimationFrame(animationId)
+      animationId = null;
+    }
+  }
+
+  animate()
+}
+
+// 更新进度条
+function updateProgress(){
+  const value = Math.min(Math.floor(progress), 100)
+  progressBar.style.width = `${value}%`
+  percentText.textContent = `${value}%`
+}
+
+// 重置进度
+function resetProgress(){
+  if(animationId){
+    cancelAnimationFrame(animationId)
+    animationId = null
+  }
+  
+  progress = 0
+  updateProgress()
+}
+
+startBtn.addEventListener('click', startProgress)
+resetBtn.addEventListener('click', resetProgress)

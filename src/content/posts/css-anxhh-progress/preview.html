@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle 2vb4mkgw</title>
+
+  <style>
+    *{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg,#f5f7fa, #e4edf9);
+  color: #333;
+}
+.container {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+}
+.progress-container {
+  background: #e0e0e0;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 2rem auto;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.progress-bar {
+  position: relative;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 12px;
+  transition: width 0.5s ease-out;
+  overflow: hidden;
+}
+.progress-percent{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+.controls{
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.controls .btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  background: #3498db;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+.controls .btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+.controls .btn.reset{
+  background: #e74c3c;
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="container">
+  <h1>动画进度条</h1>
+  <div class="progress-container">
+    <div class="progress-bar" id="progressBar">
+      <div class="progress-percent" id="percent">0%</div>
+    </div>
+  </div>
+  <div class="controls">
+      <button class="btn" id="startBtn">开始加载</button>
+      <button class="btn reset" id="resetBtn">重置</button>
+    </div>
+</div>
+
+  <script>
+    // 要操作的DOM元素
+const progressBar = document.getElementById('progressBar')
+const percentText = document.getElementById('percent')
+const startBtn = document.getElementById('startBtn')
+const resetBtn = document.getElementById('resetBtn')
+
+let animationId = null
+let progress = 0
+
+// 开始动画
+function startProgress(){
+  if(animationId) return; // 防止重复点击开始动画
+
+  progress = 0;
+  updateProgress();
+
+  function animate(){
+    if(progress < 100){
+      progress += 0.8;
+      updateProgress();
+      animationId = requestAnimationFrame(animate)
+    }else{
+      cancelAnimationFrame(animationId)
+      animationId = null;
+    }
+  }
+
+  animate()
+}
+
+// 更新进度条
+function updateProgress(){
+  const value = Math.min(Math.floor(progress), 100)
+  progressBar.style.width = `${value}%`
+  percentText.textContent = `${value}%`
+}
+
+// 重置进度
+function resetProgress(){
+  if(animationId){
+    cancelAnimationFrame(animationId)
+    animationId = null
+  }
+  
+  progress = 0
+  updateProgress()
+}
+
+startBtn.addEventListener('click', startProgress)
+resetBtn.addEventListener('click', resetProgress)
+  </script>
+</body>
+</html>
