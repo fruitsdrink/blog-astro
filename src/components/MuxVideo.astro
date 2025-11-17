@@ -1,0 +1,16 @@
+---
+interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+---
+
+<iframe
+  src={url}
+  width="640"
+  height="360"
+  style="height: auto; width: 100%; aspect-ratio: 640 / 360;"
+  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+  class="w-full aspect-video mb-4"
+  allowfullscreen></iframe>

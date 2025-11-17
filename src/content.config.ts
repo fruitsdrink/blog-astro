@@ -26,7 +26,7 @@ const posts = defineCollection({
       youtube: z.string().optional(),
       video: z
         .object({
-          type: z.enum(["cloudinary"]),
+          type: z.enum(["cloudinary", "mux"]),
           url: z.string(),
         })
         .optional(),

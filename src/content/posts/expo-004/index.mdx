@@ -1,0 +1,170 @@
+---
+title: "expo使用插值实现颜色切换"
+date: "2025-11-17T22:06:51+08:00"
+tags: [expo, react-native, animation]
+description: "通过 useDerivedValue 和 interpolateColor 实现主题颜色切换的核心拆解"
+video:
+  type: "mux"
+  url: "https://player.mux.com/h4743T9K0000iO3pzS02DbuEojOuqg123SmwXnKYQw7l3M"
+---
+
+import { MuxVideo, Link } from "@/components";
+
+<MuxVideo url="https://player.mux.com/h4743T9K0000iO3pzS02DbuEojOuqg123SmwXnKYQw7l3M" />
+
+<Link
+  url="https://youtu.be/U_V9pHnTXjA?si=OL5LDDO6zXZyTEHB"
+  icon="youtube"
+  title="YouTube"
+/>
+
+
+下面是本示例源代码中最值得关注的几个知识点，便于快速掌握实现思路：
+
+- 使用 `useDerivedValue` + `withTiming` 构建响应 `Switch` 状态的 0-1 动画进度，作为所有插值的驱动。
+- 借助 `interpolateColor` 同步控制背景、圆形与文字颜色，实现整体的明暗主题切换。
+- 通过 `useAnimatedStyle` 将动画样式与 `StyleSheet` 的静态样式组合，保持布局与动画逻辑解耦。
+- 自定义 `SWITCH_TRACK_COLOR` 与 `thumbColor`，让交互控件在视觉上与主题变化保持一致。
+
+
+## package
+
+```json
+{
+  "react-native-gesture-handler": "~2.28.0",
+  "react-native-worklets": "0.5.1",
+  "react-native-reanimated": "~4.1.1"
+}
+```
+
+## 源代码
+
+```jsx title="expo"
+import { Stack } from "expo-router";
+import { useState } from "react";
+import { Dimensions, StyleSheet, Switch } from "react-native";
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useDerivedValue,
+  withTiming,
+} from "react-native-reanimated";
+
+const SIZE = Dimensions.get("window").width * 0.7;
+
+const Colors = {
+  dark: {
+    background: "#1e1e1e",
+    circle: "#252525",
+    text: "#f8f8f8",
+  },
+  light: {
+    background: "#f8f8f8",
+    circle: "#fff",
+    text: "#1e1e1e",
+  },
+};
+
+const SWITCH_TRACK_COLOR = {
+  true: "rgba(255,0,256, 0.2)",
+  false: "rgba(0,0,0,0.1)",
+};
+
+type Theme = keyof typeof Colors;
+
+export default function Index() {
+  const [theme, setTheme] = useState<Theme>("light");
+
+  const progress = useDerivedValue(() => {
+    return theme === "dark" ? withTiming(1) : withTiming(0);
+  }, [theme]);
+
+  const rStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      progress.value,
+      [0, 1],
+      [Colors.light.background, Colors.dark.background]
+    );
+
+    return {
+      backgroundColor,
+    };
+  }, [progress]);
+
+  const circleStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      progress.value,
+      [0, 1],
+      [Colors.light.circle, Colors.dark.circle]
+    );
+
+    return {
+      backgroundColor,
+    };
+  }, [progress]);
+
+  const textStyle = useAnimatedStyle(() => {
+    const color = interpolateColor(
+      progress.value,
+      [0, 1],
+      [Colors.light.text, Colors.dark.text]
+    );
+    return {
+      color,
+    };
+  }, [progress]);
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <Animated.View style={[styles.container, rStyle]}>
+        <Animated.Text style={[styles.text, textStyle]}>theme</Animated.Text>
+        <Animated.View style={[styles.circle, circleStyle]}>
+          <Switch
+            style={styles.switch}
+            value={theme === "dark"}
+            onValueChange={(toggled) => {
+              setTheme(toggled ? "dark" : "light");
+            }}
+            trackColor={SWITCH_TRACK_COLOR}
+            thumbColor={"violet"}
+          />
+        </Animated.View>
+      </Animated.View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  switch: {
+    alignSelf: "center",
+  },
+  circle: {
+    width: SIZE,
+    height: SIZE,
+    backgroundColor: "white",
+    borderRadius: SIZE / 2,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowOffset: {
+      width: 0,
+      height: 20,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  text: {
+    fontSize: 70,
+    fontWeight: 700,
+    textTransform: "uppercase",
+    letterSpacing: 8,
+    marginBottom: 35,
+  },
+});
+```

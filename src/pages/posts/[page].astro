@@ -1,5 +1,10 @@
 ---
-import { HtmlPreview, BackToTop, CloudinaryVideo } from "@/components";
+import {
+  HtmlPreview,
+  BackToTop,
+  CloudinaryVideo,
+  MuxVideo,
+} from "@/components";
 import { BaseLayout } from "@/layouts";
 import { Image } from "astro:assets";
 import { getCollection } from "astro:content";
@@ -142,6 +147,9 @@ if (firstPostYear === year) {
                     post.data.video.type === "cloudinary" && (
                       <CloudinaryVideo url={post.data.video.url} />
                     )}
+                  {post.data.video?.url && post.data.video.type === "mux" && (
+                    <MuxVideo url={post.data.video.url} />
+                  )}
                   {post.data.cover?.image && (
                     <Image
                       class="rounded-md"

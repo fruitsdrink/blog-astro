@@ -8,6 +8,7 @@ import Prose from "./Prose.astro";
 import CodeViewer from "./CodeViewer.astro";
 import CloudinaryVideo from "./CloudinaryVideo.astro";
 import Link from "./Link.astro";
+import MuxVideo from "./MuxVideo.astro";
 
 export {
   Head,
@@ -20,4 +21,5 @@ export {
   CodeViewer,
   CloudinaryVideo,
   Link,
+  MuxVideo,
 };
