@@ -9,6 +9,7 @@ import CodeViewer from "./CodeViewer.astro";
 import CloudinaryVideo from "./CloudinaryVideo.astro";
 import Link from "./Link.astro";
 import MuxVideo from "./MuxVideo.astro";
+import { Row } from "./Row";
 
 export {
   Head,
@@ -22,4 +23,5 @@ export {
   CloudinaryVideo,
   Link,
   MuxVideo,
+  Row,
 };
