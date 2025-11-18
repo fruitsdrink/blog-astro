@@ -1,0 +1,126 @@
+---
+title: "盒子边框渐变流光效果"
+date: "2025-11-18T17:26:53+08:00"
+tags: [css, animation]
+description: "使用 CSS conic-gradient 与 @property 自定义属性实现盒子边框渐变流光效果，通过伪元素和模糊滤镜营造发光边缘光晕"
+preview:
+  enabled: true
+  height: 400
+---
+
+## 目录
+
+## 视觉效果
+
+这是一个**盒子边框渐变流光效果**的示例，具有以下特点：
+
+1. **渐变流光边框**：边框颜色沿圆周方向不断流动，形成动感光圈
+2. **发光效果**：外层模糊发光，使盒子边缘更柔和、具有霓虹感
+3. **暗色背景对比**：深色背景衬托高亮渐变色，整体更有科技/赛博感
+4. **稳定内容区域**：盒子内部背景保持纯色，适合放文字或卡片内容
+
+## CSS 关键知识点
+
+### 1. `@property` 自定义属性控制角度 (6-10 行)
+
+```css
+@property --deg {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+```
+
+- **作用**：为 CSS 自定义属性 `--deg` 声明类型（角度）、继承行为和初始值
+- **好处**：让 `--deg` 可以被动画安全地插值（从 0deg 过渡到 360deg）
+- **关键点**：`syntax: "<angle>"` 告诉浏览器这是一个角度类型，才能参与动画
+
+### 2. `conic-gradient` 实现环形渐变 (31-37 行)
+
+```css
+background: conic-gradient(
+  from var(--deg) at center,
+  #00c3ff,
+  #4d0199,
+  #6300c6,
+  #009dcd
+);
+```
+
+- **conic-gradient**：生成围绕中心点旋转的锥形渐变（类似色环）
+- **from var(--deg)**：以 `--deg` 为起始角度，使渐变整体可旋转
+- **at center**：以盒子中心为渐变圆心
+- **多段颜色**：多种蓝紫色过渡，形成丰富的渐变层次
+
+### 3. 伪元素双层边框与发光效果 (25-43 行)
+
+```css
+.box::before,
+.box::after {
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(...);
+  z-index: -10;
+  animation: animate 2s linear infinite;
+}
+.box::after {
+  filter: blur(10px);
+}
+```
+
+- **双层伪元素**：`::before` 作为主渐变边框，`::after` 叠加模糊发光层
+- **inset: -2px**：向外扩展 2px，让渐变边框略微超出盒子边缘
+- **border-radius: inherit**：继承父元素圆角，保证边缘一致
+- **filter: blur(10px)**：为 `::after` 添加模糊，形成柔和光晕
+- **z-index: -10**：将伪元素放在盒子背景之下，避免遮挡内容
+
+### 4. 关键帧动画驱动渐变旋转 (44-48 行)
+
+```css
+@keyframes animate {
+  to {
+    --deg: 360deg;
+  }
+}
+```
+
+- **动画目标**：只改变自定义属性 `--deg` 的值
+- **动画过程**：从初始的 `0deg` 旋转到 `360deg`，形成完整一圈
+- **优势**：动画逻辑简单，渐变本身会根据角度变化自动更新
+
+### 5. 布局与尺寸控制 (11-24 行)
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0e2136;
+}
+.box {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 3/4;
+  background: #142d4a;
+  border-radius: 8px;
+}
+```
+
+- **居中布局**：使用 Flexbox 将 `.box` 居中显示
+- **aspect-ratio: 3/4**：保持盒子宽高比为 3:4，自适应高度
+- **背景配色**：外层深蓝 (`#0e2136`) + 内层稍亮蓝 (`#142d4a`)，突出边缘渐变
+- **position: relative**：为伪元素提供定位上下文
+
+### 技术亮点总结
+
+- ✅ 使用 `@property` + 自定义属性驱动渐变动画，语义清晰、可控性强
+- ✅ 利用 `conic-gradient` 实现环形渐变，配合角度动画形成流光效果
+- ✅ 通过伪元素 `::before` / `::after` 实现边框与光晕分层渲染
+- ✅ 使用 `filter: blur()` 营造柔和发光边缘
+- ✅ Flexbox + `aspect-ratio` 简化布局和尺寸控制
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="css-box-shadow-gradient-effect" />

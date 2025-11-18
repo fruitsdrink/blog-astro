@@ -1,0 +1,68 @@
+---
+title: "加载器-简单3d翻转卡片"
+date: "2025-11-18T16:48:47+08:00"
+tags: [css, loader, 3d, animation]
+description: "使用 CSS3 的 perspective 和 rotateX/rotateY 实现的简易 3D 翻转卡片加载器，通过连续翻转营造立体动画效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 视觉效果
+
+这是一个**简单 3D 翻转卡片加载器**，主要效果：
+
+1. **卡片比例**：固定宽度 100px，高度使用 `calc(100px * 4 / 3)` 做 4:3 比例卡片
+2. **立体翻转**：卡片在 3D 空间中沿 X 轴、Y 轴翻转
+3. **循环动画**：卡片持续循环翻转，形成加载中的视觉效果
+
+## 核心 CSS 代码
+
+```css
+.loader {
+  position: relative;
+  width: 100px;
+  height: calc(100px * 4 / 3);
+  background: #fff;
+  border-radius: 8px;
+  animation: animate 2s linear infinite;
+}
+```
+
+- **宽高与比例**：通过 `calc(100px * 4 / 3)` 保持卡片 4:3 比例，适合作为内容占位
+- **圆角**：`border-radius: 8px` 让卡片更柔和
+- **动画绑定**：`animation: animate 2s linear infinite` 绑定关键帧动画，2 秒循环一次
+
+```css
+@keyframes animate {
+  0% {
+    transform: perspective(200px) rotateX(0) rotateY(0);
+  }
+  50% {
+    transform: perspective(200px) rotateX(-180deg) rotateY(0);
+  }
+  100% {
+    transform: perspective(200px) rotateX(-180deg) rotateY(-180deg);
+  }
+}
+```
+
+- **perspective(200px)**：为元素添加 3D 透视效果，数值越小透视越强
+- **rotateX / rotateY**：
+  - 0%：初始状态，未旋转
+  - 50%：沿 X 轴旋转 180°，实现纵向翻面
+  - 100%：在已经 X 轴翻转的基础上，再沿 Y 轴旋转 180°，形成双轴翻转效果
+- **关键点**：把 `perspective` 写在 `transform` 里，可以直接作用在当前元素，而不需要额外父容器
+
+## 关键知识点总结
+
+1. **3D 透视**：`perspective(200px)` 决定 3D 深度感，是 3D 翻转效果的基础
+2. **多轴组合旋转**：结合 `rotateX` 和 `rotateY` 可以做出更丰富的立体翻转动画
+3. **比例控制**：使用 `calc()` 控制元素宽高比例，方便复用和适配
+4. **简洁实现**：仅依赖一个元素 + 一个关键帧，即可实现完整 3D 加载动画
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-simple-3d-flip-card" />

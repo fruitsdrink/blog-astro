@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>卡片-3D旋转</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #fff;
+}
+.card {
+  position: relative;
+  width: 200px;
+  height: 300px;
+  border-radius: 8px;
+  transition: 1s;
+  transform-style: preserve-3d;
+  color: #fff;
+  background: transparent;
+  font-size: 2em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+  /* transform-origin: left; */
+  animation: animate 4s linear infinite;
+}
+@keyframes animate {
+  0%{
+    transform: perspective(1000px) rotateY(0);
+  }
+  100%{
+    transform: perspective(1000px) rotateY(360deg);
+  }
+}
+/*
+.card:hover{
+  transform: perspective(1000px) rotateY(180deg);
+}
+*/
+.card::before{
+  content: '正面';
+  position: absolute;
+  inset: 0;
+  background: #f00;
+  backface-visibility: hidden; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+.card::after{
+  content: '背面';
+  position: absolute;
+  inset: 0;
+  background: #00f;
+  backface-visibility: hidden; 
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+
+  </style>
+
+  
+</head>
+<body>
+  <div class="card"></div>
+
+  <script>
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-简单反转3d卡片</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #262626;
+}
+.loader {
+  position: relative;
+  width: 100px;
+  height: calc(100px * 4/3);
+  background: #fff;
+  border-radius: 8px;
+  animation: animate 2s linear infinite;
+}
+@keyframes animate {
+  0% {
+    transform: perspective(200px) rotateX(0) rotateY(0);
+  }
+  50% {
+    transform: perspective(200px) rotateX(-180deg) rotateY(0);
+  }
+  100% {
+    transform: perspective(200px) rotateX(-180deg) rotateY(-180deg);
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="loader">
+</div>
+
+  <script>
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+@property --deg {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0deg;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #0e2136;
+}
+.box {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 3/4;
+  background: #142d4a;
+  border-radius: 8px;
+}
+.box::before,
+.box::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--deg) at center,
+    #00c3ff,
+    #4d0199,
+    #6300c6,
+    #009dcd
+  );
+  z-index: -10;
+  animation: animate 2s linear infinite;
+}
+.box::after {
+  filter: blur(10px);
+}
+@keyframes animate {
+  to {
+    --deg: 360deg;
+  }
+}

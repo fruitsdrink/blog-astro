@@ -1,0 +1,19 @@
+{
+  "links": [
+    {
+      "name": "bilibili",
+      "url": "{{bilibili}}",
+      "icon": "bilibili"
+    },
+    {
+      "name": "youtube",
+      "url": "https://youtu.be/8SeFSmvx3AA?si=_uOGblYxvtzmAPpE",
+      "icon": "youtube"
+    },
+    {
+      "name": "jsfiddle",
+      "url": "https://jsfiddle.net/fruritsdrink/ob8rp4vs/56",
+      "icon": "jsfiddle"
+    }
+  ]
+}

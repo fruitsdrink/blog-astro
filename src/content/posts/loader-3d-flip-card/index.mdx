@@ -1,0 +1,126 @@
+---
+title: "加载器-3d翻转卡片"
+date: "2025-11-18T16:53:52+08:00"
+tags: [css, loader, animation, 3d]
+description: "使用纯 CSS 实现的 3D 翻转卡片加载效果，通过 perspective、preserve-3d 和 backface-visibility 构建前后两面连续旋转的立体卡片"
+preview:
+  enabled: true
+  height: 400
+---
+
+## 目录
+
+## 视觉效果
+
+这是一个**3D 翻转卡片加载器**，具有以下视觉特征：
+
+1. **立体卡片**：白色背景下居中的 200×300 卡片，带轻微阴影
+2. **前后两面**：正面为红色（“正面”），背面为蓝色（“背面”）
+3. **连续旋转**：卡片绕 Y 轴 360° 持续旋转，形成加载动画效果
+4. **平滑动效**：旋转时保持透视和立体感，不会“塌扁”
+
+## 关键 CSS 知识点
+
+### 1. **3D 场景与透视** (28-35 行)
+
+```css
+@keyframes animate {
+  0% {
+    transform: perspective(1000px) rotateY(0);
+  }
+  100% {
+    transform: perspective(1000px) rotateY(360deg);
+  }
+}
+```
+
+- **perspective(1000px)**：为当前元素应用透视效果，数值越大，3D 效果越“平缓”
+- **rotateY**：围绕 Y 轴旋转，实现左右翻转的立体感
+- **0 → 360deg**：让卡片完整旋转一圈，形成循环加载动效
+
+### 2. **preserve-3d 保持子元素 3D 关系** (13-20 行)
+
+```css
+.card {
+  transform-style: preserve-3d;
+  animation: animate 4s linear infinite;
+}
+```
+
+- **transform-style: preserve-3d**：保留子元素在 3D 空间中的位置关系
+- **作用**：让 `::before` / `::after` 伪元素在旋转时保持前后两层的立体效果
+- **animation**：绑定 `animate` 关键帧，4 秒钟完成一圈旋转，线性且无限循环
+
+### 3. **伪元素构建正反两面** (41-63 行)
+
+```css
+.card::before {
+  content: "正面";
+  position: absolute;
+  inset: 0;
+  background: #f00;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+
+.card::after {
+  content: "背面";
+  position: absolute;
+  inset: 0;
+  background: #00f;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+}
+```
+
+- **双伪元素结构**：使用 `::before` 和 `::after` 构建卡片的前后两面
+- **content**：直接用文本 `"正面"` / `"背面"` 作为内容，方便调试和展示
+- **inset: 0**：让伪元素完全铺满 `.card` 容器
+- **backface-visibility: hidden**：隐藏背面，使翻转时不会看到“反向文字”
+- **transform: rotateY(180deg)**：将背面先翻转 180°，与前面背靠背放置
+
+### 4. **阴影与圆角** (17-18, 24-25 行)
+
+```css
+.card {
+  border-radius: 8px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+}
+```
+
+- **border-radius**：为卡片和伪元素增加圆角，视觉上更加柔和
+- **box-shadow**：增加下方阴影，突出“悬浮”效果，增强 3D 立体感
+
+### 5. **Flex 居中布局** (6-12 行)
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #fff;
+}
+```
+
+- **display: flex**：使 body 成为弹性布局容器
+- **居中**：通过 `justify-content` 和 `align-items` 将卡片在视口中水平垂直居中
+- **min-height: 100vh**：确保在任何视口高度下都能垂直居中
+
+## 技术亮点总结
+
+- **纯 CSS 3D 实现**：无需 JavaScript，完全依赖 CSS3 的 3D 变换和关键帧动画
+- **伪元素构建结构**：通过 `::before` / `::after` 构建前后两面，减少 DOM 结构复杂度
+- **立体感控制**：使用 `perspective` + `preserve-3d` + `backface-visibility` 精细控制 3D 效果
+- **可扩展性强**：可以轻松替换为图片、图标或其他内容，复用为通用 3D 卡片组件
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-3d-flip-card" />
