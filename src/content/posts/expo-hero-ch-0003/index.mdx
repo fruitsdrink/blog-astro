@@ -1,0 +1,171 @@
+---
+title: "expo 环状进度条"
+date: "2025-11-20T01:46:51+08:00"
+tags: [expo,loader, react-native, animation]
+description: "expo tap 和 pan 手势处理"
+video:
+  type: "mux"
+  url: "https://player.mux.com/01P8rdF7ohuc5TIgCA01sYb02b800MPfNmj9dt7nbs7ZSfA"
+---
+
+import { MuxVideo, Link,Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/01P8rdF7ohuc5TIgCA01sYb02b800MPfNmj9dt7nbs7ZSfA" />
+
+<Row>
+<Link
+  url="https://youtu.be/9n2mQJ7TO6Y?si=K4DaOW9W0CjFnb-I"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0003" icon="github" title="GitHub" />
+</Row>
+
+相关组件
+
+- "react-native-animateable-text": "^0.17.1"
+- "react-native-svg": "^15.15.0"
+- "react-native-redash": "^18.1.4"
+- "react-native-animateable-text": "^0.17.1"
+
+注意 react-native-animateable-text 在expo go 模式下不能显示，需要执行下面命令
+
+```bash
+npx expo prebuild
+npx pod-install
+```
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import AnimateableText from "react-native-animateable-text";
+import Animated, {
+  useAnimatedProps,
+  useDerivedValue,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { ReText } from "react-native-redash";
+import Svg, { Circle } from "react-native-svg";
+
+const AnimatedCircle = Animated.createAnimatedComponent(Circle);
+
+const CIRCLE_LENGTH = 1000;
+const R = CIRCLE_LENGTH / (2 * Math.PI);
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+
+export default function Index() {
+  const progress = useSharedValue(0);
+
+  const animatedCircleProps = useAnimatedProps(() => {
+    return {
+      strokeDashoffset: -(CIRCLE_LENGTH * progress.value),
+    };
+  });
+
+  const progressText = useDerivedValue(() => {
+    if (!progress.value) return "0";
+    // 这里必须返回字符串，否则直接崩溃
+    return `${Math.floor(progress.value * 100)}`;
+  });
+
+  const animatedTextProps = useAnimatedProps(() => {
+    return {
+      text: `${Math.floor(progress.value * 100)}`,
+    };
+  });
+
+  const handleClick = () => {
+    progress.value = withTiming(progress.value > 0 ? 0 : 1, { duration: 2000 });
+  };
+
+  return (
+    <>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.container}>
+        <ReText style={styles.text} text={progressText} />
+        <AnimateableText
+          animatedProps={animatedTextProps}
+          style={styles.text}
+        />
+        <Svg
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: SCREEN_WIDTH,
+            height: SCREEN_HEIGHT,
+          }}
+        >
+          <Circle
+            cx={SCREEN_WIDTH / 2}
+            cy={SCREEN_HEIGHT / 2}
+            r={R}
+            fill={"transparent"}
+            stroke={"#303858"}
+            strokeWidth={30}
+          />
+          <AnimatedCircle
+            cx={SCREEN_WIDTH / 2}
+            cy={SCREEN_HEIGHT / 2}
+            r={R}
+            fill={"transparent"}
+            stroke={"#a6e1fa"}
+            strokeWidth={15}
+            strokeDasharray={CIRCLE_LENGTH}
+            animatedProps={animatedCircleProps}
+          />
+        </Svg>
+        <TouchableOpacity
+          style={{
+            position: "absolute",
+            bottom: 80,
+            width: SCREEN_WIDTH * 0.7,
+            height: 60,
+            backgroundColor: "#303858",
+            borderRadius: 30,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+          onPress={handleClick}
+        >
+          <Text
+            style={{
+              fontSize: 24,
+              color: "white",
+            }}
+          >
+            Run
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#444b6f",
+  },
+  text: {
+    fontSize: 60,
+    color: "rgba(255,255,255,0.7)",
+    width: "100%",
+    textAlign: "center",
+  },
+});
+```
+
