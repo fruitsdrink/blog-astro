@@ -1,0 +1,299 @@
+---
+title: "expo tap & pan 手势 - 颜色拾取器"
+date: "2025-11-19T23:37:51+08:00"
+tags: [expo,loader, react-native, animation]
+description: "expo tap 和 pan 手势处理"
+video:
+  type: "mux"
+  url: "https://player.mux.com/KqqCzPzP2ukFDBoKT7eMkdooSaLvEDBewc02xxe2A3YE"
+---
+
+import { MuxVideo, Link,Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/KqqCzPzP2ukFDBoKT7eMkdooSaLvEDBewc02xxe2A3YE" />
+
+<Row>
+<Link
+  url="https://youtu.be/XH35ahDm3as?si=iU8VyVQd6tJ4-vkj"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0002" icon="github" title="GitHub" />
+</Row>
+
+## 知识点
+
+- tap手势的使用
+- pan手势的使用
+- tan和pan手势组合使用
+
+## 待解决问题
+- tap手势的上移和缩放动画没有生效
+
+## package
+
+```json
+{
+  "react-native-gesture-handler": "~2.28.0",
+  "react-native-worklets": "0.5.1",
+  "react-native-reanimated": "~4.1.1"
+}
+```
+
+## 源代码
+
+```jsx title="index.tsx"
+import { ColorPicker } from "@/components";
+import { LinearGradientProps } from "expo-linear-gradient";
+import { Stack } from "expo-router";
+import { useCallback } from "react";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from "react-native-reanimated";
+
+const COLORS: LinearGradientProps["colors"] = [
+  "red",
+  "purple",
+  "blue",
+  "cyan",
+  "green",
+  "yellow",
+  "orange",
+  "black",
+  "white",
+] as const;
+
+const BACKGROUND_COLOR = "rgba(0, 0, 0, 0.9)";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const PICKER_WIDTH = SCREEN_WIDTH * 0.9;
+const CIRCLE_SIZE = SCREEN_WIDTH * 0.8;
+
+export default function Index() {
+  const pickedColor = useSharedValue<string>(COLORS[0].toString());
+
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: pickedColor.value,
+    };
+  });
+
+  const onColorChanged = useCallback(
+    (color: string) => {
+      pickedColor.value = color;
+    },
+    [pickedColor]
+  );
+
+  return (
+    <GestureHandlerRootView>
+      <Stack.Screen options={{ headerShown: false }} />
+      <View style={styles.topContainer}>
+        <Animated.View style={[styles.circle, rStyle]} />
+      </View>
+      <View style={styles.bottomContainer}>
+        <ColorPicker
+          colors={COLORS}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.gradient}
+          pickerSize={40}
+          maxWidth={PICKER_WIDTH}
+          onColorChanged={onColorChanged}
+        />
+      </View>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  topContainer: {
+    flex: 3,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: BACKGROUND_COLOR,
+  },
+  circle: {
+    width: CIRCLE_SIZE,
+    height: CIRCLE_SIZE,
+    borderRadius: CIRCLE_SIZE / 2,
+  },
+  bottomContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: BACKGROUND_COLOR,
+  },
+  gradient: {
+    width: PICKER_WIDTH,
+    height: 40,
+    borderRadius: 20,
+  },
+});
+```
+
+---
+
+```jsx title="color-picker.tsx"
+import { LinearGradient, LinearGradientProps } from "expo-linear-gradient";
+import { StyleSheet } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  interpolateColor,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+
+function clamp(val: number, min: number, max: number) {
+  "worklet";
+  return Math.min(Math.max(val, min), max);
+}
+
+type ColorPickerProps = LinearGradientProps & {
+  pickerSize?: number;
+  maxWidth: number;
+  onColorChanged: (color: string) => void;
+};
+
+export function ColorPicker({
+  pickerSize = PICKER_SIZE,
+  maxWidth,
+  colors,
+  onColorChanged,
+  ...props
+}: ColorPickerProps) {
+  const translateX = useSharedValue(0);
+  const prevTranslateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+
+  const tapGesture = Gesture.Tap()
+    .onStart((e) => {
+      translateX.value = withTiming(
+        clamp(e.absoluteX - pickerSize, 0, maxWidth - pickerSize)
+      );
+      // todo 没有生效
+      translateY.value = withSpring(-pickerSize);
+      // todo 没有生效
+      scale.value = withSpring(1.2);
+    })
+    .onEnd(() => {
+      translateY.value = withSpring(0);
+      scale.value = withSpring(1);
+    });
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      prevTranslateX.value = translateX.value;
+      translateY.value = withSpring(-pickerSize);
+      scale.value = withSpring(1.2);
+    })
+    .onUpdate((e) => {
+      translateX.value = clamp(
+        prevTranslateX.value + e.translationX,
+        0,
+        maxWidth - pickerSize
+      );
+    })
+    .onEnd(() => {
+      translateY.value = withSpring(0);
+      scale.value = withSpring(1);
+    });
+
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+        {
+          translateY: translateY.value,
+        },
+        {
+          scale: scale.value,
+        },
+      ],
+    };
+  });
+
+  const rDotStyle = useAnimatedStyle(() => {
+    const inputRange = colors.map(
+      (_color, index) => (index / colors.length) * maxWidth
+    );
+    const outRange = colors as unknown as string[];
+
+    const backgroundColor = interpolateColor(
+      translateX.value,
+      inputRange,
+      outRange
+    );
+
+    scheduleOnRN(onColorChanged, backgroundColor);
+
+    return {
+      backgroundColor,
+    };
+  });
+
+  return (
+    <>
+      <GestureDetector gesture={Gesture.Race(tapGesture, panGesture)}>
+        <Animated.View>
+          <LinearGradient colors={colors} {...props} />
+          <Animated.View
+            style={[
+              styles.picker,
+              {
+                width: pickerSize,
+                height: pickerSize,
+                borderRadius: pickerSize / 2,
+              },
+              rStyle,
+            ]}
+          >
+            <Animated.View
+              style={[
+                styles.dot,
+                {
+                  width: pickerSize / 2,
+                  height: pickerSize / 2,
+                  borderRadius: pickerSize / 2,
+                },
+                rDotStyle,
+              ]}
+            ></Animated.View>
+          </Animated.View>
+        </Animated.View>
+      </GestureDetector>
+    </>
+  );
+}
+
+const PICKER_SIZE = 40;
+const DOT_SIZE = PICKER_SIZE / 2;
+
+const styles = StyleSheet.create({
+  picker: {
+    position: "absolute",
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dot: {
+    width: DOT_SIZE,
+    height: DOT_SIZE,
+    borderRadius: DOT_SIZE,
+    borderWidth: 0.5,
+    borderStyle: "solid",
+    borderColor: "rgba(0,0,0,0.2)",
+  },
+});
+```
+
