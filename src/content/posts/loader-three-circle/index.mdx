@@ -1,0 +1,22 @@
+---
+title: "加载器-循环圆环"
+date: "2025-11-19T19:43:10+08:00"
+tags: [css,loader,animation]
+description: "纯 CSS 的三层圆环 Loader：借助 @property 自定义变量、伪元素叠层与多速率旋转动画打造有深度的加载视觉"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+这个 Loader 的 CSS 通过极少元素叠出三层旋转圆环，可重点关注：
+
+- `@property` 声明的 `--size`、`--width` 配合 `calc()` 统一驱动尺寸、定位与描边厚度。
+- `.loader` 及其 `::before`、`::after` 共享样式，再用 `inset` 缩小半径、变换 `border-bottom` 颜色，快速复制多层同心圆。
+- 只保留 `border-bottom` 的有色描边并叠加 `box-shadow`，形成带缺口的发光弧线。
+- 通过 3s/2s/1s 的动画周期差，让三层圆环展现多轨并行的节奏感。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-three-circle" />
