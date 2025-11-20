@@ -1,0 +1,280 @@
+---
+title: "expo 删除动画"
+date: "2025-11-20T20:26:51+08:00"
+tags: [expo, loader, react-native, animation]
+description: "使用 Gesture Handler 与 Reanimated 打造向左滑动删除任务列表的流畅动画效果。"
+video:
+  type: "mux"
+  url: "https://player.mux.com/1VdZWoUdl502qiMwAsA5aRYyqNGF7fc83tHyD201XgGIs"
+---
+
+import { MuxVideo, Link, Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/1VdZWoUdl502qiMwAsA5aRYyqNGF7fc83tHyD201XgGIs" />
+
+<Row>
+<Link
+  url="https://youtu.be/AVS_2nzt8Do?si=sIF76t7IOwtaf0qn"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0004" icon="github" title="GitHub" />
+</Row>
+
+## 目录
+
+## 功能目标
+
+- 任务列表支持向左滑动删除，滑动到阈值自动触发删除。
+- 列表项在删除时需平滑左移、透明度降低，同时高度递减，使下方任务顺滑上移。
+- 删除完成后回调至 React Native 层更新数据源，保持界面状态一致。
+
+## 动画流程
+
+1. **识别手势**：`react-native-gesture-handler` 的 `Gesture.Pan()` 监听水平滑动，限定为向左方向。
+2. **滑动反馈**：滑动过程中共享值 `translateX` 直接驱动任务卡片的平移动画。
+3. **触发删除**：滑动松手后根据阈值判断是否进入删除流程；否则复位。
+4. **收缩与淡出**：删除时同时执行 `translateX`、`opacity`、`height` 的 `withTiming` 动画，保证视觉连贯。
+5. **回调删除**：动画完成回调 `scheduleOnRN(onDismiss, task)`，在 JS 线程更新任务列表。
+
+## 关键技术点
+
+- **Gesture Handler**：通过 `minDistance` 调整与 `ScrollView` 的手势冲突，确保滑动删除顺畅。
+- **Shared Values**：`translateX`、`height`、`opacity` 使用 Reanimated `useSharedValue` 保持在 UI 线程驱动动画。
+- **高度测量与动画**：首次 `onLayout` 记录视图高度，确保高度从实际值动画到 0，使下方任务自然上移。
+- **动画同步**：容器样式中同步绑定高度与透明度，当 `height` 被动画驱动时，其它任务无需额外逻辑即可获得平滑过渡。
+- **异步回调**：使用 `scheduleOnRN` 将动画完成事件安全地派发到 React Native，避免直接触碰 JS 线程导致的同步问题。
+
+## 源代码
+
+```jsx title="index.tsx"
+import { ListItem } from "@/components";
+import { Task } from "@/types";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback, useState } from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const TITLES: string[] = [
+  "早上锻炼",
+  "完成项目报告",
+  "阅读三十分钟",
+  "整理房间",
+  "购买杂货",
+  "与朋友通话",
+  "复习英语单词",
+  "准备晚餐",
+  "遛狗",
+  "制定明天计划",
+  "完成一篇日记",
+  "学习编程一小时",
+  "洗衣服",
+  "打扫卫生",
+  "整理邮件",
+  "冥想十分钟",
+  "听一段播客",
+  "和家人共进晚餐",
+  "跑步五公里",
+  "准备工作计划",
+  "给父母打电话",
+  "看一部电影",
+  "写周计划",
+  "学习新菜谱",
+  "给朋友发消息",
+  "做拉伸运动",
+  "泡一杯茶",
+  "阅读新闻",
+  "整理书桌",
+  "清理手机相册",
+];
+
+const TASKS: Task[] = TITLES.map((title, index) => ({
+  id: index + 1,
+  title,
+}));
+
+// 背景颜色
+const BACKGROUND_COLOR = "#fafbff";
+
+export default function Index() {
+  const [tasks, setTasks] = useState(TASKS);
+
+  const onDismiss = useCallback(
+    (task: Task) => {
+      setTasks(tasks.filter((item) => item.id !== task.id));
+    },
+    [tasks]
+  );
+
+  return (
+    <GestureHandlerRootView>
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="auto" />
+        <Stack.Screen options={{ headerShown: false }} />
+        <ScrollView style={{ flex: 1 }}>
+          {tasks.map((task) => {
+            return <ListItem key={task.id} task={task} onDismiss={onDismiss} />;
+          })}
+        </ScrollView>
+      </SafeAreaView>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BACKGROUND_COLOR,
+  },
+});
+```
+
+```jsx title="list-item.tsx"
+import { Task } from "@/types";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { Dimensions, LayoutChangeEvent, StyleSheet, Text } from "react-native";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+
+const { width } = Dimensions.get("window");
+
+const TRANSLATE_X_THRESHOLD = -width * 0.3;
+
+type Props = {
+  task: Task,
+  onDismiss?: (task: Task) => void,
+};
+export const ListItem = ({ task, onDismiss }: Props) => {
+  const translateX = useSharedValue(0);
+  // 记录列表项当前高度，删除时用于执行高度收缩动画
+  const height = useSharedValue < number > -1;
+  const opacity = useSharedValue(1);
+
+  const panGesture = Gesture.Pan()
+    .minDistance(30) // 解决和父组件 ScrollView 手势冲突问题
+    .onUpdate((e) => {
+      if (e.translationX < 0) {
+        // 仅允许向左滑动，向右滑时保持在 0
+        translateX.value = e.translationX;
+      }
+    })
+    .onEnd(() => {
+      const shouldBeDismissed = translateX.value < TRANSLATE_X_THRESHOLD;
+      if (shouldBeDismissed) {
+        translateX.value = withTiming(-width);
+        // 先将高度动画到 0，再回调到 RN 里更新数据
+        height.value = withTiming(0);
+        opacity.value = withTiming(0, undefined, (finished) => {
+          if (finished && onDismiss) {
+            scheduleOnRN(onDismiss, task);
+          }
+        });
+      } else {
+        translateX.value = withTiming(0);
+      }
+    });
+
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateX: translateX.value,
+        },
+      ],
+    };
+  });
+
+  // 通过高度动画驱动容器收缩，列表项消失时其它任务即可平滑上移
+  const rContainer = useAnimatedStyle(() => {
+    return {
+      height: height.value === -1 ? undefined : height.value,
+      opacity: opacity.value,
+    };
+  });
+
+  const rIconStyle = useAnimatedStyle(() => {
+    const opacity = withTiming(
+      translateX.value < TRANSLATE_X_THRESHOLD ? 1 : 0
+    );
+    return {
+      opacity,
+    };
+  });
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    // 初次渲染时记录真实高度，用作删除动画的起点
+    if (height.value === -1) {
+      height.value = event.nativeEvent.layout.height;
+    }
+  };
+
+  return (
+    <Animated.View
+      style={[styles.container, rContainer]}
+      onLayout={handleLayout}
+    >
+      <Animated.View style={[styles.iconContainer, rIconStyle]}>
+        <FontAwesome6 name="trash-alt" size={24} style={styles.icon} />
+      </Animated.View>
+      <GestureDetector gesture={panGesture}>
+        <Animated.View style={[styles.task, rStyle]}>
+          <Text style={styles.title}>{task.title}</Text>
+        </Animated.View>
+      </GestureDetector>
+    </Animated.View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    width,
+    alignItems: "center",
+  },
+  task: {
+    width: width * 0.9,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 8,
+    backgroundColor: "white",
+    boxShadow: "0 10px 10px rgba(0,0,0,0.05)",
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 10,
+    // },
+    // shadowRadius: 10,
+    // shadowOpacity: 0.05,
+    // elevation: 10,
+  },
+  title: {
+    fontSize: 16,
+  },
+  iconContainer: {
+    position: "absolute",
+    right: width * 0.05,
+    top: 10,
+    bottom: 10,
+    aspectRatio: 1 / 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  icon: {
+    color: "#f00",
+  },
+});
+```
+
+```ts title="types.ts"
+export interface Task {
+  title: string;
+  id: number;
+
+
+```
