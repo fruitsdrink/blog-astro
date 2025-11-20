@@ -1,0 +1,169 @@
+---
+title: "加载器-折叠立方体"
+date: "2025-11-20T14:23:07+08:00"
+tags: [css, loader, animation]
+description: "使用纯 CSS 3D transform 实现的折叠立方体加载动画，通过 perspective、rotateX/rotateY 和动画延迟营造连续翻转的立体效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+import { CodeViewer } from "@/components";
+
+## 目录
+
+## 视觉效果
+
+这是一个由 **4 个彩色小方块组成的折叠立方体加载器**，整体效果特点：
+
+1. **菱形排列**：通过将 2×2 方块整体旋转 45°，形成菱形布局，更有动感
+2. **立体翻转**：每个小方块像立方体的一面，从底部“折叠”翻转出来再收回
+3. **交错时序**：4 个方块通过不同的 `animation-delay` 依次翻转，形成循环加载节奏
+4. **多色组合**：蓝、红、黄、绿四种颜色依次翻转，提升视觉辨识度
+
+## CSS 关键知识点
+
+### 1. Flex + 旋转实现 2×2 菱形布局 (13-19 行)
+
+```css
+ul {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-wrap: wrap;
+  transform: rotate(45deg);
+}
+ul li {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+```
+
+- **2×2 网格**：`80px` 容器 + `40px` 子元素 + `flex-wrap: wrap` 组合出 2×2 方格
+- **菱形效果**：对整个 `ul` 做 `rotate(45deg)`，比单独旋转每个方块更简单
+- **固定尺寸**：`flex-shrink: 0` 确保小方块不会被压缩变形
+
+### 2. 伪元素作为“翻转面” (55-64 行)
+
+```css
+ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: red;
+  transform-origin: 100% 100%;
+  animation: animate 3.3s linear infinite;
+}
+```
+
+- **独立动画层**：用 `::before` 作为可翻转的“立方体面”，不影响 `li` 本身布局
+- **transform-origin: 100% 100%**：将旋转中心移动到右下角，营造从一角折叠的感觉
+- **统一动画**：所有小方块共用同一套 `@keyframes animate`，通过延迟区分节奏
+
+### 3. nth-child 控制方向与颜色 + 动画延迟 (27-54 行)
+
+```css
+ul li:nth-child(1) {
+  transform: rotate(0deg);
+}
+ul li:nth-child(1)::before {
+  animation-delay: 0s;
+  background: #2980b9;
+}
+
+ul li:nth-child(2) {
+  transform: rotate(90deg);
+}
+ul li:nth-child(2)::before {
+  animation-delay: 0.4s;
+  background: #e74c3c;
+}
+
+ul li:nth-child(3) {
+  transform: rotate(270deg);
+}
+ul li:nth-child(3)::before {
+  animation-delay: 1.2s;
+  background: #f1c40f;
+}
+
+ul li:nth-child(4) {
+  transform: rotate(180deg);
+}
+ul li:nth-child(4)::before {
+  animation-delay: 0.8s;
+  background: #2ecc71;
+}
+```
+
+- **方向控制**：通过对 `li` 本身做 `rotate(...)`，让每个方块的翻转方向不同
+- **颜色分配**：每个 `::before` 使用不同背景色，提升区分度
+- **节奏设计**：不等间隔的 `animation-delay` 让翻转顺序更自然、富有节奏感
+
+### 4. 3D 透视与翻转动画 (66-91 行)
+
+```css
+@keyframes animate {
+  0% {
+    transform: perspective(200px) rotateX(0deg);
+    opacity: 0;
+  }
+  10% {
+    transform: perspective(200px) rotateX(-180deg);
+    opacity: 0;
+  }
+  25% {
+    transform: perspective(200px) rotateX(0deg);
+    opacity: 1;
+  }
+  75% {
+    transform: perspective(200px) rotateX(0deg);
+    opacity: 1;
+  }
+  90% {
+    transform: perspective(200px) rotateY(180deg);
+    opacity: 0;
+  }
+  100% {
+    transform: perspective(200px) rotateY(0deg);
+    opacity: 0;
+  }
+}
+```
+
+- **perspective(200px)**：为 3D 变换增加透视深度，产生真实的空间感
+- **rotateX / rotateY**：先绕 X 轴翻折，再绕 Y 轴翻转收回，形成“展开 → 停留 → 收起”的过程
+- **opacity 配合**：在翻折开始/结束阶段设为 0，避免边缘抖动或穿帮
+- **时间分配**：
+  - 0%–25%：从折叠到展开并完全出现
+  - 25%–75%：保持展开状态
+  - 75%–100%：旋转并渐隐消失
+
+### 5. 居中与背景衬托 (6-12 行)
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f3f3f3;
+}
+```
+
+- **垂直水平居中**：使用 Flexbox 快速让加载器居中显示
+- **中性色背景**：浅灰背景让彩色立方体更突出，同时不过于刺眼
+
+### 技术亮点总结
+
+- ✅ 使用 `transform` + `transform-origin` 精准控制折叠方向
+- ✅ 利用 `perspective` 与 `rotateX/rotateY` 营造 3D 立体翻转效果
+- ✅ 通过 `nth-child` 差异化颜色、旋转角度和动画延迟，构建有节奏的序列动画
+- ✅ 伪元素承载动画层，结构简洁、易于复用
+- ✅ 纯 CSS 实现加载动画，无需 JavaScript，性能开销小
+
+<CodeViewer postId="loader-interfolded-cub" />
