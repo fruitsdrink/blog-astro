@@ -28,6 +28,8 @@ const posts = (await getCollection("posts")).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
 
+const postCount = posts.length;
+
 // Tag 颜色映射函数
 function getTagColorClass(tag: string): string {
   const tagLower = tag.toLowerCase();
@@ -104,6 +106,23 @@ if (firstPostYear === year) {
     <div class="flex flex-row gap-6 mt-6">
       <!-- 日历 -->
       <div class="space-y-4">
+        <div
+          class="articles-counter relative rounded-2xl p-[1px] bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 shadow-[0_0_15px_rgba(192,132,252,0.45)]"
+        >
+          <div
+            class="flex flex-col items-center gap-1 rounded-2xl bg-white px-5 py-4 text-center"
+          >
+            <span class="text-xs uppercase tracking-[0.2em] text-gray-400">
+              Articles
+            </span>
+            <div class="flex items-end gap-1">
+              <span class="text-4xl font-semibold text-gray-900"
+                >{postCount}</span
+              >
+              <span class="text-sm text-gray-500">篇</span>
+            </div>
+          </div>
+        </div>
         {
           days.map((day) => (
             <div class="space-y-2 border-b border-gray-200 pb-4">
@@ -270,3 +289,22 @@ if (firstPostYear === year) {
 
   <BackToTop />
 </BaseLayout>
+
+<style is:global>
+  @keyframes gradient-move {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .articles-counter {
+    background-size: 200% 200%;
+    animation: gradient-move 8s linear infinite;
+  }
+</style>
