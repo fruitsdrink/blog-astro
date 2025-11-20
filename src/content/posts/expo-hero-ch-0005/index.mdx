@@ -1,0 +1,213 @@
+---
+title: "expo 水波纹动画"
+date: "2025-11-21T00:07:51+08:00"
+tags: [expo, loader, react-native, animation]
+description: "使用 Expo Router + Reanimated 打造可定制的水波纹点击反馈组件"
+video:
+  type: "mux"
+  url: "https://player.mux.com/hRrhowQhIPgNvlQYorb6o6WL8sm4bBLJhSNRjUgdeqw"
+---
+
+import { MuxVideo, Link, Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/hRrhowQhIPgNvlQYorb6o6WL8sm4bBLJhSNRjUgdeqw" />
+
+<Row>
+<Link
+  url="https://youtu.be/QxGQwRqxbSA?si=Igz9yN5tGkMuKhdF"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0005" icon="github" title="GitHub" />
+</Row>
+
+## 目录
+
+## 功能目标
+
+## 动画效果
+
+- 单指轻点容器时，会在触点位置生成水波纹，以触点为圆心向外扩散。
+- 波纹在约 500ms 内放大至覆盖整个容器，并在额外 250ms 内淡出消失。
+- 通过 `overflow: hidden` 限制，波纹始终被裁剪在容器内部，不会泄露到周围区域。
+- 支持自定义波纹颜色、容器样式以及 `onTap` 业务回调，便于嵌入到任何交互区域。
+
+## 主要技术点
+
+- `react-native-gesture-handler` 的 `GestureDetector` + `Gesture.Tap()` 负责精准捕获点击事件。
+- `react-native-reanimated` 提供 `useSharedValue`、`withTiming`、`useAnimatedStyle` 等，驱动缩放与透明度动画。
+- 结合 `useAnimatedRef` 与 `measure` 实时获取容器尺寸，并用对角线长度计算能覆盖整个视图的圆半径。
+- `react-native-worklets` 的 `scheduleOnRN` 将 `onTap` 回调调度回 JS 线程，避免在 UI 线程中直接调用。
+- 外层使用 `GestureHandlerRootView`，确保手势系统在原生侧正确注册并与 Expo Router 兼容。
+
+## 注意事项
+
+- 容器需要有确定的宽高，否则 `measure` 返回 0 会导致波纹不可见。
+- 必须保持 `overflow: hidden`，否则波纹会超出容器边界影响视觉。
+- 在 `ScrollView` 或复杂手势场景中使用时，可按需配置手势的竞争/协作（如 `simultaneousWithExternalGesture`）。
+- 波纹颜色建议包含透明度，避免完全遮挡内部内容；必要时也可根据主题调整。
+- 对性能敏感的界面可以缩短动画时长或减少阴影等效果，降低 GPU/CPU 压力。
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback } from "react";
+import { StyleSheet, Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ripple } from "../components";
+
+export default function Index() {
+  const onTap = useCallback(() => {
+    // console.log("on tap");
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="auto" />
+      <Ripple style={styles.ripple} onTap={onTap}>
+        <Text>Tap</Text>
+      </Ripple>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  ripple: {
+    width: 200,
+    height: 200,
+    backgroundColor: "#fff",
+    boxShadow: "0 0 20px rgba(0,0,0,0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 8,
+  },
+});
+```
+
+---
+
+```jsx title="ripple.tsx"
+import React from "react";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  measure,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { scheduleOnRN } from "react-native-worklets";
+
+type Props = {
+  style?: StyleProp<ViewStyle>;
+  color?: string;
+  onTap?: () => void;
+};
+export const Ripple: React.FC<React.PropsWithChildren<Props>> = ({
+  style,
+  color = "rgba(0,0,0,0.1)",
+  onTap,
+  children,
+}) => {
+  const viewRef = useAnimatedRef<View>();
+
+  const size = useSharedValue({
+    width: 0,
+    height: 0,
+  });
+  const tapPosition = useSharedValue({
+    x: 0,
+    y: 0,
+  });
+  const scale = useSharedValue(0);
+  const opacity = useSharedValue(0);
+
+  const tapGesture = Gesture.Tap()
+    .onStart((e) => {
+      const layout = measure(viewRef);
+
+      size.value = {
+        width: layout?.width ?? 0,
+        height: layout?.height ?? 0,
+      };
+
+      tapPosition.value = {
+        x: e.x,
+        y: e.y,
+      };
+      scale.value = 0;
+      scale.value = withTiming(1, { duration: 500 });
+
+      opacity.value = withTiming(1, undefined, () => {
+        opacity.value = withTiming(0, { duration: 250 });
+      });
+    })
+    .onFinalize(() => {
+      if (onTap) {
+        scheduleOnRN(onTap);
+      }
+    });
+
+  const rStyle = useAnimatedStyle(() => {
+    const { width, height } = size.value;
+    const circleRadius = Math.sqrt(width ** 2 + height ** 2);
+
+    const { x, y } = tapPosition.value;
+    const translateX = x - circleRadius;
+    const translateY = y - circleRadius;
+
+    return {
+      width: circleRadius * 2,
+      height: circleRadius * 2,
+      borderRadius: circleRadius,
+      backgroundColor: color,
+      opacity: opacity.value,
+      transform: [
+        {
+          translateX,
+        },
+        {
+          translateY,
+        },
+        {
+          scale: scale.value,
+        },
+      ],
+    };
+  });
+
+  return (
+    <GestureHandlerRootView style={{}}>
+      <GestureDetector gesture={tapGesture}>
+        <Animated.View style={[style, { overflow: "hidden" }]} ref={viewRef}>
+          {children}
+          <Animated.View style={[styles.ripple, rStyle]} />
+        </Animated.View>
+      </GestureDetector>
+    </GestureHandlerRootView>
+  );
+};
+
+const styles = StyleSheet.create({
+  ripple: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+  },
+});
+```
