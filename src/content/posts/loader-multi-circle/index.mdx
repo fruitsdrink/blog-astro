@@ -1,0 +1,121 @@
+---
+title: "加载器-多个旋转小球"
+date: "2025-11-20T18:09:03+08:00"
+tags: [css, loader, animation]
+description: "使用多层伪元素与 box-shadow 构建多个亮点，配合旋转动画形成环状小球加载效果，营造科幻感"
+preview:
+  enabled: true
+  height: 300
+---
+
+import { CodeViewer } from "@/components";
+
+## 目录
+
+## 视觉效果
+
+这是一个由多个亮点构成的环形加载动画，特点包括：
+
+1. **中心主体**：暗色圆球带有内阴影，模拟立体质感
+2. **环形亮点**：通过伪元素及多重 `box-shadow` 布局多个发光小球
+3. **双层光迹**：上下各一圈亮点，同时围绕中心顺时针旋转
+4. **旋转动画**：统一的 `rotate(360deg)` 动画带来连续流动感
+5. **灰色背景**：中性背景突出亮点的动态效果
+
+## CSS 关键知识点
+
+### 1. 立体主体与阴影 (13-19 行)
+
+```css
+.circle {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 0 20px rgba(0, 0, 0, 0.5);
+}
+```
+
+- **双层阴影**：`inset` 营造球体内凹感，外层 `0 0 0 20px` 创建包裹的暗环
+- **`position: relative`**：为内部伪元素提供定位基准
+- **尺寸设定**：50x50 + `border-radius: 50%` 构成核心圆球
+
+### 2. 旋转容器 `.dots` (20-26 行)
+
+```css
+.dots {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  border: 10px solid #262626;
+  animation: animate 5s linear infinite;
+}
+```
+
+- **`inset: -10px`**：扩大容器，使亮点位于核心圆球外围
+- **`border: 10px solid`**：创建包裹亮点的轨道
+- **统一动画**：`animate` 关键帧控制整体旋转
+
+### 3. 伪元素创建多颗亮点 (27-51 行)
+
+```css
+.dots::before {
+  left: calc(50% - 5px);
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5), 40px 0 0 #ff0, -40px 0 0 #ff0, 40px
+      30px 0 #fff, 0 -20px 0 #fff;
+  animation: animate 5s linear infinite;
+}
+```
+
+- **多重 `box-shadow`**：一次性复制多个亮点，控制不同方向和颜色
+- **位置参考**：`calc(50% - 5px)` 确保核心亮点位于正上方
+- **上下对称**：`::after` 使用相反定位和阴影偏移，形成下半圈亮点
+- **同步动画**：伪元素也应用 `animate` 保证与容器一致旋转
+
+### 4. `@keyframes` 控制旋转 (53-60 行)
+
+```css
+@keyframes animate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+```
+
+- **线性匀速**：`linear` 让亮点连续流畅
+- **5 秒周期**：营造平稳、不过于急促的加载节奏
+- **复用性**：同一动画应用在容器与伪元素上，确保整体同步
+
+### 5. 布局与背景 (6-12 行)
+
+```css
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #959595;
+}
+```
+
+- **Flex 居中**：使加载器在视口中心显示
+- **`min-height: 100vh`**：确保在各类屏幕上垂直居中
+- **柔和背景**：灰色背景增强亮点对比度
+
+### 技术亮点总结
+
+- ✅ 利用多重 `box-shadow` 快速复制多个亮点，减少 DOM 节点
+- ✅ 伪元素与主体分层，实现独立控制的发光轨迹
+- ✅ 统一 keyframe 动画，保证容器和亮点同步
+- ✅ Flex 布局 + 居中背景，快速搭建演示场景
+- ✅ 纯 CSS 实现，无需 JS，易于嵌入动画集合
+
+<CodeViewer postId="loader-multi-circle" />
