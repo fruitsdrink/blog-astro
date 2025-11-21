@@ -1,0 +1,61 @@
+---
+title: "loader-color-circle"
+date: "2025-11-21T13:19:25+08:00"
+tags: [css, loader, animation]
+description: "使用纯 CSS 实现彩色小球旋转加载动画，通过伪元素、CSS 变量和关键帧动画打造流畅的视觉效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+这是一个纯 CSS 实现的彩色小球旋转加载动画。动画由 4 个不同颜色的球体（红、绿、蓝、黄）组成，每个球体通过上下两个圆点表示，围绕中心点进行旋转运动。通过错位的动画延迟，形成流畅的波浪式旋转效果，营造出动态的视觉体验。
+
+调整 `margin-top` 的值可以调整小球之间的间距，实现不同的视觉效果。
+
+## 关键知识点
+
+### 1. CSS 自定义属性（CSS 变量）
+
+使用 `--i` 变量控制每个元素的动画延迟时间：
+
+```css
+animation-delay: calc(var(--i) * 0.5s);
+```
+
+通过 `style="--i: 0"` 等内联样式传入不同的延迟值，实现错位动画效果。
+
+### 2. 伪元素创建圆点
+
+利用 `::before` 和 `::after` 伪元素在每个 `span` 的顶部和底部创建圆点：
+
+- `::before` 位于顶部（`top: 0`）
+- `::after` 位于底部（`bottom: 0`）
+- 使用 `border-radius: 50%` 实现圆形
+- 通过 `box-shadow` 添加黑色边框效果
+
+### 3. 旋转动画
+
+使用 `@keyframes` 定义旋转动画：
+
+- 0% 和 75% 时保持 0 度
+- 100% 时旋转到 180 度
+- 配合 `transform: rotate()` 实现平滑旋转
+
+### 4. 定位与变换
+
+- 使用 `position: absolute` 绝对定位
+- `calc(50% + 26px)` 计算中心位置偏移
+- `transform: translate(-50%, -50%) rotate(-90deg)` 实现居中和初始旋转
+- `margin-top: -52px` 调整元素间距
+
+### 5. 颜色定制
+
+通过 `:nth-child()` 选择器为每个小球设置不同颜色（红、绿、蓝、黄），实现多彩视觉效果。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="加载器-彩色小球" />
