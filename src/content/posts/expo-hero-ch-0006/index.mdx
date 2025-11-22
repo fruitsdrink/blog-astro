@@ -1,0 +1,160 @@
+---
+title: "expo 3D透视动画"
+date: "2025-11-22T23:21:51+08:00"
+tags: [expo, loader, react-native, animation]
+description: "实现带3D透视动画和立体空间感的侧边菜单，结合 react-native-reanimated 和 react-native-gesture-handler，通过滑动拖拽和按钮点击切换，模拟真实抽屉侧滑的翻转视觉动效。适合移动端 APP 的炫酷导航场景。"
+video:
+  type: "mux"
+  url: "https://player.mux.com/fd87tPynEJ02yN9YvOKQMgzA5Zy00DsoMdWhblqjcxU4w"
+---
+
+import { MuxVideo, Link, Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/fd87tPynEJ02yN9YvOKQMgzA5Zy00DsoMdWhblqjcxU4w" />
+
+<Row>
+<Link
+  url="https://youtu.be/D-C7lLQ1oAk?si=byazQFi5aEeeJ3yk"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0006" icon="github" title="GitHub" />
+</Row>
+
+本练习实现了一个具有3D透视动画效果的侧边菜单，支持滑动拖拽和点击菜单按钮触发动画切换。通过 `react-native-reanimated` 与 `react-native-gesture-handler` 实现手势操作和动画过渡，带来类似抽屉侧滑菜单的立体翻转视觉体验。
+
+**关键知识点：**
+- 利用 `react-native-reanimated` 的插值 `interpolate` 和 `withTiming` 创建流畅的 3D 翻转和圆角过渡动画
+- 通过 `Gesture.Pan()` 配合手势更新，使菜单可以随手指滑动、松手回弹或打开
+- 应用视图 `transform` 属性中的 `perspective`, `rotateY`, `translateX` 达到3D立体空间的视觉效果
+- 状态管理：使用 `useSharedValue` 存储和追踪动画相关的数值状态
+- 菜单按钮的点击与滑动手势可同步控制菜单的开关，提升交互体验
+
+
+
+
+## 源代码
+
+```jsx title="index.tsx"
+import Feather from "@expo/vector-icons/Feather";
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useCallback } from "react";
+import { Dimensions, StyleSheet } from "react-native";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from "react-native-gesture-handler";
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const THRESHOLD = SCREEN_WIDTH / 2;
+
+const BGCOLOR = "#1e1e23";
+
+export default function Index() {
+  const translateX = useSharedValue(0);
+  const prevTranslateX = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .onUpdate((e) => {
+      if (e.translationX > 0) {
+        translateX.value = prevTranslateX.value + e.translationX;
+        prevTranslateX.value = e.translationX;
+      }
+    })
+    .onEnd(() => {
+      if (translateX.value > THRESHOLD) {
+        translateX.value = withTiming(SCREEN_WIDTH);
+      } else {
+        translateX.value = withTiming(0);
+      }
+      prevTranslateX.value = 0;
+    });
+
+  const rStyle = useAnimatedStyle(() => {
+    const rotate = interpolate(
+      translateX.value,
+      [0, SCREEN_WIDTH / 2],
+      [0, 3],
+      Extrapolation.CLAMP
+    );
+
+    const borderRadius = interpolate(
+      translateX.value,
+      [0, SCREEN_WIDTH / 2],
+      [0, 16],
+      Extrapolation.CLAMP
+    );
+
+    return {
+      borderRadius,
+      transform: [
+        {
+          perspective: 100,
+        },
+        { translateX: translateX.value },
+        {
+          rotateY: `-${rotate}deg`,
+        },
+      ],
+    };
+  });
+
+  const onPress = useCallback(() => {
+    if (translateX.value > 0) {
+      translateX.value = withTiming(0);
+    } else {
+      translateX.value = withTiming(SCREEN_WIDTH / 2);
+    }
+  }, [translateX]);
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <StatusBar style="auto" />
+        <GestureDetector gesture={panGesture}>
+          <Animated.View
+            style={[
+              {
+                flex: 1,
+                backgroundColor: "white",
+                perspective: "100",
+                transformOrigin: "right",
+              },
+              rStyle,
+            ]}
+          >
+            <Feather
+              name="menu"
+              size={24}
+              color={BGCOLOR}
+              style={{ margin: 16 }}
+              onPress={onPress}
+            />
+          </Animated.View>
+        </GestureDetector>
+      </SafeAreaView>
+    </GestureHandlerRootView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BGCOLOR,
+  },
+});
+```
+
+
