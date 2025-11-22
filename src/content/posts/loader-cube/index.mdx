@@ -1,0 +1,26 @@
+---
+title: "加载器-方块"
+date: "2025-11-22T22:06:10+08:00"
+tags: [css,loader,animation]
+description: "通过纯 CSS 实现的方块加载动画，演示了如何结合 border、伪元素和动画关键帧，实现无 JavaScript 的灵动加载效果。"
+preview:
+  enabled: true
+  height: 300
+---
+
+本文主要介绍了一个基于纯 CSS 实现的方块加载动画（loader-cube），该动画无需 JavaScript，依靠 CSS 的各种特性便可实现精致且流畅的交互动效。该加载器巧妙运用 `border`、定位（`position`）、伪元素（`::before`），配合两组 `@keyframes` 动画，呈现出方块旋转与内部高度变化的视觉效果，适用于网页加载、内容占位等场景。
+
+主要实现方式如下：
+
+- 使用 `border` 属性绘制方块的轮廓，并通过设置伪元素生成可独立控制的内部背景。
+- 通过 `position: relative` 和 `position: absolute` 精确定位外部方块和内部伪元素，保证填充动画贴合容器底部，提升整体协调性。
+- 外部方块设置动画，实现周期性的 0° → 180° → 360° 旋转，表达持续运作的加载感。
+- 内部背景通过 `::before` 创建，并分配不同的动画，实现高度的 0 → 100% → 0 循环变换，模拟加载进度随时间填充和消退的过程。
+- 两组 `@keyframes` 动画配合 `linear infinite` 属性，确保动效自然、无缝循环，无需借助任何脚本即可实现复杂的视觉动态。
+- 简单的结构和样式，使该 Loader 兼容性好，易于嵌入各种项目，也方便进行自定义拓展，如调整尺寸、颜色或动画速度等。
+
+这种做法充分展现了 CSS 动画、伪元素与定位技术的联合力量，无需 JavaScript，即可实现令人印象深刻且性能优越的加载动效，非常适合在现代前端项目中应用和借鉴。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-cube" />
