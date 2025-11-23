@@ -1,0 +1,293 @@
+---
+title: "expo 时钟加载器"
+date: "2025-11-23T22:00:51+08:00"
+tags: [expo, loader, react-native, animation]
+description: "使用 react-native-reanimated 实现时钟风格的加载动画，12个方块按顺序旋转到指定角度后向上移动，形成类似时钟指针转动的视觉效果"
+video:
+  type: "mux"
+  url: "https://player.mux.com/kGNGaGTE1VbfT00bP6AbYf6EaI005urqB1XDvc4REXSH8"
+---
+
+import { MuxVideo, Link, Row } from "@/components";
+
+<MuxVideo url="https://player.mux.com/kGNGaGTE1VbfT00bP6AbYf6EaI005urqB1XDvc4REXSH8" />
+
+<Row>
+<Link
+  url="https://youtu.be/YbIXcA2fcLU?si=Te5q63YrGbkGDrJj"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0007" icon="github" title="GitHub" />
+</Row>
+
+## 功能目标
+
+实现一个时钟风格的加载动画，通过多个方块按顺序旋转和位移，模拟时钟指针的转动效果，适用于应用加载、数据请求等场景。
+
+## 动画效果
+
+- **旋转阶段**：12 个白色方块从初始位置开始，按逆序依次旋转到各自的目标角度（将 2π 平均分成 12 份，每个方块对应一个角度位置）。
+- **位移阶段**：当方块旋转到目标角度后，使用弹性动画（`withSpring`）向上移动到顶部位置，形成"指针归位"的视觉效果。
+- **循环动画**：整体动画通过 `withRepeat` 无限循环，`progress` 值从 0 线性增长到 4π（8 秒），然后重新开始，创造连续的时钟转动感。
+
+## 主要技术点
+
+### 1. 共享动画进度值
+
+使用 `useSharedValue` 创建全局的 `progress` 值，通过 `withRepeat` 和 `withTiming` 实现无限循环的线性动画：
+
+```jsx
+progress.value = withRepeat(
+  withTiming(4 * Math.PI, {
+    duration: 8000,
+    easing: Easing.linear,
+  }),
+  -1  // 无限循环
+);
+```
+
+### 2. 分阶段旋转逻辑
+
+通过 `useDerivedValue` 计算每个方块的旋转角度，分为三个阶段：
+
+- **第一阶段**（0 ≤ progress ≤ 2π）：方块逐步旋转到目标角度 `finalAngle`
+- **第二阶段**（2π < progress < 2π + finalAngle）：保持目标角度不变
+- **第三阶段**（progress ≥ 2π + finalAngle）：继续旋转，跟随 `progress` 值
+
+这种设计确保每个方块在到达目标角度后能保持一段时间，然后再继续旋转。
+
+### 3. 弹性位移动画
+
+当方块旋转到目标角度时，使用 `withSpring` 实现弹性向上移动：
+
+```jsx
+if (rotate.value === finalAngle) {
+  return withSpring(-N * SQUARE_SIZE);
+}
+```
+
+`withSpring` 提供自然的弹性效果，比 `withTiming` 更有动感。
+
+### 4. 角度计算策略
+
+每个方块的目标角度通过逆序计算：
+
+```jsx
+const offsetAngle = (2 * Math.PI) / N;  // 每个方块的角度间隔
+const finalAngle = offsetAngle * (N - 1 - index);  // 逆序计算
+```
+
+这样最后一个方块（index = 11）先旋转，第一个方块（index = 0）最后旋转，形成从外到内的旋转顺序。
+
+### 5. 位移位置管理
+
+位移分为三个阶段：
+- **初始阶段**：根据索引向下排列 `-index * SQUARE_SIZE`
+- **归位阶段**：旋转到目标角度后，弹性移动到顶部 `-N * SQUARE_SIZE`
+- **后续阶段**：根据索引重新排列 `(index - N) * SQUARE_SIZE`
+
+## 实现细节
+
+### 角度偏移计算
+
+将完整的 2π 弧度平均分成 N 份（N = 12），每个方块占据一个角度位置，形成时钟的 12 个刻度：
+
+```jsx
+const offsetAngle = (2 * Math.PI) / N;  // π/6 弧度，即 30 度
+```
+
+### 动画同步机制
+
+所有方块共享同一个 `progress` 值，但通过不同的 `finalAngle` 和索引实现错位动画。这种设计确保了动画的同步性和可预测性。
+
+### 性能优化
+
+- 使用 `useDerivedValue` 在 UI 线程中计算值，避免频繁的 JS 线程通信
+- `useAnimatedStyle` 确保样式更新在 UI 线程执行，保证 60fps 流畅度
+- 所有动画计算都在 worklet 中完成，充分利用原生性能
+
+## 注意事项
+
+- **方块数量**：通过 `constants.ts` 中的 `N` 值控制方块数量，修改后需要相应调整角度计算
+- **动画时长**：当前设置为 8 秒完成一个周期（4π），可根据需要调整 `duration`
+- **方块尺寸**：`SQUARE_SIZE` 影响方块大小和位移距离，建议保持较小值以保持视觉平衡
+- **背景色**：深色背景（#111）与白色方块形成对比，突出动画效果
+- **绝对定位**：方块使用 `position: "absolute"`，确保可以自由变换而不影响布局
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
+import { StyleSheet } from "react-native";
+import {
+  Easing,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Square } from "../components/square";
+import { N } from "../constants";
+
+export default function Index() {
+  const progress = useSharedValue(0);
+
+  useEffect(() => {
+    progress.value = withRepeat(
+      withTiming(4 * Math.PI, {
+        duration: 8000,
+        easing: Easing.linear,
+      }),
+      -1
+    );
+  }, [progress]);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <StatusBar style="auto" />
+
+      {new Array(N).fill(0).map((_, index) => {
+        return <Square key={index} index={index} progress={progress} />;
+      })}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#111",
+  },
+});
+```
+
+---
+
+```ts title="constants.ts"
+export const N = 12;
+export const SQUARE_SIZE = 12;
+```
+
+---
+
+```jsx title="square.tsx"
+import React from "react";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+  useDerivedValue,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+import { N, SQUARE_SIZE } from "../constants";
+
+/**
+ * Square 组件的属性类型
+ */
+type Props = {
+  /** 方块的索引位置（从 0 开始） */
+  index: number;
+  /** 动画进度值，用于控制旋转和位移动画 */
+  progress: SharedValue<number>;
+};
+
+/**
+ * Square 组件 - 创建一个可动画的方块
+ * 该组件会根据 progress 值实现旋转和垂直位移的动画效果
+ *
+ * @param index - 方块在序列中的索引
+ * @param progress - 共享的动画进度值
+ */
+export const Square: React.FC<Props> = ({ index, progress }) => {
+  // 计算每个方块之间的角度偏移量（将 2π 平均分成 N 份）
+  const offsetAngle = (2 * Math.PI) / N;
+
+  // 计算当前方块的目标旋转角度（从最后一个方块开始，逆序计算）
+  const finalAngle = offsetAngle * (N - 1 - index);
+
+  /**
+   * 计算旋转角度
+   * 根据 progress 值动态计算方块应该旋转到的角度
+   */
+  const rotate = useDerivedValue(() => {
+    // 第一阶段：progress 在 0 到 2π 之间时，逐步旋转到目标角度
+    if (progress.value <= 2 * Math.PI) {
+      return Math.min(finalAngle, progress.value);
+    }
+
+    // 第二阶段：progress 超过 2π 但还未达到目标角度时，保持目标角度
+    if (progress.value - 2 * Math.PI < finalAngle) {
+      return finalAngle;
+    }
+
+    // 第三阶段：继续旋转
+    return progress.value;
+  }, []);
+
+  /**
+   * 计算垂直位移
+   * 根据旋转状态和 progress 值计算方块的 Y 轴位移
+   */
+  const translateY = useDerivedValue(() => {
+    // 当方块旋转到目标角度时，使用弹性动画向上移动
+    if (rotate.value === finalAngle) {
+      return withSpring(-N * SQUARE_SIZE);
+    }
+
+    // 当 progress 超过 2π 时，根据索引计算位移位置
+    if (progress.value > 2 * Math.PI) {
+      return withTiming((index - N) * SQUARE_SIZE);
+    }
+
+    // 初始阶段：根据索引向下移动
+    return withTiming(-index * SQUARE_SIZE);
+  }, []);
+
+  /**
+   * 创建动画样式
+   * 将旋转和位移应用到方块上
+   */
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          // 应用旋转变换（以弧度为单位）
+          rotate: `${rotate.value}rad`,
+        },
+        {
+          // 应用垂直位移
+          translateY: translateY.value,
+        },
+      ],
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        {
+          width: SQUARE_SIZE,
+          aspectRatio: 1, // 保持 1:1 的宽高比
+          backgroundColor: "#fff",
+          //   opacity: (index + 1) / N, // 可选的透明度效果
+          position: "absolute", // 绝对定位，允许自由变换
+        },
+        rStyle, // 应用动画样式
+      ]}
+    />
+  );
+};
+```
+
+
