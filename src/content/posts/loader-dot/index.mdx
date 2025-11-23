@@ -1,0 +1,18 @@
+---
+title: "加载器-点"
+date: "2025-11-23T20:37:38+08:00"
+tags: [css,loader,animation]
+description: "使用 CSS 动画和 box-shadow 实现的点状加载器，通过错位延迟创造波浪流动效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+
+本示例呈现"点状波浪流动"的加载效果：通过 `box-shadow` 在单个 `li` 元素上创建多个白色圆点（主点 + 上下两个阴影点），形成垂直排列的点阵；核心动画 `@keyframes animate` 控制点的水平移动（从 -100px 到 100px）和透明度变化（0 → 1 → 0），营造淡入淡出的流动感；每个点通过 `animation-delay: calc(var(--i) * -0.2s)` 设置不同的延迟时间，利用 CSS 自定义属性 `--i` 实现错位动画，形成连续的波浪效果。关键知识点包括：**CSS 自定义属性在动画延迟中的应用**、**box-shadow 的多重阴影技巧**、**transform 与 opacity 的组合动画**、**calc() 函数计算动态延迟值**。
+
+
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-dot" />
