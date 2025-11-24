@@ -1,0 +1,107 @@
+---
+title: "加载器-css3"
+date: "2025-11-24T12:04:52+08:00"
+tags: [css, loader, animation]
+description: "使用 Flexbox 布局和 CSS3 动画创建 3x3 网格加载效果，通过旋转容器和错位缩放动画营造波浪式视觉节奏"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+这是一个使用纯 CSS3 实现的 3x3 网格加载动画。通过 Flexbox 布局创建 9 个小方块组成的网格，容器旋转 45 度后，每个小方块按照特定的时间延迟依次进行缩放动画（从正常大小缩小到 0，再恢复），形成流畅的波浪式动画效果，营造出动态的视觉节奏。
+
+## 关键知识点
+
+### 1. Flexbox 布局创建网格
+
+使用 `display: flex` 和 `flex-wrap: wrap` 创建 3x3 网格布局：
+
+```css
+display: flex;
+flex-wrap: wrap;
+```
+
+- 每个 `span` 设置为 `50px × 50px`
+- 容器宽度为 `150px`，自动换行形成 3 列
+- 无需使用 Grid 或复杂的定位，Flexbox 即可实现网格效果
+
+### 2. 容器旋转变换
+
+通过 `transform: rotate(45deg)` 将整个容器旋转 45 度：
+
+- 使原本的方形网格呈现菱形视觉效果
+- 旋转后的小方块缩放动画更具动感
+- 所有子元素会继承父元素的变换
+
+### 3. scale 缩放动画
+
+使用 `transform: scale()` 实现缩放动画：
+
+```css
+@keyframes animate {
+  0% {
+    transform: scale(1);
+  } /* 正常大小 */
+  30% {
+    transform: scale(0);
+  } /* 缩小到 0 */
+  50% {
+    transform: scale(0);
+  } /* 保持 0 */
+  75% {
+    transform: scale(1);
+  } /* 恢复大小 */
+  100% {
+    transform: scale(1);
+  } /* 保持正常 */
+}
+```
+
+- 从 1 缩放到 0 再恢复，形成"消失-出现"的视觉效果
+- 在 30%-50% 之间保持 scale(0)，延长消失时间
+
+### 4. 动画延迟实现波浪效果
+
+通过 `animation-delay` 为不同位置的方块设置不同的延迟时间：
+
+- 中心方块（第 7 个）：`0s` - 最先开始
+- 边缘方块：`0.2s`、`0.4s`、`0.6s`、`0.8s` - 依次延迟
+
+这种错位的延迟创造出从中心向外扩散的波浪式动画效果。
+
+### 5. :nth-child() 选择器精确定位
+
+使用 `:nth-child()` 选择器为不同位置的方块设置不同的动画延迟：
+
+```css
+.loader span:nth-child(7) {
+  animation-delay: 0s;
+}
+.loader span:nth-child(4),
+.loader span:nth-child(8) {
+  animation-delay: 0.2s;
+}
+/* ... */
+```
+
+- 可以精确控制每个方块的位置和动画时机
+- 支持同时为多个元素设置相同样式（逗号分隔）
+
+### 6. 动画时间线设计
+
+精心设计的动画时间线（0% → 30% → 50% → 75% → 100%）：
+
+- **0%-30%**：快速缩小
+- **30%-50%**：保持消失状态（20% 的时间）
+- **50%-75%**：快速恢复
+- **75%-100%**：保持正常状态
+
+这种节奏设计让动画更有呼吸感和节奏感。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-css3" />

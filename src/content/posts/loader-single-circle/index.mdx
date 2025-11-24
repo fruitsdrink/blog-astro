@@ -1,0 +1,84 @@
+---
+title: "加载器-单元素彩色圆环"
+date: "2025-11-24T11:26:12+08:00"
+tags: [css, loader, animation]
+description: "使用单个元素和伪元素创建三层彩色圆环加载动画，通过不同旋转速度营造层次感和动态视觉效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+这是一个使用纯 CSS 实现的单元素多层彩色圆环加载动画。通过单个 `div` 元素和两个伪元素（`::before` 和 `::after`）创建三层同心圆环，每层圆环使用不同的颜色组合（顶部和底部颜色不同），并以不同的旋转速度进行动画，形成层次丰富、视觉流畅的加载效果。
+
+## 关键知识点
+
+### 1. 伪元素创建多层结构
+
+使用 `::before` 和 `::after` 伪元素在单个元素基础上创建额外的视觉层：
+
+- 主元素 `.loader` 创建最外层圆环
+- `::before` 创建中间层圆环
+- `::after` 创建最内层圆环
+
+通过这种方式，仅用一个 HTML 元素就能实现复杂的多层视觉效果。
+
+### 2. border 属性创建圆环
+
+利用 `border` 属性创建圆环效果，而非使用 `background`：
+
+```css
+border: 4px solid transparent;
+border-top: 4px solid #b858ff;
+border-bottom: 4px solid #fff958;
+```
+
+- 先将所有边框设为透明
+- 再单独设置顶部和底部边框颜色
+- 配合 `border-radius: 50%` 形成圆环
+
+### 3. inset 属性简化定位
+
+使用 `inset` 属性快速设置内层圆环的位置和大小：
+
+```css
+inset: 10px; /* 等同于 top: 10px; right: 10px; bottom: 10px; left: 10px; */
+```
+
+- `inset: 10px` 表示距离外层 10px，创建更小的内层圆环
+- `inset: 24px` 创建最内层圆环
+- 比分别设置 `top`、`right`、`bottom`、`left` 更简洁
+
+### 4. 不同动画时长创造层次感
+
+通过设置不同的动画时长，让各层圆环以不同速度旋转：
+
+- 外层和中间层：`animation: animate 2s linear infinite`
+- 最内层：`animation: animate 4s linear infinite`
+
+这种速度差异创造出层次感和动态的视觉节奏。
+
+### 5. aspect-ratio 保持比例
+
+使用 `aspect-ratio: 1` 确保元素始终保持 1:1 的正方形比例，无论容器如何变化，圆环都能保持完美的圆形。
+
+### 6. 旋转动画实现
+
+使用简单的 `@keyframes` 定义旋转动画：
+
+```css
+@keyframes animate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+```
+
+从初始状态旋转到 360 度，配合 `linear` 和 `infinite` 实现匀速无限循环旋转。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-single-circle" />
