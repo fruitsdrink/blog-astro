@@ -1,0 +1,184 @@
+---
+title: "expo 布局动画"
+date: "2025-11-25T19:01:51+08:00"
+tags: [expo, react-native, animation]
+description: "使用 React Native Reanimated 构建可增删的列表动画，首屏按序淡入，后续增删伴随平滑 FadeIn/FadeOut 过渡，并搭配浮动按钮触发交互"
+video:
+  type: "cloudinary"
+  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-hero-ch-0008_lhyu8w&profile=cld-default"
+---
+
+import { CloudinaryVideo, Link, Row } from "@/components";
+
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-hero-ch-0008_lhyu8w&profile=cld-default" />
+
+<Row>
+<Link
+  url="https://youtu.be/p3BLiloo2UM?si=MmFrNoy8Vm_eEwLA"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0008" icon="github" title="GitHub" />
+</Row>
+
+## 目录
+
+- 体验概述
+- 动画策略
+- 样式与交互
+- 关键知识点
+- 源代码
+
+## 体验概述
+
+这个例子展示了如何在 Expo 中搭配 React Native Reanimated v3 为列表项添加“首屏依次淡入 + 删除时淡出”的过渡效果。列表默认渲染 5 个任务卡片，点击浮动按钮会在末尾添加新卡片，轻触任意卡片会立即将其移除。动画强调“连续性”和“响应速度”：元素不会突然出现或消失，而是通过可感知的过渡让用户理解状态变化。
+
+## 动画策略
+
+### 首屏延迟淡入
+
+- 组件维护 `initialMode` ref，只有首轮渲染为 `true`。
+- 首屏渲染时为每个 `Animated.View` 绑定 `entering={FadeIn.delay(index * 100)}`，实现 100ms 梯度延迟。
+- 一旦首屏完成（`useEffect` 将 `initialMode` 置为 `false`），后续新增的元素直接使用无延迟 `FadeIn`，保持响应速度。
+
+### 删除时淡出
+
+- `exiting={FadeOut}` 让元素在被 React 从列表中移除时自动播放淡出动画，不需要手写额外状态。
+- 通过 `onTouchEnd` 将 `item.id` 传给 `onRemove`，只要更新 `items` 数组即可触发对应元素的退出动画，过程完全声明式。
+
+### 布局动画预留
+
+```jsx
+// layout={LinearTransition}
+// layout={LinearTransition.delay(200)}
+```
+
+示例中保留了 `LinearTransition` 配置的注释，提示我们可以在需求升级时打开布局动画，让新增/删除带有位移过渡。目前只开启淡入淡出已经足以覆盖大部分交互场景。
+
+## 样式与交互
+
+- 列表项：使用 `ScrollView` 包裹，卡片宽度占 90%，高度 100，圆角 8，并通过 `boxShadow` 营造浮层感。
+- 颜色：统一使用 `LIST_ITEM_COLOR`（蓝绿色）和白色文本，确保对比度。
+- 浮动按钮：绝对定位在右下角（`bottom: 50`，`right: "4%"`），`borderRadius: "50%"` + 80×80 尺寸形成 FAB。点击触发 `onAdd`，在原数组末尾追加 ID 自增的元素。
+- Safe Area：外层用 `SafeAreaView`，并隐藏路由头部（`<Stack.Screen options={{ headerShown: false }}`），保证动画区域与系统边界对齐。
+
+## 关键知识点
+
+1. **Reanimated Entering/Exiting API**：通过 `entering`/`exiting` prop 即可为组件提供声明式过渡，无需手动控制动画值。
+2. **首屏特判**：使用 `useRef` + `useEffect` 持久化初始状态，避免列表更新时重复触发延迟动画。
+3. **不可变数据操作**：`setItems` 回调中使用扩展运算符和 `filter`，既保证性能可控，也让 Reanimated 能准确判断元素增删。
+4. **触摸事件**：在 `Animated.View` 上挂载 `onTouchEnd`，可直接响应点击并触发删除逻辑，保持代码简洁。
+5. **Shadow + Radius 组合**：在 React Native 中 `boxShadow` 已得到 Expo 支持，配合圆角能快速塑造卡片层级。
+6. **FAB 交互模式**：绝对定位、提高 `zIndex` 保证按钮悬浮在列表之上，是移动端新增操作的经典模式。
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, TouchableOpacity } from "react-native";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+const LIST_ITEM_COLOR = "#1798de";
+
+const defaultItems = new Array(5).fill(0).map((_, index) => ({
+  id: index + 1,
+}));
+
+export default function Index() {
+  const [items, setItems] = useState(defaultItems);
+
+  const initialMode = useRef(true);
+
+  const onAdd = () => {
+    setItems((currentItems) => {
+      const nextItemId = (currentItems[currentItems.length - 1]?.id ?? 0) + 1;
+
+      return [...currentItems, { id: nextItemId }];
+    });
+  };
+
+  const onRemove = (id: number) => {
+    setItems((currentItems) => {
+      return currentItems.filter((item) => item.id !== id);
+    });
+  };
+
+  useEffect(() => {
+    initialMode.current = false;
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="auto" />
+      <ScrollView style={{ flex: 1 }}>
+        {items.map((item, index) => (
+          <Animated.View
+            key={item.id}
+            entering={initialMode.current ? FadeIn.delay(index * 100) : FadeIn}
+            exiting={FadeOut}
+            // layout={LinearTransition}
+            // layout={LinearTransition.delay(200)}
+            onTouchEnd={() => onRemove(item.id)}
+            style={{
+              width: "90%",
+              height: 100,
+              backgroundColor: LIST_ITEM_COLOR,
+              borderRadius: 8,
+              boxShadow: "0 10px 20px rgba(0,0,0,0.25)",
+              alignSelf: "center",
+              marginVertical: 8,
+              padding: 32,
+            }}
+          >
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 32,
+              }}
+            >
+              {item.id}
+            </Text>
+          </Animated.View>
+        ))}
+      </ScrollView>
+      <TouchableOpacity
+        style={{
+          width: 80,
+          height: 80,
+          borderRadius: "50%",
+          backgroundColor: "#262626",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          bottom: 50,
+          right: "4%",
+          zIndex: 10,
+          boxShadow: "0 2px 2px rgba(0,0,0,0.2)",
+        }}
+        onPress={onAdd}
+      >
+        <Text
+          style={{
+            color: "#fff",
+            fontSize: 48,
+            lineHeight: 48,
+          }}
+        >
+          +
+        </Text>
+      </TouchableOpacity>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+```
