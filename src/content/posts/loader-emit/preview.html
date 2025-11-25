@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle bvrh4c67</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  justify-content: center; 
+  align-items: center;
+  min-height: 100vh;
+  background: #111;
+}
+ul li {
+  position: relative;
+  list-style: none;
+  width: 200px;
+  background: #fff;
+}
+ul li:nth-child(2){
+  transform: rotate(60deg);
+}
+ul li:nth-child(3){
+  transform: rotate(-60deg);
+}
+ul li::before,
+ul li::after{
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: calc(50% - 4px);
+  width: 8px;
+  height: 8px;
+  background: #fff;
+}
+ul li::before{
+  animation: animate1 1s linear infinite;
+}
+@keyframes animate1{
+  0%{
+    transform: translateX(0);
+    opacity: 1;
+    box-shadow: 0 0 0 #fff, 0 0 0 #fff, 0 0 0 #fff;
+  }
+  100%{
+    transform: translateX(-100px);
+    opacity: 0;
+    box-shadow: 25px 0 0 #fff, 50px 0 0 #fff, 75px 0 0 #fff;
+  }
+}
+ul li::after{
+  animation: animate2 1s linear infinite;
+}
+@keyframes animate2{
+  0%{
+    transform: translateX(0);
+    opacity: 1;
+    box-shadow: 0 0 0 #fff, 0 0 0 #fff, 0 0 0 #fff;
+  }
+  100%{
+    transform: translateX(100px);
+    opacity: 0;
+    box-shadow: -25px 0 0 #fff, -50px 0 0 #fff, -75px 0 0 #fff;
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <ul>
+  <li></li>
+  <li></li>
+  <li></li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>

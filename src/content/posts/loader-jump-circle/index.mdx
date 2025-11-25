@@ -1,0 +1,114 @@
+---
+title: "加载器-弹跳小球"
+date: "2025-11-25T11:33:22+08:00"
+tags: [css, loader, animation]
+description: "使用 CSS3 动画实现 5 个小球的弹跳加载效果，通过 translateY 位移和错位延迟营造流畅的跳跃动画"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## 效果介绍
+
+这是一个使用纯 CSS3 实现的弹跳小球加载动画。5 个小球排列在一条基线上，每个小球按照不同的时间延迟依次向上弹跳，到达最高点后回落到底部，形成流畅的波浪式弹跳效果。动画模拟了真实的物理弹跳过程，营造出动态而有趣的视觉体验。
+
+## 关键知识点
+
+### 1. Flexbox 布局与 gap 属性
+
+使用 `display: flex` 和 `gap: 8px` 创建水平排列的小球：
+
+```css
+display: flex;
+gap: 8px;
+```
+
+- `gap` 属性直接设置元素之间的间距，比使用 `margin` 更简洁
+- 配合 `border-bottom` 创建底部基线，小球在基线上方弹跳
+
+### 2. translateY 垂直位移动画
+
+使用 `transform: translateY()` 实现垂直方向的弹跳动画：
+
+```css
+@keyframes animate {
+  0% {
+    transform: translateY(0);
+  } /* 底部位置 */
+  35% {
+    transform: translateY(-50px);
+  } /* 最高点 */
+  60% {
+    transform: translateY(-65px);
+  } /* 稍微下降（模拟重力） */
+  100% {
+    transform: translateY(0);
+  } /* 回到底部 */
+}
+```
+
+- 负值向上移动，正值向下移动
+- 使用 `transform` 而非 `top`/`bottom`，性能更好且不会影响布局流
+
+### 3. 动画时间线模拟物理弹跳
+
+精心设计的动画时间线模拟真实的弹跳物理效果：
+
+- **0%-35%**：快速向上弹跳，到达最高点（-50px）
+- **35%-60%**：在最高点后稍微下降（-65px），模拟重力作用
+- **60%-100%**：快速回落到底部
+
+这种时间线设计让动画更具真实感和节奏感。
+
+### 4. 动画延迟实现错位效果
+
+通过 `animation-delay` 为每个小球设置不同的延迟时间：
+
+```css
+ul li:nth-child(1) {
+  animation-delay: 0.45s;
+}
+ul li:nth-child(2) {
+  animation-delay: 0.6s;
+}
+ul li:nth-child(3) {
+  animation-delay: 0.3s;
+}
+ul li:nth-child(4) {
+  animation-delay: 0s;
+}
+ul li:nth-child(5) {
+  animation-delay: 0.15s;
+}
+```
+
+- 不同的小球在不同时间开始动画
+- 形成波浪式的弹跳序列，而非同步弹跳
+- 延迟时间不按顺序，创造出更自然的视觉效果
+
+### 5. border-bottom 作为基线
+
+使用 `border-bottom: 4px solid #262626` 创建底部基线：
+
+- 为小球提供视觉参考点
+- 与小球颜色一致，形成统一的视觉风格
+- 通过 `padding: 0 8px` 让边框两端留出空间
+
+### 6. 圆形元素创建
+
+使用 `border-radius: 50%` 将小方块转换为圆形：
+
+```css
+width: 8px;
+height: 8px;
+border-radius: 50%;
+```
+
+- 当宽高相等且 `border-radius` 为 50% 时，形成完美的圆形
+- 小球尺寸与边框粗细（4px）形成良好的视觉比例
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-jump-circle" />

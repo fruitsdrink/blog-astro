@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-弹跳小球</title>
+
+  <style>
+    *{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+ul{
+  display: flex;
+  gap: 8px;
+  border-bottom: 4px solid #262626;
+  padding: 0 8px;
+}
+ul li{
+  list-style: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #262626;
+  animation: animate 0.6s linear infinite;
+}
+@keyframes animate {
+  0%{
+    transform: translateY(0);
+  }
+  35%{
+    transform: translateY(-50px);
+  }
+  60%{
+    transform: translateY(-65px);
+  }
+  100%{
+    transform: translateY(0);
+  }
+}
+ul li:nth-child(1){
+  animation-delay: 0.45s;
+}
+ul li:nth-child(2){
+  animation-delay: 0.6s;
+}
+ul li:nth-child(3){
+  animation-delay: 0.3s;
+}
+ul li:nth-child(4){
+  animation-delay: 0s;
+}
+ul li:nth-child(5){
+  animation-delay: 0.15s;
+}
+  </style>
+
+  
+</head>
+<body>
+  <ul>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+  <li></li>
+</ul>
+
+  <script>
+    
+  </script>
+</body>
+</html>
