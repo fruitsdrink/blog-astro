@@ -1,0 +1,367 @@
+---
+title: "expo 下拉菜单动画"
+date: "2025-11-25T22:04:51+08:00"
+tags: [expo, react-native, animation]
+description: "使用 Reanimated SharedValue 与 withSpring/withTiming 驱动卡片式下拉菜单的折叠与展开动画，结合颜色渐变、缩放与层叠位移打造类似 Apple Wallet 的交互动效"
+cover:
+  {
+    image: "https://res.cloudinary.com/di0hcf6yr/image/upload/v1764079451/blog-astro/expo-hero-ch-0010_qahmex.png",
+    hiddenInSingle: true,
+  }
+---
+
+import { CloudinaryVideo, Link, Row } from "@/components";
+
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-hero-ch-0009_rmms5b&profile=cld-default" />
+
+<Row>
+<Link
+  url="https://youtu.be/LtgHWjf7BA8?si=eY5X-ifc1ceGFGRy"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0010" icon="github" title="GitHub" />
+</Row>
+
+## 目录
+
+1. [交互概览](#交互概览)
+2. [组件结构](#组件结构)
+3. [关键技术点](#关键技术点)
+4. [动画拆解](#动画拆解)
+
+## 交互概览
+
+下拉菜单由 1 个头部项和多条操作项堆叠组成，初始状态所有卡片折叠在屏幕中央呈现层叠透视效果。点击头部后：
+
+- 卡片沿垂直方向展开到各自位置，缩放比例恢复为 1。
+- 背景色随索引由浅到深过渡，层级对比更明显。
+- 头部箭头旋转 90°，左侧图标淡入，提供即时的交互反馈。
+- 再次点击头部即可回到折叠状态，动画完全可逆。
+
+## 组件结构
+
+- `index.tsx`：通过 Expo Router 渲染 `Dropdown`，定义头部与选项数据。
+- `Dropdown`：拼装头部与选项数组，并在内部创建 `isExpanded` SharedValue。
+- `DropdownItem`：根据索引计算每个卡片的几何位置、缩放、背景色以及交互逻辑。
+
+这种拆分让业务层只需关注数据，动画和手势状态全部封装在组件里。
+
+## 关键技术点
+
+### SharedValue 全局控制
+
+`Dropdown` 内部的 `useSharedValue(false)` 充当折叠/展开的单一数据源，所有 `DropdownItem` 都读取同一个共享值。点击头部时直接在 UI 线程切换布尔值，避免 JS 线程阻塞引起的迟滞。
+
+### 几何与缩放计算
+
+```ts
+const fullDropdownHeight = dropdownItemCount * (ItemHeight + Margin);
+const collapsedTop = fullDropdownHeight / 2 - ItemHeight;
+const expandedTop = (ItemHeight + Margin) * index;
+const collapsedScale = 1 - index * 0.08;
+```
+
+- 折叠状态：所有卡片的 `top` 都指向 `collapsedTop`，并按索引逐级缩放，营造景深。
+- 展开状态：`top` 切换为 `expandedTop`，排列成标准列表。
+- 这些值只依赖常量和索引，计算轻量且可在 UI 线程频繁运行。
+
+### withSpring/withTiming 组合
+
+- `top`、`scale` 使用 `withSpring`，带来自然的弹性展开/收起效果。
+- `backgroundColor`、`opacity`、`rotate` 使用 `withTiming`，颜色和角度流畅过渡。
+- 所有动画均写在 `useAnimatedStyle` 中，Reanimated 自动在 UI 线程执行。
+
+### 颜色亮度控制
+
+利用 `color(expandedBackgroundColor).lighten(index * 0.2)` 在折叠态生成不同亮度，使最上层项最暗、越靠后的卡片越亮，透出层级。展开时再统一收敛为深色背景，确保对比一致。
+
+### 图标与箭头的可见性
+
+- 左侧图标：只有在头部或展开状态时才 `opacity: 1`，避免折叠时画面过于拥挤。
+- 右侧箭头：头部项在展开时旋转 90°，其余项保持箭头指向右侧，方便区分「控制项」与「普通动作」。
+
+## 动画拆解
+
+1. **绝对定位与层级**：所有卡片 `position: "absolute"` 并根据索引设置 `zIndex`，保证头部永远在最上层。
+2. **居中与响应式宽度**：`useWindowDimensions()` 让卡片宽度始终为屏幕的 90%，在大屏与小屏上都留出一致的边距。
+3. **交互事件**：`onTouchEnd` 仅在头部项切换 `isExpanded`，简单需求下避免引入额外手势库，事件模型更可控。
+
+得益于这些处理方式，整个下拉菜单具有类似 Apple Wallet 的堆叠展开手感，同时保持实现简洁、易于复用。
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Dropdown } from "../components";
+
+const options = [
+  {
+    id: 1,
+    label: "Charts",
+    iconName: "bar-chart",
+  },
+  {
+    id: 2,
+    label: "Book",
+    iconName: "book",
+  },
+  {
+    id: 3,
+    label: "Calendar",
+    iconName: "calendar",
+  },
+  {
+    id: 4,
+    label: "Camera",
+    iconName: "camera",
+  },
+];
+
+const header = {
+  id: 0,
+  label: "Header",
+  iconName: "ellipsis",
+};
+
+export default function Index() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="inverted" />
+      <Dropdown header={header} options={options} />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#111",
+  },
+});
+```
+
+---
+
+```jsx title="dropdown.tsx"
+import React from "react";
+import { useSharedValue } from "react-native-reanimated";
+import { DropdownItem } from "./dropdown-item";
+
+type Props = {
+  header: {
+    id: number,
+    label: string,
+    iconName: string,
+  },
+  options: {
+    id: number,
+    label: string,
+    iconName: string,
+  }[],
+};
+export const Dropdown: React.FC<Props> = ({ header, options }) => {
+  const items = [header, ...options];
+  const isExpanded = useSharedValue(false);
+
+  return (
+    <>
+      {items.map((item, index) => (
+        <DropdownItem
+          key={item.id}
+          item={item}
+          index={index}
+          dropdownItemCount={items.length}
+          isExpanded={isExpanded}
+        />
+      ))}
+    </>
+  );
+};
+```
+
+---
+
+```jsx title="dropdown-item.tsx"
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import color from "color";
+import React from "react";
+import { StyleSheet, Text, useWindowDimensions } from "react-native";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+} from "react-native-reanimated";
+// 下拉菜单项组件：支持折叠/展开动画，带图标与箭头
+
+type Props = {
+  // 当前项索引（0 为头部）
+  index: number;
+  // 数据项
+  item: {
+    // 唯一标识
+    id: number;
+    // 文本标签
+    label: string;
+    // 左侧图标名
+    iconName: string;
+  };
+  // 下拉项总数，用于定位与层级
+  dropdownItemCount: number;
+  // 折叠/展开共享值（UI 线程动画驱动）
+  isExpanded: SharedValue<boolean>;
+};
+
+// 单项高度与项间距
+const ItemHeight = 80;
+const Margin = 12;
+
+export const DropdownItem: React.FC<Props> = ({
+  item,
+  index,
+  dropdownItemCount,
+  isExpanded,
+}) => {
+  const { width: screenWidth } = useWindowDimensions();
+
+  const fullDropdownHeight = dropdownItemCount * (ItemHeight + Margin);
+
+  const collapsedTop = fullDropdownHeight / 2 - ItemHeight;
+  const expandedTop = (ItemHeight + Margin) * index;
+
+  const collapsedScale = 1 - index * 0.08;
+  const expandedScale = 1;
+
+  const expandedBackgroundColor = "#1b1b1b";
+  const collapsedBackgroundColor = color(expandedBackgroundColor)
+    .lighten(index * 0.2)
+    .hex();
+
+  // 主体容器动画：背景色、位置与缩放
+  const rStyle = useAnimatedStyle(() => {
+    return {
+      backgroundColor: withTiming(
+        isExpanded.value ? expandedBackgroundColor : collapsedBackgroundColor
+      ),
+      top: withSpring(isExpanded.value ? expandedTop : collapsedTop),
+      transform: [
+        {
+          scale: withSpring(isExpanded.value ? expandedScale : collapsedScale),
+        },
+        {
+          translateY: fullDropdownHeight / 2,
+        },
+      ],
+    };
+  }, []);
+
+  // 头部项（控制展开/折叠）
+  const isHeader = index === 0;
+
+  // 左侧图标仅在头部或展开时可见
+  const rLeftIconOpacityStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withTiming(isHeader || isExpanded.value ? 1 : 0),
+    };
+  }, []);
+
+  // 头部箭头旋转动画（展开时旋转 90°）
+  const rHeaderArrowIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: "-50%",
+        },
+        {
+          rotate: withTiming(isHeader && isExpanded.value ? "90deg" : "0deg"),
+        },
+      ],
+    };
+  }, []);
+
+  return (
+    <Animated.View
+      // 点击头部切换展开/折叠
+      onTouchEnd={() => {
+        if (isHeader) {
+          isExpanded.value = !isExpanded.value;
+        }
+      }}
+      style={[
+        {
+          zIndex: dropdownItemCount - index,
+          position: "absolute",
+          width: screenWidth * 0.9,
+          height: ItemHeight,
+          borderRadius: 8,
+          top: collapsedTop,
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        rStyle,
+      ]}
+    >
+      <Animated.View
+        style={[
+          styles.icon,
+          {
+            left: 16,
+            transform: [
+              {
+                translateY: "-50%",
+              },
+            ],
+          },
+          rLeftIconOpacityStyle,
+        ]}
+      >
+        <AntDesign name={item.iconName as any} size={24} color={"#d4d4d4"} />
+      </Animated.View>
+      <Text style={styles.label}>{item.label}</Text>
+      <Animated.View
+        style={[
+          styles.icon,
+          {
+            right: 16,
+            backgroundColor: "transparent",
+          },
+          rHeaderArrowIconStyle,
+        ]}
+      >
+        <MaterialIcons
+          name={isHeader ? "arrow-forward-ios" : "arrow-forward"}
+          size={24}
+          color={"#d4d4d4"}
+        />
+      </Animated.View>
+    </Animated.View>
+  );
+};
+
+const styles = StyleSheet.create({
+  icon: {
+    width: 45,
+    aspectRatio: 1,
+    backgroundColor: "#111",
+    position: "absolute",
+    top: "50%",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  label: {
+    color: "#d4d4d4",
+    fontSize: 16,
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+  },
+});
+```
