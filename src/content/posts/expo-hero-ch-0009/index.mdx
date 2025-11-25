@@ -1,0 +1,343 @@
+---
+title: "expo FlatList 动画"
+date: "2025-11-25T20:32:51+08:00"
+tags: [expo, react-native, animation]
+description: "使用 FlatList 的 onViewableItemsChanged 和 Reanimated 实现列表项进入视口时的淡入缩放动画，通过 SharedValue 和 worklet 函数在 UI 线程高效处理可见性检测"
+video:
+  type: "cloudinary"
+  url: "https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-hero-ch-0009_rmms5b&profile=cld-default"
+---
+
+import { CloudinaryVideo, Link, Row } from "@/components";
+
+<CloudinaryVideo url="https://player.cloudinary.com/embed/?cloud_name=di0hcf6yr&public_id=blog-astro%2Fvideo%2Fexpo-hero-ch-0009_rmms5b&profile=cld-default" />
+
+<Row>
+<Link
+  url="https://youtu.be/3ox0R5jPb04?si=scY1IYZxNun9ozrJ"
+  icon="youtube"
+  title="YouTube"
+/>
+
+<Link url="https://github.com/fruitsdrink/expo-hero/tree/ch-0009" icon="github" title="GitHub" />
+</Row>
+
+## 目录
+
+- 效果介绍
+- 动画策略
+- 关键知识点
+- 注意事项
+- 源代码
+
+## 效果介绍
+
+这个例子展示了如何在 Expo 中使用 `FlatList` 的 `onViewableItemsChanged` 回调配合 React Native Reanimated 实现列表项的视口动画。当列表项滚动进入可视区域时，会触发淡入和缩放动画（从 0.6 倍缩放到 1 倍，透明度从 0 到 1）；当列表项离开可视区域时，会反向执行动画。这种基于视口可见性的动画让长列表滚动体验更加流畅和有趣。
+
+## 动画策略
+
+### 视口可见性检测
+
+- 使用 `FlatList` 的 `onViewableItemsChanged` 回调监听可见项变化
+- 在回调中过滤出 `isViewable` 为 `true` 的项，更新到 `SharedValue` 中
+- 通过 `SharedValue` 在 UI 线程和 JS 线程之间共享可见项数据
+
+### 基于可见性的动画
+
+- 在 `ListItem` 组件中使用 `useAnimatedStyle` 创建响应式样式
+- 通过 worklet 函数 `itemIsVisible` 判断当前项是否在可见列表中
+- 根据可见性状态使用 `withTiming` 平滑过渡透明度和缩放值
+- 不可见时：`opacity: 0`，`scale: 0.6`
+- 可见时：`opacity: 1`，`scale: 1`
+
+### Worklet 函数优化
+
+- `itemIsVisible` 函数使用 `"worklet"` 指令，确保在 UI 线程执行
+- 在 worklet 中直接访问 `SharedValue.value`，避免跨线程通信开销
+- 使用 `Array.some()` 方法高效判断项是否可见
+
+## 关键知识点
+
+### 1. FlatList 的 onViewableItemsChanged
+
+`onViewableItemsChanged` 是 `FlatList` 提供的回调，用于监听可见项的变化：
+
+```jsx
+onViewableItemsChanged={({ viewableItems: vItems }) => {
+  viewableItems.value = vItems.filter((vi) => vi.isViewable);
+}}
+```
+
+- 回调参数包含 `viewableItems` 数组，每个元素包含 `item`、`index`、`isViewable` 等信息
+- 需要过滤出 `isViewable: true` 的项，因为回调可能包含部分可见的项
+- 将过滤后的结果存储到 `SharedValue` 中，供子组件使用
+
+### 2. SharedValue 跨线程数据共享
+
+`useSharedValue` 创建的值可以在 JS 线程和 UI 线程之间共享：
+
+```jsx
+const viewableItems = useSharedValue<ViewToken[]>([]);
+```
+
+- 在 JS 线程更新 `viewableItems.value`，UI 线程可以立即读取
+- 在 worklet 函数中访问 `.value` 不会触发跨线程通信，性能更好
+- 类型安全：使用 TypeScript 的 `ViewToken[]` 类型确保数据结构正确
+
+### 3. Worklet 函数
+
+Worklet 函数是在 UI 线程执行的 JavaScript 函数：
+
+```jsx
+const itemIsVisible = (
+  target: { id: number },
+  items: SharedValue<ViewToken[]>
+) => {
+  "worklet";
+  const current = items.value ?? [];
+  return current.some((vi) => vi.item.id === target.id);
+};
+```
+
+- `"worklet"` 指令告诉 Reanimated 这个函数需要在 UI 线程执行
+- 在 worklet 中可以直接访问 `SharedValue.value`，无需特殊处理
+- 所有动画相关的计算都应该在 worklet 中完成，保证 60fps 流畅度
+
+### 4. useAnimatedStyle 响应式样式
+
+`useAnimatedStyle` 创建响应式样式，当依赖的 `SharedValue` 变化时自动更新：
+
+```jsx
+const rStyle = useAnimatedStyle(() => {
+  const isVisible = itemIsVisible(item, viewableItems);
+  return {
+    opacity: withTiming(isVisible ? 1 : 0),
+    transform: [{ scale: withTiming(isVisible ? 1 : 0.6) }],
+  };
+}, []);
+```
+
+- 回调函数会在 UI 线程执行，所有计算都在 worklet 中
+- 使用 `withTiming` 实现平滑过渡，而非瞬间切换
+- 依赖数组为空 `[]`，因为样式只依赖传入的 props
+
+### 5. React.memo 性能优化
+
+使用 `React.memo` 包装 `ListItem` 组件，避免不必要的重渲染：
+
+```jsx
+const ListItem: React.FC<Props> = React.memo(({ item, viewableItems }) => {
+  // ...
+});
+```
+
+- 当父组件 `FlatList` 重新渲染时，如果 `item` 和 `viewableItems` 引用未变，子组件不会重渲染
+- `viewableItems` 是 `SharedValue`，引用稳定，不会触发重渲染
+- 只有 `item` 变化时才需要重新创建组件实例
+
+### 6. ItemSeparatorComponent 分隔符
+
+使用 `ItemSeparatorComponent` 为列表项添加间距：
+
+```jsx
+ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+```
+
+- 比在列表项内部设置 `margin` 更灵活
+- 可以统一管理列表间距，便于维护
+
+## 注意事项
+
+### 1. Worklet 中的限制
+
+在 worklet 函数中不能使用某些 JavaScript 方法，比如 `Array.filter`：
+
+```jsx
+// ❌ 错误：会导致应用崩溃
+const filterItems = current.filter((vi) => vi.isViewable);
+return filterItems.some((vi) => vi.item.id === target.id);
+
+// ✅ 正确：直接使用 some
+return current.some((vi) => vi.item.id === target.id);
+```
+
+- 过滤操作应该在父组件的 `onViewableItemsChanged` 中完成
+- Worklet 中只进行简单的判断和计算
+
+### 2. 可见性判断逻辑
+
+代码中的注释提醒我们：
+
+```jsx
+/**
+ * 注意这里不能进行filter，否则app直接崩溃
+ * 可以在父组件中的onViewableItemsChanged方法中过滤掉不在视图中的数据
+ */
+```
+
+- 父组件已经过滤了 `isViewable: true` 的项
+- Worklet 中只需要判断项是否存在，不需要再次过滤
+
+### 3. 动画时长
+
+当前代码使用 `withTiming` 的默认时长（通常为 300ms），可以根据需要自定义：
+
+```jsx
+opacity: withTiming(isVisible ? 1 : 0, { duration: 200 }),
+```
+
+- 较短的时长（200ms）让动画更快速响应
+- 较长的时长（500ms）让动画更平滑，但可能感觉迟缓
+
+### 4. 列表性能
+
+对于超长列表（如 1000+ 项），建议：
+
+- 使用 `getItemLayout` 优化滚动性能
+- 考虑使用 `initialNumToRender` 控制初始渲染数量
+- 合理设置 `windowSize` 和 `maxToRenderPerBatch`
+
+### 5. 样式组合
+
+`Animated.View` 的样式通过数组组合：
+
+```jsx
+style={[
+  {
+    height: 60,
+    width: "90%",
+    // ... 基础样式
+  },
+  rStyle, // 动画样式
+]}
+```
+
+- 基础样式定义静态属性
+- `rStyle` 定义动态动画属性
+- 数组顺序影响样式优先级
+
+## 源代码
+
+```jsx title="index.tsx"
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { FlatList, StyleSheet, View, ViewToken } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ListItem } from "../components";
+
+const items = new Array(100).fill(0).map((_, index) => ({
+  id: index + 1,
+}));
+export default function Index() {
+  const viewableItems = useSharedValue<ViewToken[]>([]);
+  return (
+    <SafeAreaView style={styles.container}>
+      <Stack.Screen options={{ headerShown: false }} />
+      <StatusBar style="auto" />
+      <FlatList
+        data={items}
+        onViewableItemsChanged={({ viewableItems: vItems }) => {
+          viewableItems.value = vItems.filter((vi) => vi.isViewable);
+        }}
+        renderItem={({ item }) => (
+          <ListItem key={item.id} item={item} viewableItems={viewableItems} />
+        )}
+        ItemSeparatorComponent={() => (
+          <View
+            style={{
+              height: 12,
+            }}
+          />
+        )}
+      />
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
+```
+
+---
+
+```jsx title="list-item.tsx"
+import React from "react";
+import { Text, ViewToken } from "react-native";
+import Animated, {
+  SharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
+
+type Props = {
+  item: {
+    id: number,
+  },
+  viewableItems: SharedValue<ViewToken[]>,
+};
+const ListItem: React.FC<Props> = React.memo(({ item, viewableItems }) => {
+  const itemIsVisible = (
+    target: { id: number },
+    items: SharedValue<ViewToken[]>
+  ) => {
+    "worklet";
+    const current = items.value ?? [];
+
+    /**
+     * 注意这里不能进行filter，否则app直接崩溃
+     * 可以在父组件中的onViewableItemsChanged方法中过滤掉不在视图中的数据
+     */
+    // const filterItems = current.filter((vi) => vi.isViewable) ?? [];
+    // return filterItems.some((vi) => vi.item.id === target.id);
+    return current.some((vi) => vi.item.id === target.id);
+  };
+
+  const rStyle = useAnimatedStyle(() => {
+    const isVisible = itemIsVisible(item, viewableItems);
+
+    return {
+      opacity: withTiming(isVisible ? 1 : 0),
+      transform: [
+        {
+          scale: withTiming(isVisible ? 1 : 0.6),
+        },
+      ],
+    };
+  }, []);
+
+  return (
+    <Animated.View
+      style={[
+        {
+          height: 60,
+          width: "90%",
+          backgroundColor: "#fff",
+          alignSelf: "center",
+          justifyContent: "center",
+          paddingHorizontal: 24,
+          borderRadius: 8,
+          boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+        },
+        rStyle,
+      ]}
+    >
+      <Text
+        style={{
+          fontSize: 24,
+          color: "#262626",
+        }}
+      >
+        {item.id}
+      </Text>
+    </Animated.View>
+  );
+});
+
+ListItem.displayName = "ListItem";
+
+export { ListItem };
+```
