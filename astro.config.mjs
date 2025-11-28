@@ -50,4 +50,7 @@ export default defineConfig({
     "/posts": "/posts/1",
   },
   adapter: netlify(),
+  image: {
+    remotePatterns: [{ protocol: "https" }],
+  },
 });
