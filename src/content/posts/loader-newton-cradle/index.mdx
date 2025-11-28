@@ -1,0 +1,166 @@
+---
+title: "loader-牛顿摇篮"
+date: "2025-11-28T00:28:58+08:00"
+tags: [css,loader,animation]
+description: "使用 CSS 边框技巧和 transform 动画实现牛顿摇篮加载效果，通过 transform-origin 控制旋转原点，配合 animation-delay 创造经典的物理摆动动画"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## CSS 效果与关键知识点
+
+### 视觉效果
+
+这是一个**牛顿摇篮加载动画**，具有以下视觉效果：
+
+1. **物理装置模拟**：使用 CSS 边框技巧创建支架结构，模拟真实的牛顿摇篮装置
+2. **摆动动画**：第一个球向右摆动 60 度，最后一个球向左摆动 60 度，形成经典的碰撞传递效果
+3. **延迟同步**：最后一个球的动画延迟 0.5 秒开始，与第一个球形成交替摆动
+4. **中间静止**：中间的三个球保持静止，符合牛顿摇篮的物理特性
+5. **循环播放**：动画无限循环，营造持续的加载氛围
+
+### 关键 CSS 知识点
+
+#### 1. **边框技巧创建支架结构** (14-18 行)
+
+```css
+.loader {
+  border-top: 4px solid #262626;
+  border-bottom: 40px solid #262626;
+  border-left: 1px solid #262626;
+  border-right: 1px solid #262626;
+  padding: 0 40px 20px;
+}
+```
+
+- **边框组合**：通过不同宽度的边框组合创建支架的视觉效果
+- **顶部边框**：`border-top: 4px` 创建细长的顶部横梁
+- **底部边框**：`border-bottom: 40px` 创建较厚的底部支撑
+- **左右边框**：`border-left` 和 `border-right` 各 1px，创建侧边框架
+- **内边距**：`padding: 0 40px 20px` 为球体摆动留出空间，避免碰撞边框
+
+#### 2. **transform-origin 控制旋转原点** (28 行)
+
+```css
+.loader span {
+  transform-origin: top;
+}
+```
+
+- **作用**：设置变换的原点位置
+- **关键值**：`top` 表示以元素顶部为旋转中心
+- **效果**：球体围绕顶部中心点旋转，模拟悬挂摆动的物理效果
+- **默认值**：如果不设置，默认是 `center`（中心点），会导致球体围绕中心旋转，不符合物理规律
+
+#### 3. **伪元素创建球体** (31-40 行)
+
+```css
+.loader span::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  bottom: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #262626;
+}
+```
+
+- **伪元素定位**：使用 `::before` 伪元素创建球体，避免额外的 HTML 元素
+- **绝对定位**：`position: absolute` 让球体相对于 `span` 元素定位
+- **位置计算**：`left: -14px` 和 `bottom: 0` 精确定位球体在摆线底部
+- **圆形创建**：`border-radius: 50%` 配合相等的宽高（30px）创建完美圆形
+- **视觉统一**：球体颜色与支架一致（`#262626`），保持整体风格
+
+#### 4. **第一个球的摆动动画** (41-57 行)
+
+```css
+.loader span:first-child {
+  animation: animate1 1s linear infinite;
+}
+
+@keyframes animate1 {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(60deg); }
+  75% { transform: rotate(0); }
+  100% { transform: rotate(0); }
+}
+```
+
+- **选择器**：`:first-child` 选择第一个 `span` 元素
+- **动画流程**：
+  - **0% → 25%**：从 0 度旋转到 60 度（向右摆动）
+  - **25% → 75%**：从 60 度回到 0 度（返回中心）
+  - **75% → 100%**：保持在 0 度（静止等待）
+- **时间分配**：摆动和返回各占 25% 的时间，静止占 50%，符合物理规律
+- **线性动画**：`linear` 让动画匀速进行，模拟重力作用下的摆动
+
+#### 5. **最后一个球的延迟动画** (58-75 行)
+
+```css
+.loader span:last-child {
+  animation: animate2 1s linear infinite;
+  animation-delay: 0.5s;
+}
+
+@keyframes animate2 {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(-60deg); }
+  75% { transform: rotate(0); }
+  100% { transform: rotate(0); }
+}
+```
+
+- **选择器**：`:last-child` 选择最后一个 `span` 元素
+- **相反方向**：`rotate(-60deg)` 向左旋转，与第一个球方向相反
+- **延迟启动**：`animation-delay: 0.5s` 延迟 0.5 秒开始动画
+- **同步效果**：当第一个球回到中心时，最后一个球开始摆动，形成能量传递的视觉效果
+- **时间同步**：0.5 秒的延迟正好是动画周期的一半，确保完美的交替效果
+
+#### 6. **Flexbox 布局排列球体** (19 行)
+
+```css
+.loader {
+  display: flex;
+}
+```
+
+- **水平排列**：`display: flex` 让所有 `span` 元素水平排列
+- **间距控制**：通过 `margin: 0 14px` 控制球体之间的间距
+- **对齐方式**：默认 `flex-direction: row`，球体从左到右排列
+
+#### 7. **摆线样式设计** (21-30 行)
+
+```css
+.loader span {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: 100px;
+  background: #262626;
+  margin: 0 14px;
+}
+```
+
+- **细线设计**：`width: 2px` 创建细长的摆线
+- **高度设置**：`height: 100px` 决定摆动的幅度范围
+- **相对定位**：`position: relative` 为伪元素（球体）提供定位上下文
+- **间距控制**：`margin: 0 14px` 在左右两侧各留出 14px 间距
+
+### 技术亮点
+
+1. **边框艺术**：巧妙使用不同宽度的边框组合，无需额外元素即可创建复杂的支架结构
+2. **物理模拟**：通过 `transform-origin: top` 精确模拟悬挂摆动的物理效果
+3. **伪元素复用**：使用 `::before` 伪元素创建球体，保持 HTML 结构简洁
+4. **动画同步**：通过 `animation-delay` 实现两个球的交替摆动，模拟能量传递
+5. **选择器精准**：使用 `:first-child` 和 `:last-child` 精确控制特定元素的动画
+6. **方向相反**：第一个球向右（正角度），最后一个球向左（负角度），形成对称的视觉效果
+7. **时间控制**：动画时间分配合理，摆动和返回各占 25%，静止占 50%，符合物理规律
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-newton-cradle" />

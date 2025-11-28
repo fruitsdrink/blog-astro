@@ -1,0 +1,119 @@
+---
+title: "加载器-文字加载动画"
+date: "2025-11-27T00:04:10+08:00"
+tags: [css,loader,animation]
+description: "使用伪元素和宽度动画实现文字加载效果，通过 attr() 函数和 overflow 隐藏创造流畅的文本填充动画"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## CSS 效果与关键知识点
+
+### 视觉效果
+
+这是一个**文字加载动画**，具有以下视觉效果：
+
+1. **文本填充效果**：深色文字从左侧逐渐填充到右侧，然后消失，形成加载动画
+2. **光标效果**：右侧边框模拟打字光标，跟随文字填充移动
+3. **循环动画**：填充和消失过程无限循环，营造持续的加载感
+4. **双层文字**：浅色文字作为背景，深色文字作为前景，形成对比
+
+### 关键 CSS 知识点
+
+#### 1. **attr() 函数获取属性值** (19 行)
+
+```css
+h1::before{
+  content: attr(data-text);
+}
+```
+
+- **作用**：`attr()` 函数从元素的 `data-text` 属性中获取文本内容
+- **优势**：避免重复书写相同文本，保持 HTML 和 CSS 的分离
+- **应用**：伪元素 `::before` 通过 `content: attr(data-text)` 显示与主元素相同的文本
+- **关键**：HTML 中需要设置 `data-text="Loading..."` 属性
+
+#### 2. **伪元素创建重叠层** (18-29 行)
+
+```css
+h1::before{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  color: #111;
+  border-right: 2px solid #111;
+  overflow: hidden;
+}
+```
+
+- **定位策略**：使用 `position: absolute` 让伪元素完全覆盖主元素
+- **尺寸匹配**：`width: 100%` 和 `height: 100%` 确保伪元素与主元素大小一致
+- **颜色对比**：伪元素使用深色（`#111`），主元素使用浅色（`#f5f5f5`），形成视觉层次
+- **光标模拟**：`border-right: 2px solid #111` 在右侧创建边框，模拟打字光标效果
+
+#### 3. **宽度动画实现填充效果** (30-40 行)
+
+```css
+@keyframes animate {
+  0%{
+    width: 0%;
+  }
+  50%{
+    width: 100%;
+  }
+  100%{
+    width: 0%;
+  }
+}
+```
+
+- **动画流程**：
+  - **0% → 50%**：宽度从 0% 增长到 100%，文字从左到右逐渐显示
+  - **50% → 100%**：宽度从 100% 减少到 0%，文字从右到左逐渐消失
+- **关键技巧**：配合 `overflow: hidden`，超出宽度的部分被裁剪，实现平滑的填充和消失效果
+- **循环播放**：`animation: animate 2s linear infinite` 让动画无限循环
+
+#### 4. **overflow: hidden 裁剪溢出** (27 行)
+
+```css
+h1::before{
+  overflow: hidden;
+}
+```
+
+- **作用**：隐藏超出伪元素宽度的内容
+- **效果**：当宽度小于 100% 时，右侧的文字被裁剪，只显示左侧部分
+- **关键**：这是实现填充效果的核心，没有 `overflow: hidden` 就无法实现平滑的宽度变化
+
+#### 5. **文本样式增强视觉效果** (12-17 行)
+
+```css
+h1 {
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 5px;
+  color: #f5f5f5;
+}
+```
+
+- **相对定位**：`position: relative` 为绝对定位的伪元素提供定位上下文
+- **大写转换**：`text-transform: uppercase` 将文本转换为大写，增强视觉冲击力
+- **字间距**：`letter-spacing: 5px` 增加字符间距，让动画效果更明显
+- **背景色**：浅色（`#f5f5f5`）作为背景，与深色前景形成对比
+
+### 技术亮点
+
+1. **attr() 函数复用**：使用 `attr(data-text)` 避免文本重复，提高代码可维护性
+2. **伪元素叠加**：通过 `::before` 伪元素创建重叠层，实现双层文字效果
+3. **宽度动画**：简单的宽度变化配合 `overflow: hidden` 实现复杂的填充动画
+4. **光标模拟**：使用 `border-right` 模拟打字光标，增强加载动画的真实感
+5. **无限循环**：通过 `infinite` 关键字实现无缝循环，营造持续的加载氛围
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-text-loading" />

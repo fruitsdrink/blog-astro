@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>loader-牛顿摇篮</title>
+
+  <style>
+    * {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.loader {
+  position: relative;
+  border-top: 4px solid #262626;
+  border-bottom: 40px solid #262626;
+  border-left: 1px solid #262626;
+  border-right: 1px solid #262626;
+  padding: 0 40px 20px;
+  display: flex;
+}
+.loader span {
+  position: relative;
+  display: block;
+  width: 2px;
+  height: 100px;
+  background: #262626;
+  margin: 0 14px;
+  transform-origin: top;
+
+}
+.loader span::before{
+  content: '';
+  position: absolute;
+  left: -14px;
+  bottom: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #262626;
+}
+.loader span:first-child{
+  animation: animate1 1s linear infinite;
+}
+@keyframes animate1 {
+  0%{
+    transform: rotate(0);
+  }
+  25%{
+    transform: rotate(60deg);
+  }
+  75%{
+    transform: rotate(0);
+  }
+  100%{
+    transform: rotate(0);
+  }
+}
+.loader span:last-child{
+  animation: animate2 1s linear infinite;
+  animation-delay: 0.5s;
+}
+@keyframes animate2 {
+  0%{
+    transform: rotate(0);
+  }
+  25%{
+    transform: rotate(-60deg);
+  }
+  75%{
+    transform: rotate(0);
+  }
+  100%{
+    transform: rotate(0);
+  }
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="loader">
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
+  <script>
+    
+  </script>
+</body>
+</html>

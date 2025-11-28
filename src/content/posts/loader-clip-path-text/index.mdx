@@ -1,0 +1,125 @@
+---
+title: "加载器-clip-path分割文本"
+date: "2025-11-26T23:33:59+08:00"
+tags: [css,loader,animation]
+description: "使用 clip-path 分割文本实现滑动加载动画，通过多边形裁剪和反向动画创造流畅的文字滑动效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+## CSS 效果与关键知识点
+
+### 视觉效果
+
+这是一个**clip-path 分割文本加载器**，具有以下视觉效果：
+
+1. **文本分割**：使用 `clip-path` 将 "loading" 文字分割成上下两部分
+2. **滑动动画**：上半部分从右侧滑入，停留后滑出到左侧；下半部分以相反方向运动
+3. **无缝循环**：两个部分反向运动，形成连续的滑动加载效果
+4. **边框容器**：深色边框包裹整个加载器，增强视觉边界
+
+### 关键 CSS 知识点
+
+#### 1. **clip-path 多边形裁剪** (32-38 行)
+
+```css
+.loader span:nth-child(1){
+  clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
+}
+.loader span:nth-child(2){
+  clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
+}
+```
+
+- **作用**：使用 `polygon()` 函数定义多边形裁剪区域
+- **上半部分**：`polygon(0 0, 100% 0, 100% 50%, 0 50%)` 裁剪出文本的上半部分
+  - 四个顶点：左上角(0,0) → 右上角(100%,0) → 右下角(100%,50%) → 左下角(0,50%)
+- **下半部分**：`polygon(0 50%, 100% 50%, 100% 100%, 0 100%)` 裁剪出文本的下半部分
+  - 四个顶点：左上角(0,50%) → 右上角(100%,50%) → 右下角(100%,100%) → 左下角(0,100%)
+- **关键**：两个裁剪区域在 50% 处分割，完美将文本分成上下两半
+
+#### 2. **绝对定位与垂直居中** (21-31 行)
+
+```css
+.loader span{
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  transform: translateY(-50%);
+}
+```
+
+- **定位策略**：使用 `position: absolute` 让两个 `span` 重叠在同一位置
+- **垂直居中**：`top: 50%` + `transform: translateY(-50%)` 实现垂直居中
+- **重叠技巧**：两个 `span` 内容相同，通过 `clip-path` 分别显示不同部分
+
+#### 3. **反向动画实现对称效果** (34, 38 行)
+
+```css
+.loader span:nth-child(1){
+  animation: animate 4s linear infinite;
+}
+.loader span:nth-child(2){
+  animation: animate 4s reverse infinite;
+}
+```
+
+- **正向动画**：第一个 `span` 使用默认方向
+- **反向动画**：第二个 `span` 使用 `reverse` 关键字，动画反向播放
+- **效果**：上半部分从左到右，下半部分从右到左，形成对称的滑动效果
+
+#### 4. **关键帧动画的时序控制** (40-53 行)
+
+```css
+@keyframes animate {
+  0%{
+    transform: translateX(100%) translateY(-50%);
+  }
+  40%{
+    transform: translateX(0%) translateY(-50%);
+  }
+  60%{
+    transform: translateX(0%) translateY(-50%);
+  }
+  100%{
+    transform: translateX(-100%) translateY(-50%);
+  }
+}
+```
+
+- **0% → 40%**：从右侧（`translateX(100%)`）滑入到中心（`translateX(0%)`）
+- **40% → 60%**：在中心停留 20% 的时间，保持可见状态
+- **60% → 100%**：从中心滑出到左侧（`translateX(-100%)`）
+- **关键**：保持 `translateY(-50%)` 确保垂直居中不被破坏
+- **时序设计**：40% 的进入时间 + 20% 的停留时间 + 40% 的退出时间，形成自然的节奏
+
+#### 5. **overflow 隐藏溢出** (19 行)
+
+```css
+.loader{
+  overflow: hidden;
+}
+```
+
+- **作用**：隐藏滑出容器边界的文本部分
+- **效果**：文本从右侧滑入和向左侧滑出时，超出容器的部分被裁剪，保持视觉整洁
+
+### 技术亮点
+
+1. **双重文本技巧**：使用两个相同的 `span` 元素，通过 `clip-path` 分别显示不同部分，实现分割效果
+2. **反向动画**：利用 `animation-direction: reverse` 轻松实现对称运动，无需编写两套关键帧
+3. **clip-path 精确控制**：通过 `polygon()` 精确控制裁剪区域，实现完美的文本分割
+4. **时序优化**：关键帧中设置停留时间（40%-60%），让文本在中心位置有足够的展示时间
+
+
+### 相关工具
+
+- [CSS clip-path maker](https://bennettfeely.com/clippy/)
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-clip-path-text" />
