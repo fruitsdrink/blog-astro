@@ -1,0 +1,24 @@
+---
+title: "加载器-复杂加载动画"
+date: "2025-11-30T15:49:43+08:00"
+tags: [css, loader, animation]
+description: "使用 transform-origin、translate 与 rotate 组合的关键帧动画，让方块沿着轨道翻转移动的复杂加载效果。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本例实现了一个**沿轨道翻转前进的方块加载动画**：左侧黄色方块以右下角为旋转中心，通过 `translate + rotate` 的关键帧动画，依次完成位移与翻转，最终滑入右侧轨道终点的方框中，形成等待/加载中的视觉反馈。
+
+- **关键 CSS 知识点**
+  - **transform-origin 与 transform 组合**：通过设置 `transform-origin: bottom right`，配合 `translate()` 和 `rotate()` 在关键帧中改变方块的位置和角度。
+  - **@keyframes 动画节奏控制**：在 0%、50%、100% 三个关键帧中分别控制“起步位移”“原地翻转”和“终点下落”，形成连贯运动。
+  - **绝对定位的居中与轨道布局**：使用 `position: absolute` + `top/left/transform` 实现整体居中，并通过 `calc()` 计算方块与轨道的相对位置。
+  - **伪元素构建终点框**：轨道使用 `::before` 生成右侧终点方框，避免额外 DOM 元素。
+  - **文字标签装饰**：通过 `span` 叠在终点框上方，展示 `enter` 文案，增强交互感。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-complex" />

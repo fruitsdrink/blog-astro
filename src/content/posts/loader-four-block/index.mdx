@@ -1,0 +1,20 @@
+---
+title: "加载器-四个方块"
+date: "2025-11-29T14:41:40+08:00"
+tags: [css, loader, animation]
+description: "解析一个由四个彩色方块组成的 CSS 加载动画，涵盖旋转缩放联动与关键帧控制技巧。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+这个案例里的 `.loader` 容器先整体旋转 `45deg`，再通过 `@keyframes animate` 在 1 秒内让包围盒在 `100px` 与 `150px` 之间呼吸式缩放；四个绝对定位的 `<span>` 则由 `rotate` 动画控制在 `0°→90°` 的翻折中交替出现，配合不同的背景色形成多彩跳动的方块矩阵。
+
+- **关键帧联动**：`animate` 负责容器尺寸变化，而 `rotate` 叠加在子元素上，展示出两层动画叠加的效果。
+- **布局技巧**：使用相对定位的容器配合绝对定位的四个子元素，再通过 `nth-child` 精确控制方位和配色，保证方块始终占据对角线。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-four-block" />

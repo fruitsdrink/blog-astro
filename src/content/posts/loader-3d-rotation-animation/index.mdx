@@ -1,0 +1,23 @@
+---
+title: "加载器-3D旋转动画"
+date: "2025-12-02T16:27:44+08:00"
+tags: [css, loader, animation]
+description: "利用 3D 透视 + transform-style: preserve-3d + rotateX 动画，做出一块不断绕 X 轴旋转的立体卡片加载动效。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本例通过一组叠加的 `span` 结合 `perspective` 与 `transform-style: preserve-3d` 构建出一块立体卡片，并使用 `@keyframes` 不断绕 X 轴旋转，配合 `::before` 模拟地面阴影，形成完整的 3D 加载动画效果。
+
+- **核心知识点**
+  - **3D 场景搭建**：`perspective(1000px)` + `transform-style: preserve-3d` 保留子元素的 3D 信息。
+  - **多面体结构**：通过多个 `span:nth-child()` 不同的 `rotateX()` 角度，组合出“厚度”与多面外观。
+  - **动画实现**：`@keyframes animate` 中连续旋转 `rotateX(0deg → 359deg)` 实现整块卡片的循环翻转。
+  - **立体阴影**：`.box::before` 使用模糊黑色块和 `rotateX(90deg)` 制造落地阴影，增强空间感。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-3d-rotation-animation" />

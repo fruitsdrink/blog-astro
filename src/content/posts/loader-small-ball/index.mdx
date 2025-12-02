@@ -1,0 +1,17 @@
+---
+title: "加载器-小球"
+date: "2025-12-01T16:11:36+08:00"
+tags: [css, loader-animation]
+description: "使用 @keyframes 配合 translateX、opacity 和 animation-delay 实现三颗彩色小球依次滑动的加载动效。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本例通过 `@keyframes` 定义小球在水平方向上的位移动画，配合 `translateX` 和 `opacity` 实现从左到右出现、停留再消失的过渡效果；同时利用 `animation-delay` 和 `nth-child` 为每个小球设置不同的延迟与颜色，营造连续流动的加载动效，整体布局则通过 flex 居中让动效始终处于视口中央。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-small-ball" />

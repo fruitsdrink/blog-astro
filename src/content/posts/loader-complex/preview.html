@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JSFiddle hmnxoLp7</title>
+
+  <style>
+    *{
+  padding: 0;
+  margin: 0;
+}
+body {  
+  min-height: 100vh;
+}
+.square{
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 50px);
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  background: #ff0;
+  box-sizing: border-box;
+  border: 4px solid #262626;
+  animation: animate 1s linear infinite;
+}
+@keyframes animate {
+  0%{
+    transform-origin: bottom right;
+    transform: translate(-50%, -50%) translateX(25px) rotate(0deg) ;
+  }
+  50%{
+    transform-origin: bottom right;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  100%{
+    transform-origin: bottom right;
+    transform: translate(-50%, -50%) rotate(90deg) translateY(25px);
+  }
+}
+.track{
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 40px);
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 50px;
+  border-bottom: 2px solid #262626;
+}
+.track::before{
+  content: '';
+  position: absolute;
+  right: 4px;
+  top: -2px;
+  width: 50px;
+  height: 50px;
+  border: 2px solid #262626;
+}
+.track span{
+  position: absolute;
+  display: block;
+  right: 4px;
+  top: -22px;
+  width: 42px;
+  background: #262626;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  font-family: sans-serif;
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="square"></div>
+<div class="track">
+  <span>enter</span>
+</div>
+
+  <script>
+    
+  </script>
+</body>
+</html>
