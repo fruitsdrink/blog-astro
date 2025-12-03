@@ -80,3 +80,17 @@ ShowWordCount: false
 - <a href="https://www.gin-vue-admin.com" alt="官网地址" target="_blank">官网地址 用户名：admin 密码：123456</a>
 - <a href="http://demo.gin-vue-admin.com" alt="演示地址" target="_blank">演示地址</a>
 - <a href="https://github.com/flipped-aurora/gin-vue-admin" alt="代码下载" target="_blank">代码下载</a>
+
+## 纯前端
+
+### vue
+
+- [SoybeanAdmin](https://docs.soybeanjs.cn/zh)
+- [pure admin](https://pure-admin.cn)
+- [vben admin](https://doc.vben.pro)
+
+### react
+
+- [ant design pro](https://pro.ant.design/zh-CN)
+- [adminJS](https://adminjs.co/)
+- [ra](https://marmelab.com/react-admin/)
