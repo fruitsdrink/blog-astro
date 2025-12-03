@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>加载器-渐入渐出效果</title>
+
+  <style>
+    *{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #111;
+}
+.loader span {
+  color: #fff;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 32px;
+  letter-spacing: 10px;
+  animation: animate 3s linear infinite;
+}
+@keyframes animate {
+  0%{
+    filter: blur(0);
+  }
+  40%{
+    filter: blur(20px);
+  }
+  80%{
+    filter: blur(0);
+  }
+  100%{
+    filter: blur(0);
+  }
+}
+.loader span:nth-child(1){
+  animation-delay: 0s;
+}
+.loader span:nth-child(2){
+  animation-delay: 0.1s;
+}
+.loader span:nth-child(3){
+  animation-delay: 0.2s;
+}
+.loader span:nth-child(4){
+  animation-delay: 0.3s;
+}
+.loader span:nth-child(5){
+  animation-delay: 0.4s;
+}
+.loader span:nth-child(6){
+  animation-delay: 0.5s;
+}
+.loader span:nth-child(7){
+  animation-delay: 0.6s;
+}
+  </style>
+
+  
+</head>
+<body>
+  <div class="loader">
+  <span>l</span>
+  <span>o</span>
+  <span>a</span>
+  <span>d</span>
+  <span>i</span>
+  <span>n</span>
+  <span>g</span>
+</div>
+
+  <script>
+    
+  </script>
+</body>
+</html>

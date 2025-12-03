@@ -1,0 +1,17 @@
+---
+title: "加载器-渐入渐出"
+date: "2025-12-03T15:09:46+08:00"
+tags: [css, loader, animation]
+description: "利用 filter blur 叠加 animation-delay 打造顺序渐入渐出的文字加载动画"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+这个加载器通过 `filter: blur()` 控制文字清晰度，在 `@keyframes` 中设置 0%→40%→80% 的模糊过渡形成渐入渐出的呼吸效果；再配合 `nth-child` 链式的 `animation-delay`，让每个字符依次启动动画，从而营造出有节奏的 loading 文案。布局层面使用全屏 `flex` 居中与大写字距，确保重点放在动画节奏上。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-fadeinout" />
