@@ -1,0 +1,21 @@
+---
+title: "加载器-文字混合动画"
+date: "2025-12-04T15:25:01+08:00"
+tags: [css, loader, animation]
+description: "利用 mix-blend-mode 与伪元素的横向滑块反色文字加载动画。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+白底上有一块深色滑块水平往复移动，借助 `mix-blend-mode: difference` 让文字在滑块经过时反色，形成 Loading 效果。关键点：
+
+- `::before` 伪元素作为滑块，设置绝对定位、固定宽度并做 `left` 往返动画。
+- `mix-blend-mode: difference` 作用于 `span`，实现滑块与文字的颜色差值混合。
+- 字体通过大写、加粗和 `letter-spacing` 强化视觉效果，整体在全屏居中展示。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-text-mix" />

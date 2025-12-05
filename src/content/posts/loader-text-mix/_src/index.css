@@ -1,0 +1,46 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.loader {
+  position: relative;
+  font-size: 2em;
+  background: #fff;
+  color: #111;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5em;
+  padding: 10px;
+}
+.loader span {
+  color: #fff;
+  mix-blend-mode: difference;
+}
+.loader::before {
+  position: absolute;
+  content: "";
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 100%;
+  background: #111;
+  animation: animate 3s linear infinite;
+}
+@keyframes animate {
+  0% {
+    left: 0;
+  }
+  50% {
+    left: calc(100% - 80px);
+  }
+  100% {
+    left: 0;
+  }
+}

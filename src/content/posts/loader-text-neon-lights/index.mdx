@@ -1,0 +1,17 @@
+---
+title: "加载器-霓虹灯文字"
+date: "2025-12-05T15:46:47+08:00"
+tags: [css, loader, animation]
+description: "黑色背景居中的霓虹蓝文字逐字闪烁加载动画，利用 text-shadow 叠加和延迟控制形成波浪发光效果"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本文展示一个霓虹蓝色文字的加载动画：黑底居中布局，`h1 span` 逐字循环亮灭，叠加多层 `text-shadow` 与轻微 `blur` 营造发光，并通过 `nth-child` 为每个字符设定不同 `animation-delay`，形成波浪式闪烁。关键知识点：Flex 居中、文本分字动画、霓虹发光的阴影叠加、`@keyframes` 亮灭循环与延迟错位。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-text-neon-lights" />
