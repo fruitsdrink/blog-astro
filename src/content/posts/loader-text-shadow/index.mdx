@@ -1,0 +1,21 @@
+---
+title: "加载器-文本阴影"
+date: "2025-12-07T17:22:12+08:00"
+tags: [css, loader, animation]
+description: "利用 text-shadow 与 scale 形成脉冲式发光加载效果，逐字错位延迟。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+import { CodeViewer } from "@/components";
+
+本例通过 `text-shadow` 与 `transform: scale` 制造文字由暗到亮再回落的脉冲效果，并用自定义属性 `--i` 叠加 `animation-delay` 让每个字母依次起跳。关键点：
+
+- `text-shadow` 在 0%/80%/100% 归零，40% 时增强阴影与缩放，产生柔和闪烁
+- `scale(1 → 1.4 → 1)` 与阴影同步，强化呼吸感
+- `animation-delay: calc(var(--i) * 0.2s)` 结合行内 `--i`，实现逐字错峰
+
+<CodeViewer postId="loader-text-shadow" />

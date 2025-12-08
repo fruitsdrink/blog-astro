@@ -1,0 +1,24 @@
+---
+title: "加载器-老式电影倒计时"
+date: "2025-12-06T17:06:26+08:00"
+tags: [css, loader, animation]
+description: "纯 CSS 复刻老式电影倒计时加载器，旋转指针与数字淡入淡出轮播。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-old-film" />
+
+## 效果与关键 CSS 点
+
+老式电影倒计时的加载器由径向渐变背景、十字准线、同心圆、旋转指针和 10→1 的数字轮播组合而成。关键实现要点：
+
+- `radial-gradient(#fff, #757575)` 营造胶片扫光的灰阶背景，叠加 `::before/::after` 十字准线强化视觉中心。
+- 两个不同尺寸的 `.circle` 使用纯边框与 `border-radius: 50%` 形成同心圆框。
+- `.niddle` 设置 `transform-origin: left`，通过 `@keyframes animate` 以 1s 线性无限旋转，模拟秒针扫过的感觉。
+- 数字容器 `.number div` 利用 `animation-delay: calc(var(--i) * 1s)` 叠加 `opacity` 关键帧，实现按顺序淡入淡出的倒计时效果。

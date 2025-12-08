@@ -1,0 +1,17 @@
+---
+title: "加载器-全屏数字"
+date: "2025-12-08T19:32:36+08:00"
+tags: [css, loader, animation]
+description: "全屏数字加载器，黑色遮罩随进度展开，数字混合反差后整体淡出"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+全屏加载遮罩覆盖整页，黑底随百分比水平拉伸，居中的巨大数字通过 mix-blend-mode:difference 在黑白背景间反相显示，最终由 fadeout 动画淡出离场。关键点：section 绝对定位 100vh 叠放，pointer-events:none 避免阻挡交互；loader 仅控制宽度即可表现进度；count 用 vw 字号配合 transform 居中；动画延时 8.5s 后线性透明处理。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-full-screen-number" />
