@@ -1,0 +1,17 @@
+---
+title: "加载器-旋转方块"
+date: "2025-12-09T19:49:50+08:00"
+tags: [css,loader,animation]
+description: "CSS 旋转方块加载器：核心用 transform-origin + 双重 keyframes 控制方块翻转与主体旋转，伪元素填充色块带出四色过渡效果，flex 居中让视图始终居中展示。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+旋转方块加载器使用父容器与四个子块共同旋转，`rotate` 控制黑色外框整体 1s 循环，`animate` 让四个子块围绕各自 `transform-origin` 翻转 180°，伪元素填充不同颜色带来连续过渡。`flex` 居中布局配合绝对定位与 `inset` 填充实现简洁结构，值得关注的是 `transform-origin` 的不同取值决定了方块翻转方向。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="loader-rotate-square" />
