@@ -1,0 +1,17 @@
+---
+title: "响应式轮播图"
+date: "2025-12-10T22:07:13+08:00"
+tags: [css,carousel]
+description: "使用 flex + transform 实现滑动轮播，含渐变遮罩、圆形按钮和指示点，并在 600px 以下自动收缩高度。"
+preview:
+  enabled: true
+  height: 300
+---
+
+## 目录
+
+本篇演示的 CSS 通过 `flex` 容器承载整组幻灯片，使用 `transform` 平移实现切换过渡，并在 `.slide::before` 添加顶部渐变遮罩以突出标题。圆形的左右切换按钮与底部指示点拥有 hover 反馈，而 `@media (max-width: 600px)` 让幻灯高度与控件尺寸在移动端自适应。
+
+import { CodeViewer } from "@/components";
+
+<CodeViewer postId="carousel-001" />
